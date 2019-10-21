@@ -5,6 +5,7 @@ const bodyParser        = require('body-parser');
 const http              = require('http');
 const questionRouter    = require('./routes/questions');
 const teamsRouter       = require('./routes/teams');
+const mongoose          = require('mongoose');
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use(bodyParser.json());
 
 app.use('/', questionRouter);
 app.use('/', teamsRouter);
+
+const dbName = "quizzer";
 
 const httpServer      = http.createServer(app);
 const webSocketServer = new ws.Server({
@@ -37,7 +40,9 @@ webSocketServer.on('connection', function connection(websocket) {
 });
 
 const server = app.listen(3000, () => {
-    console.log(`game server started on port ${server.address().port}`);
+    mongoose.connect(`mongodb://localhost:27017/${dbName}`,  {useNewUrlParser: true }, () => {
+        console.log(`game server started on port ${server.address().port}`);
+    });
 });
 
 
