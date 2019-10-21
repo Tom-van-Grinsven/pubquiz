@@ -1,0 +1,19 @@
+{
+  "name": "quizzer-server",
+  "version": "1.0.0",
+  "description": "quizzer-opdracht-DWA-tim-tom",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tom van Grinsven, Tim Hemmes",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "latest",
+    "ws": "latest"
+  },
+  "devDependencies": {
+    "express-session": "^1.17.0"
+  }
+}
