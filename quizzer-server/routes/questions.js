@@ -11,10 +11,9 @@ const Question  = mongoose.model('Question');
 
 questionRouter.get('/questions', async function(req,res, next){
     try {
-        let categories = ["Art and Literature", "Music", "History"];
+        let categories = ["Sport", "Film and Tv", "History"];
         let questions = await Question.getQuestionsForRound(categories);
-        console.log(questions);
-        res.json("GET /questions")
+        res.json(questions)
     } catch (err) {
         console.log(err);
     }
