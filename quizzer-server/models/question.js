@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const questionSchema = new mongoose.Schema({
     _id: {
         type: String,
-        required: true
     },
     question: {
         type: String,
-        required: true
+        required: true,
     },
     answer: {
         type: String,
@@ -19,7 +18,7 @@ const questionSchema = new mongoose.Schema({
     }
 });
 
-questionSchema.methods.getQuestionsForRound = async function (categories){
+questionSchema.statics.getQuestionsForRound = async function (categories){
     try{
         let questions = await this.aggregate([
                 { $match : {category: {$in: [categories[0], categories[1], categories[2]] }}},
