@@ -9,10 +9,6 @@ const questionRouter = express.Router();
 
 const Question  = mongoose.model('Question');
 
-questionRouter.use('', async function(req, res, next){
-
-});
-
 questionRouter.get('/questions', async function(req,res, next){
     try {
         let categories = ["Sport", "Film and Tv", "History"];
