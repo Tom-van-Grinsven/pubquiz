@@ -1,0 +1,14 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+.main-content-container {
+    padding:50px 0;
+    width: 992px;
+}
+.login-register-form {
+    padding:0 20px;
+}
+.login-register-form h3 {
+    margin-bottom: 15px;
+}
