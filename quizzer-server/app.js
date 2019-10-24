@@ -3,8 +3,9 @@ const ws                = require('ws');
 const session           = require('express-session');
 const bodyParser        = require('body-parser');
 const http              = require('http');
+
 const questionRouter    = require('./routes/questions');
-const teamsRouter       = require('./routes/teams');
+const quizRouter        = require('./routes/quizzes');
 const mongoose          = require('mongoose');
 
 const app = express();
@@ -13,8 +14,9 @@ app.use(session({resave: true, saveUninitialized: true, secret: "littlelayerofse
 
 app.use(bodyParser.json());
 
-app.use('/', questionRouter);
-app.use('/', teamsRouter);
+
+app.use('/quizzes', quizRouter);
+app.use('/questions', questionRouter);
 
 const dbName = "quizzer";
 

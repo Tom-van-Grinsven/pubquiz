@@ -30,7 +30,7 @@ seedQuestion = async () => {
     let questions = await Question.find({});
 
     if(questions.length === 0){
-        const fileName = path.join('../vragen', 'Questions.json');
+        const fileName = path.join('../vragen', 'test.json');
         const result = await readFileP(fileName);
         await Question.insertMany(JSON.parse(result));
     }
@@ -46,9 +46,9 @@ seedQuiz = async () => {
                 {teamName: "Zuipschuiten", points: 6}],
             isActive: 0,
             roundNumber: 1,
-            questions: [{_id: "5db183258966e72e740ae066", isActive: 1, isClosed: 0}],
+            questions: [{_id: "5db1b4f4cf57af17bc021d6c", isActive: 1, isClosed: 0}],
             answeredQuestions: {
-                _id: "5db183258966e72e740ae066",
+                _id: "5db1b4f4cf57af17bc021d6c",
                 answers: [
                     {
                         teamName: "Harry's Doner",
