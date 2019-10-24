@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose          = require('mongoose');
+let uniqueValidator = require('mongoose-unique-validator');
 
 const quizSchema = new mongoose.Schema({
-    code: {String, unique: true, maxLength: 6},
-    naam: {type: String, required: true,},
-    teams: [{teamName: String, unique: true, points: Number}],
+    code: {type: String, unique: true, maxLength: 6},
+    naam: {type: String, required: true},
+    teams: [{teamName: {type: String, unique: true, points: Number}}],
     isActive: {type: Boolean, required: true, default: false},
     roundNumber: {type: Number, required: true, default: 1},
     questionNumber: {type: Number, required: true, default: 1},
@@ -29,17 +30,5 @@ const quizSchema = new mongoose.Schema({
     ]
 });
 
-// quizSchema.methods.getActiveQuestion();
-// quizSchema.methods.setCategories(categories);
-// quizSchema.methods.addJoinedTeamToQuiz(team);
-// quizSchema.methods.getJoinedTeamsOfQuiz();
-// quizSchema.methods.setDefinitiveTeamsForQuiz(teams);
-// quizSchema.methods.setActiveQuestion(questionId);
-// quizSchema.methods.setClosedQuestion();
-// quizSchema.methods.setTeamAnswerForQuestion(team, answer);
-// quizSchema.methods.getGivenAnswers();
-// quizSchema.methods.judgeGivenAnswers(answers);
-// quizSchema.methods.getScores();
-
+quizSchema.plugin(uniqueValidator);
 const Quiz = mongoose.model("Quiz", quizSchema);
-
