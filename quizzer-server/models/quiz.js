@@ -84,7 +84,10 @@ quizSchema.methods.setDefinitiveTeamsForQuiz = async function(teams){
     }
 };
 
-// TODO: NIET DUIDELIJK MORGEN OVERLEGGEN
+// TODO: https://mongoosejs.com/docs/faq.html schijnbaar kan je niet
+//      rechtstreeks op de index van een array aanpassen
+//      heb nog niet gevonden hoe dat zou moeten werken.
+//      de oplossing in de FAQ werkt voor mij niet.
 // quizSchema.methods.setActiveQuestion = async function(questionId) {
 //     try {
 //         currentQuestionIndex = this.questions.findIndex(e => e._id === questionId);
@@ -95,23 +98,26 @@ quizSchema.methods.setDefinitiveTeamsForQuiz = async function(teams){
 //     }
 // };
 
-quizSchema.methods.setClosedQuestion = async function(questionId) {
-    try {
-        let currentQuestionIndex = this.questions.findIndex(e => e._id == questionId);
-        this.questions[currentQuestionIndex].isClosed = true;
-        this.save();
-
-
-        //
-        // this.questions.set(0, {
-        //     _id: new ObjectId(questionId),
-        //     isClosed: true,
-        //     isActive: true,
-        // });
-    } catch (err) {
-        console.log(err);
-    }
-};
+// TODO: https://mongoosejs.com/docs/faq.html schijnbaar kan je niet
+//      rechtstreeks op de index van een array aanpassen
+//      heb nog niet gevonden hoe dat zou moeten werken.
+//      de oplossing in de FAQ werkt voor mij niet.
+// quizSchema.methods.setClosedQuestion = async function(questionId) {
+//     try {
+//         // let currentQuestionIndex = this.questions.findIndex(e => e._id == questionId);
+//         // this.questions[currentQuestionIndex].isClosed = true;
+//         // this.save();
+//
+//         this.questions.set(0, {
+//             isClosed: true,
+//             isActive: true,
+//         });
+//
+//         this.save();
+//     } catch (err) {
+//         console.log(err);
+//     }
+// };
 
 quizSchema.plugin(uniqueValidator);
 

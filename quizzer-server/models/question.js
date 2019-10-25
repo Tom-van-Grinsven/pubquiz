@@ -43,6 +43,15 @@ questionSchema.statics.getQuestionsForRound = async function (categories, curren
     }
 };
 
+questionSchema.statics.getCatgeories = async function() {
+    try {
+        let categories = await this.distinct('category');
+        console.log(categories);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 const Question = mongoose.model("Question", questionSchema);
 
 module.exports = questionSchema;
