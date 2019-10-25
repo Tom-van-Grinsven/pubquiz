@@ -4,8 +4,10 @@ const session           = require('express-session');
 const bodyParser        = require('body-parser');
 const http              = require('http');
 
-const questionRouter    = require('./routes/questions');
 const quizRouter        = require('./routes/quizzes');
+const categoryRouter    = require('./routes/categories');
+const accountRouter     = require('./routes/accounts');
+const sessionsRouter    = require('./routes/sessions');
 const mongoose          = require('mongoose');
 
 const app = express();
@@ -16,7 +18,9 @@ app.use(bodyParser.json());
 
 
 app.use('/quizzes', quizRouter);
-app.use('/questions', questionRouter);
+app.use('/categories', categoryRouter);
+app.use('/accounts', accountRouter);
+app.use('/sessions', sessionsRouter);
 
 const dbName = "quizzer";
 
@@ -46,9 +50,3 @@ const server = app.listen(3000, () => {
         console.log(`game server started on port ${server.address().port}`);
     });
 });
-
-
-
-
-
-

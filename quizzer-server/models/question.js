@@ -43,14 +43,22 @@ questionSchema.statics.getQuestionsForRound = async function (categories, curren
     }
 };
 
-questionSchema.statics.getCatgeories = async function() {
+questionSchema.statics.getCategories = async function() {
     try {
         let categories = await this.distinct('category');
-        console.log(categories);
+        return categories;
     } catch (err) {
         console.log(err);
     }
-}
+};
+
+questionSchema.statics.getQuestionsById = async function(questionIdList) {
+    try {
+        return await Question.find({'_id': {$in: questionIdList}});
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 const Question = mongoose.model("Question", questionSchema);
 
