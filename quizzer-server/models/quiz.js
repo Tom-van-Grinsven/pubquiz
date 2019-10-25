@@ -193,6 +193,7 @@ quizSchema.methods.getGivenAnswers = async function() {
 quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
     try {
         let currentQuestionId = this.questions.find(question => question.isActive === true)._id;
+        console.log(currentQuestionId);
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
         console.log(currentlyAnsweredQuestion);
         givenAnswers.forEach((item) => {

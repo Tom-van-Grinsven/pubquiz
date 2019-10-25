@@ -7,7 +7,7 @@ require('./models/question.js');
 require('./models/quiz.js');
 require('./models/account.js');
 
-const dbName = 'quizzer';
+const dbName = 'quizzer-nt';
 
 const db = mongoose.connection;
 const Question = mongoose.model('Question');
@@ -16,7 +16,7 @@ const Account = mongoose.model('Account');
 
 
 
-mongoose.connect(`mongodb://localhost:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
+mongoose.connect(`mongodb://quizzer-nt:ra1nbow-warriors@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
     return seedQuestion();
 }).then(() => {
     return seedQuiz();

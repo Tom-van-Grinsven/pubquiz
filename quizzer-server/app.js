@@ -16,7 +16,6 @@ app.use(session({resave: true, saveUninitialized: true, secret: "littlelayerofse
 
 app.use(bodyParser.json());
 
-
 app.use('/quizzes', quizRouter);
 app.use('/categories', categoryRouter);
 app.use('/accounts', accountRouter);
@@ -46,7 +45,7 @@ webSocketServer.on('connection', function connection(websocket) {
 });
 
 const server = app.listen(3000, () => {
-    mongoose.connect(`mongodb://localhost:27017/${dbName}`,  {useNewUrlParser: true }, () => {
+    mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true }, () => {
         console.log(`game server started on port ${server.address().port}`);
     });
 });
