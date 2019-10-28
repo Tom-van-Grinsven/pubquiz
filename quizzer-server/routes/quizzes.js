@@ -18,12 +18,20 @@ quizRouter.use('/:quizcode', async (req, res, next) => {
 
 quizRouter.post('/', async function(req, res, next){
     try {
-        await Quiz.createNewQuiz(req.body.quizName);
-        res.json("ok");
+        let quiz = await Quiz.createNewQuiz(req.body.quizName);
+        res.json(quiz.code);
     } catch (err) {
         console.log(err);
         res.json(err);
     }
+});
+
+quizRouter.get('/:quizcode', async function(req, res, next){
+   try {
+       res.json(req.quiz);
+   } catch (err) {
+       res.json(err);
+   }
 });
 
 quizRouter.put('/:quizcode/categories', async function(req, res, next) {
