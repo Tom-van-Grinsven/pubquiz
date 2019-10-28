@@ -57,6 +57,9 @@ body {
 .card.orange button.btn-primary {
     border:1px solid #FFFFFF
 }
+.btn {
+    position: relative;
+}
 .btn.large-border {
     border-width: 5px;
 }
@@ -79,6 +82,18 @@ body {
     margin-bottom: -5px;
     font-weight: bold;
 }
+.btn .right-icon.loading {
+    background: url('/images/spinner-white.svg') no-repeat center center;
+    display: block;
+    width: 40px;
+    height: 40px;
+    top: 9px;
+}
+input.error {
+    border:1px solid red;
+    color:red;
+}
+
 .main-content-container {
     width: 992px;
 }
@@ -89,7 +104,7 @@ body {
     margin-bottom: 15px;
 }
 .create-quiz-form-container {
-    width: 500px;
+    max-width: 500px;
     margin:auto;
     padding: 3rem 0;
 }

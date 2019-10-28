@@ -3,11 +3,12 @@ import Container from 'react-bootstrap/Container'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import RegisterLoginContainer from "./RegisterLoginContainer";
 import CreateQuizForm from "./CreateQuizForm";
-import ApproveTeamContainer from "./ApproveTeamContainer";
-import RoundCategorySelect from "./RoundCategorySelect";
-import QuizMasterDashboard from "./QuizMasterDashboard";
+import QuizComponent from "./QuizComponent";
+
 
 function App(props) {
+    console.log(props)
+
   return (
       <Container className='main-content-container'>
         <div className='logo'>
@@ -17,13 +18,12 @@ function App(props) {
             <Switch>
                 <Route exact path='/' component={RegisterLoginContainer} />
                 <Route exact path='/quiz' component={CreateQuizForm}/>
-                <Route exact path='/quiz/approve-teams' component={ApproveTeamContainer} />
-                <Route exact path='/quiz/select-categories' component={RoundCategorySelect}/>
-                <Route exact path='/quiz/dashboard' component={QuizMasterDashboard}/>
+                <Route path='/quiz/:code' component={QuizComponent} />
             </Switch>
         </Router>
       </Container>
   );
 }
+
 
 export default App;

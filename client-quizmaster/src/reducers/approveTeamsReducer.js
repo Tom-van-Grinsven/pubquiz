@@ -1,22 +1,13 @@
 import {produce} from "immer";
+import {clearError, setError} from "./errorReducer";
 
 
-export const fetchTeams = () => {
+export const fetchTeams = (quizCode) => {
     return dispatch => {
-        dispatch(fetchTeamsRequest())
-        return new Promise((resolve, reject) => {
-            resolve([{
-                "name": "Team1",
-            },{
-                "name": "Team2",
-            },{
-                "name": "Team3",
-            },{
-                "name": "Team4",
-            }, {
-                "name": "Team5",
-            }])
-        }).then(teams => dispatch(fetchTeamsRequestSuccess(teams)),
+        dispatch(fetchTeamsRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams')
+            .then(response => response.json())
+            .then(teams => dispatch(fetchTeamsRequestSuccess(teams)),
                 err => dispatch(fetchTeamsRequestFailure(err)))
     }
 };
@@ -51,27 +42,94 @@ export const updateTeamStatus = (teamName, status) => {
     }
 };
 
-export const approveTeams = (approvedTeams, history) => {
+export const approveTeams = (teams, quizCode, history) => {
     return dispatch => {
-        return new Promise((resolve, reject) => {
-            resolve(approvedTeams);
-        }).then(approvedTeams => {
-            dispatch(updateApprovedTeams(approvedTeams));
-            history.push('/quiz/select-categories')
+
+        console.log(history)
+        const err = [];
+        const approvedTeams = teams.filter(team => team.approved === true).map(approvedTeam => approvedTeam.teamName);
+        const rejectedTeams = teams.filter(team => team.approved === false);
+
+        if(approvedTeams.length < 2) {
+            err.push('You need to approve at least two team in order for the quiz to be playable')
+        }
+
+        if((approvedTeams.length + rejectedTeams.length) !== teams.length) {
+            err.push('Not all teams have been approved or rejected')
+        }
+
+        if(!quizCode) {
+            err.push('A system error has occurred, please contact an administrator if the problem persists')
+        }
+
+        if(err.length > 0) {
+            return dispatch(setError({
+                messages: err,
+                code: 'NUMBER_OF_TEAMS_APPROVED'
+            }));
+        }
+
+        console.log(JSON.stringify(approvedTeams));
+        dispatch(approveTeamsRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/JSON'
+            },
+            credentials: "include",
+            body: JSON.stringify(approvedTeams)
+        }).then(() => {
+                dispatch(approveTeamsRequestSuccess(approvedTeams));
+                dispatch(clearError());
+                history.push('/quiz/' + quizCode + '/select-categories')
+            },
+            err => {
+                dispatch(approveTeamsRequestFailure());
+                dispatch(setError({
+                    messages: [err.message]
+                }))
         })
     }
 };
+
+const approveTeamsRequest = () => {
+    return {
+        type: 'APPROVE_TEAMS_REQUEST'
+    }
+};
+
+const approveTeamsRequestSuccess = (approvedTeams) => {
+    return {
+        type: 'APPROVE_TEAMS_REQUEST_SUCCESS',
+        payload: approvedTeams
+    }
+};
+
+const approveTeamsRequestFailure = () => {
+    return {
+        type: 'APPROVE_TEAMS_REQUEST_FAILURE',
+    }
+};
+
+
 
 export const updateApprovedTeams = (approvedTeams) => {
     return {
         type: 'UPDATE_APPROVED_TEAMS',
         payload: approvedTeams
     }
-}
+};
+
+export const setTeamsUpdated = () => {
+    return {
+        type: 'TEAMS_UPDATED'
+    }
+};
 
 const initialState = {
     "isFetching": false,
     "isSending": false,
+    "isUpdated": true,
     "teams": []
 };
 
@@ -85,25 +143,40 @@ export const approveTeamsReducer = produce((state, action) => {
 
         case 'FETCH_TEAMS_REQUEST_SUCCESS':
             state.isFetching = false;
+            state.isUpdated = false;
             state.teams = action.payload;
             return;
 
         case 'FETCH_TEAMS_REQUEST_FAILURE':
             state.isFetching = false;
+            state.isUpdated = false;
             state.err = action.payload;
             return;
 
         case 'UPDATE_TEAM_STATUS':
             state.teams.forEach((team, index) => {
-                if(team.name === action.payload.teamName) {
+                if(team.teamName === action.payload.teamName) {
                     state.teams[index].approved = action.payload.status
                 }
             });
             return;
 
-        case 'UPDATE_APPROVED_TEAMS':
-            state.teams = state.teams.filter(team => action.payload.includes(team.name));
-            return;
+        case 'TEAMS_UPDATED':
+            state.isUpdated = true;
+            return state;
+
+        case 'APPROVE_TEAMS_REQUEST':
+            state.isSending = true;
+            return state;
+
+        case 'APPROVE_TEAMS_REQUEST_SUCCESS':
+            state.teams = state.teams.filter(team => action.payload.includes(team.teamName));
+            state.isSending = false;
+            return state;
+
+        case 'APPROVE_TEAMS_REQUEST_FAILURE':
+            state.isSending = false;
+            return state;
 
         default:
             return state

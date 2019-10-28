@@ -10,8 +10,8 @@ import {fetchCategoryQuestions, sendActiveQuestion} from "../reducers/categoryQu
 function QuestionNav (props) {
 
     console.log(props)
-    if(props.categoryQuestions.length === 0) {
-        props.doFetchCategoryQuestions();
+    if(props.categoryQuestions.length === 0 && !props.isFetching) {
+        props.doFetchCategoryQuestions(props.quizCode);
         return null;
     }
 
@@ -36,7 +36,9 @@ function QuestionNav (props) {
 
 const mapStateToProps = (state) => {
     return {
+        quizCode: state.quiz.code,
         selectedQuestionId: state.dashboard.categoryQuestions.selectedQuestionId,
+        isFetching: state.dashboard.categoryQuestions.isFetching,
         categoryQuestions: state.dashboard.categoryQuestions.list,
         activeQuestion: state.dashboard.activeQuestion
     }
@@ -44,7 +46,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        doFetchCategoryQuestions: () => dispatch(fetchCategoryQuestions()),
+        doFetchCategoryQuestions: (quizCode) => dispatch(fetchCategoryQuestions(quizCode)),
         doSendActiveQuestion: (questionId) => dispatch(sendActiveQuestion(questionId))
     }
 };

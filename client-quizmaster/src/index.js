@@ -9,10 +9,9 @@ import mainReducer from './reducers/index'
 import './index.css'
 import App from './components/App'
 
-//const socket = new WebSocket('ws://localhost:3000');
+
 const theStore = createStore(mainReducer,
     applyMiddleware(
-        //reduxWebsocket(socket),
         thunkMiddleware
     )
 );

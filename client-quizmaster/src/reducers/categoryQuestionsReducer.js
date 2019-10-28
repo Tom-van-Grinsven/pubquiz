@@ -2,72 +2,12 @@ import {produce} from "immer";
 import {setActiveQuestionIsUpdated} from "./activeQuestionReducer";
 
 
-export const fetchCategoryQuestions = () => {
+export const fetchCategoryQuestions = (quizCode) => {
     return dispatch => {
         dispatch(fetchCategoryQuestionsRequest());
-        // test data replace with fetch
-        return new Promise((resolve, reject) => {
-            resolve([{
-                "name": "Art & Literature",
-                "questions": [{
-                    "id": "1",
-                    "question": "Who wrote Twilight series of novels?"
-                }, {
-                    "id": "2",
-                    "question": "Who wrote the poem 'The Owl and the Pussycat'?"
-                }, {
-                    "id": "3",
-                    "question": "In the Adrian Mole Diaries, what is the surname of his girlfriend?"
-                }, {
-                    "id": "4",
-                    "question": "Who wrote the novel Revolutionary Road, which was made into a successful feature film?"
-                }]
-            }, {
-                "name": "General Knowledge",
-                "questions": [{
-                    "id": "5",
-                    "question": "In the wild west, how was Henry McCarty better known?"
-                }, {
-                    "id": "6",
-                    "question": "What famous sauce is manufactured by McIlhenny & Co?"
-                }, {
-                    "id": "7",
-                    "question": "What is the busiest single-runway airport in the world?"
-                }, {
-                    "id": "8",
-                    "question": "On what day of the year is St Georges day held?"
-                }]
-            }, {
-                "name": "Geography",
-                "questions": [{
-                    "id": "9",
-                    "question": "What is the capital of India?"
-                }, {
-                    "id": "10",
-                    "question": "In which city is the European Parliament based?"
-                }, {
-                    "id": "11",
-                    "question": "The highest temperature ever recorded outside in the shade was recorded in Azizah, in Africa. In which country is this city located?"
-                }, {
-                    "id": "12",
-                    "question": "What is the largest fresh water lake in North America?"
-                }]
-            }, {
-                "name": "Music",
-                "questions": [{
-                    "id": "13",
-                    "question": "Which famous group performed the first ever song on Top Of The Pops in 1964?"
-                }, {
-                    "id": "14",
-                    "question": "Which band has released albums titled Word Gets Around, Just Enough Education To Perform and Pull The Pin?"
-                }, {
-                    "id": "15",
-                    "question": "Which supermodel is seen pole dancing in the White Stripes video for the song I Just Don`t Know What To Do With Myself?"
-                }, {
-                    "id": "16",
-                    "question": "Which Beatle led the way across the zebra crossing on the Abbey Road album cover?"
-                }]
-            }])}).then(categoryQuestions => dispatch(fetchCategoryQuestionsRequestSuccess(categoryQuestions)),
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/categories/questions')
+            .then(response => response.json())
+            .then(categoryQuestions => dispatch(fetchCategoryQuestionsRequestSuccess(categoryQuestions)),
                 err => dispatch(fetchCategoryQuestionsRequestFailure(err)))
     }
 };

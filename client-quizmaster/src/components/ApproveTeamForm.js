@@ -6,12 +6,14 @@ import Button from "react-bootstrap/Button";
 import {updateTeamStatus} from "../reducers/approveTeamsReducer";
 import {withRouter} from "react-router-dom";
 import {connect} from "react-redux";
+import {Collapse} from "react-bootstrap";
 
 function ApproveTeamForm(props) {
 
     const updateTeamStatus = (status) => props.doUpdateTeamStatus(props.teamName, status);
 
     return (
+        <Collapse in='true' appear='false'>
         <div className='approve-teams-form'>
             <p>{props.teamName}</p>
             <ButtonGroup aria-label="Approve Team">
@@ -19,6 +21,7 @@ function ApproveTeamForm(props) {
                 <Button variant="outline-danger" onClick={() => updateTeamStatus(false)} active={props.approved !== undefined && !props.approved}>✗</Button>
             </ButtonGroup>
         </div>
+        </Collapse>
     )
 }
 
