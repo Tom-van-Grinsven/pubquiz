@@ -32,7 +32,6 @@ function QuestionNav (props) {
             </Card.Footer>
         </Card>
     )
-
 }
 
 const mapStateToProps = (state) => {
