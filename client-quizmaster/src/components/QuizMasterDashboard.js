@@ -2,8 +2,10 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Col, Row} from "react-bootstrap";
 import QuestionNav from "./QuestionNav";
 import TeamQuestionAnswers from "./TeamQuestionAnswers";
+import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
+import {connect} from "react-redux";
 
-function QuizMasterDashboard() {
+function QuizMasterDashboard(props) {
 
     const [navHeight, setNavHeight] = useState(0)
     const [contentHeight, setContentHeight] = useState(0)
@@ -11,9 +13,14 @@ function QuizMasterDashboard() {
     const contentRef = useRef(null)
 
     useEffect(() => {
-        setNavHeight(navRef.current.clientHeight);
-        setContentHeight(contentRef.current.clientHeight)
+        setNavHeight(navRef.current !== null ? navRef.current.clientHeight : 0);
+        setContentHeight(contentRef.current !== null ? contentRef.current.clientHeight: 0)
     });
+
+    if(props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
+        props.doFetchActiveQuestion(props.quizCode);
+        return null;
+    }
 
     let navStyle = {};
     if(contentHeight > 0 && contentHeight >= navHeight) {
@@ -27,6 +34,21 @@ function QuizMasterDashboard() {
         </Row>
     )
 
+
 }
 
-export default QuizMasterDashboard
+const mapStateToProps = (state) => {
+    return {
+        quizCode: state.quiz.code,
+        activeQuestion: state.dashboard.activeQuestion,
+    }
+};
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        doFetchActiveQuestion: (quizCode) => dispatch(fetchActiveQuestion(quizCode))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizMasterDashboard)

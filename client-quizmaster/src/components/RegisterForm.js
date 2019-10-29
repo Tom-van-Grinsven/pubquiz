@@ -13,7 +13,7 @@ function RegisterForm(props) {
 
     const setEmail      = (event) => props.doSetEmail(event.target.value);
     const setPassword   = (event) => props.doSetPassword(event.target.value);
-    const doRegister    = () => props.doRegisterAccount(props.email, props.password, props.history);
+    const doRegister    = () => props.doRegisterAccount(props.email, props.password);
     const doSubmitOnEnter = (event) => submitOnEnter(doRegister)(event);
 
     return (
@@ -51,7 +51,7 @@ function mapDispatchToProps(dispatch) {
     return {
         doSetEmail: (email) => dispatch(setRegisterEmail(email)),
         doSetPassword: (password) => dispatch(setRegisterPassword(password)),
-        doRegisterAccount: (email, password, history) => dispatch(registerAccount(email, password, history))
+        doRegisterAccount: (email, password) => dispatch(registerAccount(email, password))
     }
 }
 export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(RegisterForm));

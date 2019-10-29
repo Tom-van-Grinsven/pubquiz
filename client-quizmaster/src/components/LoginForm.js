@@ -11,10 +11,10 @@ import {ErrorComponent, submitOnEnter} from "./MiscComponents";
 
 function LoginForm(props) {
 
-    const setEmail          = (event) => props.doSetEmail(event.target.value);
-    const setPassword       = (event) => props.doSetPassword(event.target.value);
-    const login             = () => props.doLogin(props.email, props.password, props.history);
-    const doSubmitOnEnter   = (event) => submitOnEnter(login)(event);
+    const setEmail              = (event) => props.doSetEmail(event.target.value);
+    const setPassword           = (event) => props.doSetPassword(event.target.value);
+    const login                 = () => props.doLogin(props.email, props.password);
+    const doSubmitOnEnter       = (event) => submitOnEnter(login)(event);
 
     return (
         <Container className='login-register-form'>
@@ -50,7 +50,7 @@ function mapDispatchToProps(dispatch) {
     return {
         doSetEmail: (email) => dispatch(setLoginEmail(email)),
         doSetPassword: (password) => dispatch(setLoginPassword(password)),
-        doLogin: (email, password, history) => dispatch(login(email, password, history))
+        doLogin: (email, password) => dispatch(login(email, password))
     }
 }
 

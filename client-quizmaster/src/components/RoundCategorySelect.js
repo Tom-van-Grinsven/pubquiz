@@ -19,7 +19,7 @@ function RoundCategorySelect(props) {
 
     return (
         <Card className='purple'>
-            <Collapse in='true' appear='true'>
+            <Collapse in={true} appear={true}>
             <Card.Body>
                 <div className='round-category-select-container'>
                     <h3 className='text-center'>Please select 3 categories<br/>for the next round</h3>

@@ -11,39 +11,42 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {LoadingComponent} from "./MiscComponents";
 import {setupSocketConnection} from "../reducers/webSocketReducer";
+import {Col, Row} from "react-bootstrap";
 
 
 function QuizComponent(props) {
 
+    const loadingComponent = <LoadingComponent text='Loading Quiz Info'/>
+
     if(!props.quiz.isFetching && (props.match.params.code !== props.quiz.code|| props.quiz.isUpdated)) {
         props.doFetchQuiz(props.match.params.code);
-        return <LoadingComponent text='Loading Quiz Info'/>
+        return loadingComponent;
     }
 
     if(props.quiz.isFetching) {
-        return <LoadingComponent text='Loading Quiz Info'/>
+        return loadingComponent;
     }
 
     if(props.quiz.code && props.websocket === null) {
         props.doSetupSocketConnection();
     }
 
-
     return (
-        <Router>
-            <Switch>
-                <Route path={`${props.match.path}/approve-teams`} component={ApproveTeamContainer} />
-                <Route path={`${props.match.path}/select-categories`} component={RoundCategorySelect}/>
-                <Route path={`${props.match.path}/dashboard`}  component={QuizMasterDashboard} />>
-            </Switch>
-        </Router>
+        <div>
+            <Router>
+                <Switch>
+                    <Route path={`${props.match.path}/approve-teams`} component={ApproveTeamContainer} />
+                    <Route path={`${props.match.path}/select-categories`} component={RoundCategorySelect}/>
+                    <Route path={`${props.match.path}/dashboard`}  component={QuizMasterDashboard} />>
+                </Switch>
+            </Router>
+        </div>
     )
 }
 
 
 const mapStateToProps = (state) => {
     return {
-        account: state.account,
         websocket: state.websocket.socket,
         quiz: state.quiz
     }

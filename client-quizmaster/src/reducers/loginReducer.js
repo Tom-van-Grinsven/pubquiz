@@ -1,5 +1,8 @@
 import produce from 'immer'
 import {clearError, setError} from "./errorReducer";
+import {setAccountIsUpdated} from "./accountReducer";
+
+const defaultLoginRedirectUrl = '/quiz';
 
 const validateLogin = (email, password) => {
 
@@ -16,7 +19,7 @@ const validateLogin = (email, password) => {
 
 };
 
-export const login = (email, password, history) => {
+export const login = (email, password) => {
     return dispatch => {
 
         dispatch(clearError());
@@ -52,7 +55,7 @@ export const login = (email, password, history) => {
             }))
         }).then(() => {
             dispatch(loginRequestSuccess());
-            history.push('/quiz');
+            dispatch(setAccountIsUpdated());
         }, () => {
             dispatch(loginRequestFailure());
             dispatch(setError({
@@ -80,7 +83,6 @@ const loginRequestFailure = () => {
     }
 };
 
-
 export const setLoginEmail = (email) => {
     return {
         type: 'SET_LOGIN_EMAIL',
@@ -98,7 +100,8 @@ export const setLoginPassword = (password) => {
 const initialState = {
     email: '',
     password: '',
-    isSending: false
+    isSending: false,
+    redirectUrl: defaultLoginRedirectUrl
 };
 
 export const loginReducer = produce((state, action) => {

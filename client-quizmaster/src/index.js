@@ -8,6 +8,7 @@ import mainReducer from './reducers/index'
 
 import './index.css'
 import App from './components/App'
+import {BrowserRouter} from "react-router-dom";
 
 
 const theStore = createStore(mainReducer,
@@ -18,7 +19,9 @@ const theStore = createStore(mainReducer,
 
 const mainComponent = (
     <Provider store={theStore}>
-        <App/>
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
     </Provider>
 );
 

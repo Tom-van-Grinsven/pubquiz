@@ -13,6 +13,7 @@ const Quiz = mongoose.model('Quiz');
 
 quizRouter.use('/:quizcode', async (req, res, next) => {
     req.quiz = await Quiz.findOne({code: req.params.quizcode});
+    req.session.quizCode = req.quiz.code;
     next();
 });
 
@@ -119,6 +120,7 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
     try{
         if(req.session.account){
             let result = await req.quiz.getActiveQuestion();
+            console.log('result', result);
             res.json(result);
         } else if (req.session.team){
             let result = await req.quiz.getActiveQuestion();

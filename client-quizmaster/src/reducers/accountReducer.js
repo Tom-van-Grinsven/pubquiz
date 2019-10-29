@@ -1,7 +1,7 @@
 import {produce} from "immer";
 import {clearError, setError} from "./errorReducer";
 
-const fetchAccount = () => {
+export const fetchAccount = () => {
     return dispatch => {
         dispatch(clearError());
         dispatch(fetchAccountRequest());
@@ -36,9 +36,15 @@ const fetchAccountRequestFailure = () => {
     }
 };
 
+export const setAccountIsUpdated = () => {
+    return {
+        type: 'ACCOUNT_IS_UPDATED'
+    }
+};
+
 const initialState = {
     isFetching: false,
-    isUpdated: false,
+    isUpdated: true,
     isLoggedIn: false,
     accInfo: {}
 };
@@ -54,8 +60,11 @@ export const accountReducer = produce((state, action) => {
         case 'FETCH_ACCOUNT_REQUEST_SUCCESS':
             state.isFetching = false;
             state.isUpdated = false;
-            state.accInfo = action.payload;
-            console.log(action.payload);
+
+            if(action.payload.isLoggedIn) {
+                state.accInfo       = action.payload;
+                state.isLoggedIn    = true;
+            }
             return;
 
         case 'FETCH_ACCOUNT_REQUEST_FAILURE':
@@ -63,6 +72,10 @@ export const accountReducer = produce((state, action) => {
             state.isUpdated = false;
             state.isLoggedIn = false;
             state.accInfo = {};
+            return;
+
+        case 'ACCOUNT_IS_UPDATED':
+            state.isUpdated = true;
             return;
 
         default:

@@ -1,12 +1,11 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
 }
 body {
     background: #f0a202;
-    height: 100%;
     position: relative;
+    margin-bottom: 2rem;
 }
 .no-padding {
     padding: 0 !important;
@@ -117,26 +116,40 @@ input.error {
 .create-quiz-form-container button {
     width: 50%;
 }
-.approve-teams-containers {
+
+div.quiz-link-container {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 1rem;
+}
+
+div.quiz-link-container .form-group {
+    max-width: 500px;
+    margin: 0 auto;
+}
+div.quiz-link-container {
+
+}
+
+.approve-teams-container {
     max-width: 500px;
     margin:auto
 }
-.approve-teams-containers button.btn-primary {
+.approve-teams-container button.btn-primary {
     padding: .375rem 2.5rem;
 }
-.approve-teams-containers .loading-div {
+.approve-teams-container .loading-div {
     margin-bottom: 2rem;
 }
 
-
-.approve-teams-containers .approve-teams-form {
+.approve-teams-container .approve-teams-form {
     display: flex;
     margin-bottom: .375rem;
 }
-.approve-teams-containers .approve-teams-form:last-child {
+.approve-teams-container .approve-teams-form:last-child {
     margin-bottom: 1.5rem;
 }
-.approve-teams-containers .approve-teams-form p {
+.approve-teams-container .approve-teams-form p {
     padding: .75rem;
     flex-grow: 1;
     border: 1px solid rgba(0,0,0,.5);
@@ -146,17 +159,17 @@ input.error {
     background: #FFFFFF;
     color: #000000
 }
-.approve-teams-containers .approve-teams-form div button {
+.approve-teams-container .approve-teams-form div button {
     width: 5rem;
     padding: .75rem;
     font-weight: bold;
 }
-.approve-teams-containers .approve-teams-form div button.btn:not(.active):not(:hover) {
+.approve-teams-container .approve-teams-form div button.btn:not(.active):not(:hover) {
     border:1px solid gray;
     background: #FFFFFF;
     color: black;
 }
-.approve-teams-containers .approve-teams-form div button:first-child {
+.approve-teams-container .approve-teams-form div button:first-child {
     border-radius: 0 .25rem .25rem 0;
     border-right:none
 }

@@ -12,26 +12,29 @@ export const createQuiz = (quizName, history) => {
             return;
         }
 
+        dispatch(clearError());
         dispatch(createQuizRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             credentials: 'include',
             body: JSON.stringify({quizName: quizName})
-        })
-            .then(response => response.json())
-            .then(quizCode => {
+        }).then(response => response.json(), err => {
+            dispatch(createQuizRequestFailure())
+            dispatch(setError({
+                message: [err]
+            }));
+        }).then(quizCode => {
                 dispatch(createQuizRequestSuccess(quizCode));
-                dispatch(clearError());
                 history.push('/quiz/' + quizCode + '/approve-teams')
-        }, err => {
-            dispatch(createQuizRequestFailure(err))
+            }, err => {
+            dispatch(createQuizRequestFailure())
+            dispatch(setError({
+                message: [err]
+            }));
         })
     }
 };
-
-export
-
 
 const createQuizRequest = () => {
     return {
@@ -46,11 +49,9 @@ const createQuizRequestSuccess = (quizCode) => {
     }
 };
 
-const createQuizRequestFailure = (err) => {
-    console.log(err);
+const createQuizRequestFailure = () => {
     return {
         type: 'CREATE_QUIZ_REQUEST_FAILURE',
-        payload: err
     }
 };
 
@@ -63,10 +64,22 @@ export const setQuizName = (quizName) => {
 
 export const fetchQuiz = (quizCode) => {
     return dispatch => {
+        dispatch(clearError());
         dispatch(fetchQuizRequest());
-        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode)
-            .then(response => response.json(), err => dispatch(fetchQuizRequestFailure(err)))
-            .then(quiz => {console.log(quiz); dispatch(fetchQuizRequestSuccess(quiz))}, err => dispatch(fetchQuizRequestFailure(err)))
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode, {
+            method: 'GET',
+            credentials: 'include'
+        }).then(response => response.json(), err => {
+            dispatch(fetchQuizRequestFailure())
+            dispatch(setError({
+                message: [err]
+            }));
+        }).then(quiz => dispatch(fetchQuizRequestSuccess(quiz)), err => {
+            dispatch(fetchQuizRequestFailure(err))
+            dispatch(setError({
+                message: [err]
+            }));
+        })
     }
 };
 
@@ -83,10 +96,9 @@ const fetchQuizRequestSuccess = (quiz) => {
     }
 };
 
-const fetchQuizRequestFailure = (err) => {
+const fetchQuizRequestFailure = () => {
     return {
         type: 'FETCH_QUIZ_REQUEST_FAILURE',
-        payload: err
     }
 
 };
@@ -120,7 +132,6 @@ export const quizReducer = produce((state, action) => {
             return state;
 
         case 'FETCH_QUIZ_REQUEST_FAILURE':
-            state.err = action.payload;
             state.isFetching = false;
             state.isUpdated = false;
             return state;
@@ -137,7 +148,6 @@ export const quizReducer = produce((state, action) => {
 
         case 'CREATE_QUIZ_REQUEST_FAILURE':
             state.isSending = false;
-            state.err = action.payload;
             return;
 
         case 'SET_QUIZ_NAME':

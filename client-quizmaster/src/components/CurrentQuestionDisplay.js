@@ -1,4 +1,4 @@
-import {Button, Card} from "react-bootstrap";
+import {Button, Card, Collapse} from "react-bootstrap";
 import React from "react";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 import {connect} from "react-redux";
@@ -7,20 +7,17 @@ function CurrentQuestionDisplay(props) {
 
     if(props.activeQuestion.question === null && !props.activeQuestion.isUpdated || props.activeQuestion.isFetching) {
         return (
-            <div className='current-question-display'>
-                <Card>
-                    <Card.Body className='text-center'>
-                        <p>{props.activeQuestion.isFetching ? 'Fetching Question' : 'Waiting for question'}</p>
-                        <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
-                    </Card.Body>
-                </Card>
-            </div>
+            <Collapse in={true} appear={true}>
+                <div className='current-question-display'>
+                    <Card>
+                        <Card.Body className='text-center'>
+                            <p>{props.activeQuestion.isFetching ? 'Fetching Question' : 'Waiting for question'}</p>
+                            <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
+                        </Card.Body>
+                    </Card>
+                </div>
+            </Collapse>
         )
-    }
-
-    if(props.activeQuestion.question === null && !props.activeQuestion.isFetching) {
-        props.doFetchActiveQuestion();
-        return null;
     }
 
     const {question, category, answer} = props.activeQuestion.question;
@@ -40,15 +37,15 @@ function CurrentQuestionDisplay(props) {
 
 const mapStateToProps = (state) => {
     return {
+        quizCode: state.quiz.code,
         activeQuestion: state.dashboard.activeQuestion,
-        test: 'test'
     }
 };
 
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        doFetchActiveQuestion: () => dispatch(fetchActiveQuestion())
+        doFetchActiveQuestion: (quizCode) => dispatch(fetchActiveQuestion(quizCode))
     }
 };
 

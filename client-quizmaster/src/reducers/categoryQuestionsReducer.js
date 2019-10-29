@@ -1,14 +1,26 @@
 import {produce} from "immer";
 import {setActiveQuestionIsUpdated} from "./activeQuestionReducer";
+import {clearError, setError} from "./errorReducer";
 
 
 export const fetchCategoryQuestions = (quizCode) => {
     return dispatch => {
+        dispatch(clearError());
         dispatch(fetchCategoryQuestionsRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/categories/questions')
-            .then(response => response.json())
+            .then(response => response.json(),
+                err => {
+                    dispatch(setError({
+                        message: [err]
+                    }));
+                })
             .then(categoryQuestions => dispatch(fetchCategoryQuestionsRequestSuccess(categoryQuestions)),
-                err => dispatch(fetchCategoryQuestionsRequestFailure(err)))
+                err => {
+                    dispatch(fetchCategoryQuestionsRequestFailure(err));
+                    dispatch(setError({
+                        message: [err]
+                    }));
+                })
     }
 };
 
@@ -25,10 +37,9 @@ const fetchCategoryQuestionsRequestSuccess = (categoryQuestions) => {
     }
 };
 
-const fetchCategoryQuestionsRequestFailure = (err) => {
+const fetchCategoryQuestionsRequestFailure = () => {
     return {
         type: 'FETCH_CATEGORY_QUESTIONS_REQUEST_FAILURE',
-        payload: err
     }
 };
 
@@ -39,14 +50,29 @@ export const toggleSelectedQuestion = (questionId) => {
     }
 };
 
-export const sendActiveQuestion = (questionId) => {
+export const sendActiveQuestion = (questionId, quizCode) => {
     return dispatch => {
-        dispatch(sendActiveQuestionRequest())
-        return new Promise((resolve, reject) => resolve(true))
-            .then((status) => {
-                dispatch(sendActiveQuestionRequestSuccess())
-                dispatch(setActiveQuestionIsUpdated(true))
-            }, err => dispatch(sendActiveQuestionRequestFailure(err)))
+        dispatch(clearError());
+        dispatch(sendActiveQuestionRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/JSON'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                'id': questionId
+            })
+        }).then(() => {
+            dispatch(sendActiveQuestionRequestSuccess())
+            dispatch(setActiveQuestionIsUpdated(true))
+        }, err => {
+            dispatch(setError({
+                message: [err]
+            }));
+            dispatch(sendActiveQuestionRequestFailure())
+        });
+
     }
 };
 
@@ -62,10 +88,9 @@ const sendActiveQuestionRequestSuccess = () => {
     }
 };
 
-const sendActiveQuestionRequestFailure = (err) => {
+const sendActiveQuestionRequestFailure = () => {
     return {
         type: 'SEND_ACTIVE_QUESTION_REQUEST_FAILURE',
-        payload: err
     }
 };
 

@@ -21,10 +21,22 @@ sessionRouter.post('/', async function(req, res, next) {
 
 sessionRouter.get('/', async function(req, res, next) {
     try {
-        res.json(req.session.account);
+
+        if(req.session.account) {
+            res.send({
+                isLoggedIn: true,
+                _id: req.session.account._id,
+                email: req.session.account.email
+            })
+        } else {
+            res.send({
+                isLoggedIn: false,
+            })
+        }
+
     } catch (err){
         console.log(err.message);
-        res.sendStatus(401);
+        res.sendStatus(500);
     }
 });
 

@@ -1,5 +1,6 @@
 import produce from 'immer'
 import {clearError, setError} from "./errorReducer";
+import {setAccountIsUpdated} from "./accountReducer";
 
 export const setRegisterEmail = (email) => {
     return {
@@ -22,7 +23,6 @@ const validateEmail = (email) => {
 
 const validateRegister = (email, password) => {
 
-    console.log(password);
     const err = [];
     if (email.length === 0) {
         err.push('Please enter an e-mailadres')
@@ -39,7 +39,7 @@ const validateRegister = (email, password) => {
     return err
 };
 
-export const registerAccount = (email, password, history) => {
+export const registerAccount = (email, password) => {
     return dispatch => {
 
         dispatch(clearError());
@@ -75,7 +75,7 @@ export const registerAccount = (email, password, history) => {
             }))
         }).then(() => {
             dispatch(registerAccountRequestSuccess());
-            history.push('/quiz');
+            dispatch(setAccountIsUpdated());
         }, response => {
             dispatch(registerAccountRequestFailure());
             response.json().then((json) => {

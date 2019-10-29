@@ -1,25 +1,27 @@
 import React from 'react';
-import {Button, ButtonGroup, Card} from "react-bootstrap";
+import {Button, ButtonGroup, Card, Collapse} from "react-bootstrap";
 import {connect} from "react-redux";
 import {toggleSelectedQuestion} from "../reducers/categoryQuestionsReducer";
 
 function QuestionNavCategory(props) {
 
-    const questionItems = props.category.questions.map(q => <QuestionNavCategoryQuestion
-        key={q.id}
+    const questionItems = props.categoryItem.questions.map(q => <QuestionNavCategoryQuestion
+        key={q._id}
         disabled={props.disabled}
         question={q.question}
-        onToggle={() => {console.log(q.id); props.doToggleSelectedQuestion(q.id)}}
-        active={props.selectedQuestionId === q.id}
+        onToggle={() => {props.doToggleSelectedQuestion(q._id)}}
+        active={props.selectedQuestionId === q._id}
     />);
 
     return (
         <Card className='question-nav-category'>
-            <Card.Header className='green'>{props.category.name}</Card.Header>
+            <Card.Header className='green'>{props.categoryItem.category}</Card.Header>
             <Card.Body className='no-padding d-flex'>
+                <Collapse in={true} appear={true}>
                 <ButtonGroup vertical>
                     {questionItems}
                 </ButtonGroup>
+                </Collapse>
             </Card.Body>
         </Card>
     )

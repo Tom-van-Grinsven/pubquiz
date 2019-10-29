@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card} from "react-bootstrap";
+import {Card, Collapse} from "react-bootstrap";
 import QuestionNavCategory from "./QuestionNavCategory";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -9,17 +9,15 @@ import {fetchCategoryQuestions, sendActiveQuestion} from "../reducers/categoryQu
 
 function QuestionNav (props) {
 
-    console.log(props)
     if(props.categoryQuestions.length === 0 && !props.isFetching) {
         props.doFetchCategoryQuestions(props.quizCode);
         return null;
     }
 
     const disabled = props.activeQuestion.question !== null;
-    const sendActiveQuestion = () => props.doSendActiveQuestion(props.selectedQuestionId);
-    const questionCategories = props.categoryQuestions.map(questionsCategory => <QuestionNavCategory key={questionsCategory.name} disabled={disabled} category={questionsCategory} />);
+    const sendActiveQuestion = () => props.doSendActiveQuestion(props.selectedQuestionId, props.quizCode);
+    const questionCategories = props.categoryQuestions.map(categoryItem => <QuestionNavCategory key={categoryItem.category} disabled={disabled} categoryItem={categoryItem} />);
 
-    console.log(disabled);
     return (
         <Card className='question-nav'>
             <Card.Body className='question-category-nav-container'>
@@ -47,7 +45,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         doFetchCategoryQuestions: (quizCode) => dispatch(fetchCategoryQuestions(quizCode)),
-        doSendActiveQuestion: (questionId) => dispatch(sendActiveQuestion(questionId))
+        doSendActiveQuestion: (questionId, quizCode) => dispatch(sendActiveQuestion(questionId, quizCode))
     }
 };
 

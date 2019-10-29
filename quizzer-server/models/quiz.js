@@ -53,8 +53,7 @@ quizSchema.methods.getQuestionsForRound = async function () {
     try {
         console.log('hiero');
         console.log(this.questions);
-        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).map(el => el._id);
-
+        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => !q.isActive).map(el => el._id);
 
         //console.log(refQuestionIds.length);
         let questions = await Question.getQuestionsById(refQuestionIds);
@@ -68,8 +67,14 @@ quizSchema.methods.getQuestionsForRound = async function () {
 quizSchema.methods.getActiveQuestion = async function() {
     try {
         let activeQuestion = this.questions.find(question => question.isActive === true);
-        let fullQuestion = await Question.findById(activeQuestion._id);
-        return fullQuestion;
+        if(activeQuestion) {
+            let question = await Question.findById(activeQuestion._id);
+            return {
+                ...question._doc,
+                isClosed: activeQuestion.isClosed
+            }
+        }
+        return {};
     } catch (err) {
         console.log(err);
     }
