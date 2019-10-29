@@ -94,9 +94,7 @@ quizRouter.put('/:quizcode/teams', async function(req, res, next) {
     try{
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
 
-        // console.log(req.body);
         filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
-
 
         sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
         res.send("ok");
@@ -173,7 +171,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
 function sendMessageToWebsocketTeams(req, message) {
     req.websocketServer.clients.forEach((client) => {
         console.log(client.session);
-        if(!client.session.account){
+        if(!client.session.account && req.quiz.quizCode === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
