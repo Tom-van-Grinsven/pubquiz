@@ -41,7 +41,7 @@ function RegisterForm(props) {
 
 function mapStateToProps(state) {
     return {
-        err: state.err,
+        err: state.err.register,
         email: state.loginRegister.register.email,
         password: state.loginRegister.register.password,
     }

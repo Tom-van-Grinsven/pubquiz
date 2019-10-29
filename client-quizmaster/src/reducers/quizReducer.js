@@ -1,6 +1,6 @@
 import produce from "immer";
 import {clearError, setError} from "./errorReducer";
-import {setupSocketConnection} from "./WebSocketReducer";
+import {setupSocketConnection} from "./webSocketReducer";
 
 export const createQuiz = (quizName, history) => {
     return dispatch => {
@@ -16,11 +16,11 @@ export const createQuiz = (quizName, history) => {
         fetch(process.env.REACT_APP_API_URL + '/quizzes', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
             body: JSON.stringify({quizName: quizName})
         })
             .then(response => response.json())
             .then(quizCode => {
-                dispatch(setupSocketConnection());
                 dispatch(createQuizRequestSuccess(quizCode));
                 dispatch(clearError());
                 history.push('/quiz/' + quizCode + '/approve-teams')

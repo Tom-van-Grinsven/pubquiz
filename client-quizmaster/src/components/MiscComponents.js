@@ -3,8 +3,7 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 
 export function ErrorComponent(props) {
-    if(props.err.messages) {
-
+    if(props.err !== undefined &&  props.err.messages) {
         const errorMessages = props.err.messages.map((mssg, index) => <li key={`error-mssg-${index}`}>{mssg}</li>);
         return <Collapse in={true} appear={true}>
             <Alert className={props.className} variant='danger'>

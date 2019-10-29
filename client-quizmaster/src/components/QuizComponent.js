@@ -10,6 +10,7 @@ import ApproveTeamList from "./ApproveTeamList";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {LoadingComponent} from "./MiscComponents";
+import {setupSocketConnection} from "../reducers/webSocketReducer";
 
 
 function QuizComponent(props) {
@@ -21,6 +22,10 @@ function QuizComponent(props) {
 
     if(props.quiz.isFetching) {
         return <LoadingComponent text='Loading Quiz Info'/>
+    }
+
+    if(props.quiz.code && props.websocket === null) {
+        props.doSetupSocketConnection();
     }
 
 
@@ -38,13 +43,16 @@ function QuizComponent(props) {
 
 const mapStateToProps = (state) => {
     return {
+        account: state.account,
+        websocket: state.websocket.socket,
         quiz: state.quiz
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        doFetchQuiz: (quizCode) => dispatch(fetchQuiz(quizCode))
+        doFetchQuiz: (quizCode) => dispatch(fetchQuiz(quizCode)),
+        doSetupSocketConnection: () => dispatch(setupSocketConnection())
     }
 };
 

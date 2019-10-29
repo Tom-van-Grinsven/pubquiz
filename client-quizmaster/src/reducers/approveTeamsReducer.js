@@ -120,7 +120,7 @@ export const updateApprovedTeams = (approvedTeams) => {
 
 export const setTeamsUpdated = () => {
     return {
-        type: 'TEAMS_UPDATED'
+        type: 'UPDATE_JOINED_TEAMS'
     }
 };
 
@@ -159,7 +159,7 @@ export const approveTeamsReducer = produce((state, action) => {
             });
             return;
 
-        case 'TEAMS_UPDATED':
+        case 'UPDATE_JOINED_TEAMS':
             state.isUpdated = true;
             return state;
 

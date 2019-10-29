@@ -1,5 +1,5 @@
 import produce from 'immer'
-import {setError} from "./errorReducer";
+import {clearError, setError} from "./errorReducer";
 
 export const setRegisterEmail = (email) => {
     return {
@@ -42,16 +42,17 @@ const validateRegister = (email, password) => {
 export const registerAccount = (email, password, history) => {
     return dispatch => {
 
+        dispatch(clearError());
         const err = validateRegister(email, password);
         if(err.length > 0) {
             dispatch(setError({
-                messages: err
+                register: {messages: err}
             }));
             return
         }
 
         dispatch(registerAccountRequest());
-        fetch(process.env.REACT_APP_API_URL + '/accounts/', {
+        fetch(process.env.REACT_APP_API_URL + '/accounts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'Application/JSON'
@@ -67,6 +68,11 @@ export const registerAccount = (email, password, history) => {
             } else {
                 return true
             }
+        }, fetchErr => {
+            dispatch(registerAccountRequestFailure());
+            dispatch(setError({
+                register: {messages: [fetchErr]}
+            }))
         }).then(() => {
             dispatch(registerAccountRequestSuccess());
             history.push('/quiz');
@@ -74,11 +80,11 @@ export const registerAccount = (email, password, history) => {
             dispatch(registerAccountRequestFailure());
             response.json().then((json) => {
                 dispatch(setError({
-                    messages: [json.err]
+                    register: {messages: [json.err]}
                 }))
         }, err => dispatch(setError({
-                    messages: [err.message]
-                })));
+                register: {messages: [err.message]}
+            })));
         })
     }
 };
