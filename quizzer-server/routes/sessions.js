@@ -26,6 +26,6 @@ sessionRouter.get('/', async function(req, res, next) {
         console.log(err.message);
         res.sendStatus(401);
     }
-})
+});
 
 module.exports = sessionRouter;

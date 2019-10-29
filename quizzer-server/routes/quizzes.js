@@ -27,12 +27,6 @@ quizRouter.post('/', async function(req, res, next){
     }
 });
 
-// quizRouter.use('/', async function(req, res, next){
-//    if(!req.session.account){
-//        next("You need to login")
-//    }
-// });
-
 quizRouter.get('/:quizcode', async function(req, res, next){
    try {
        res.json(req.quiz);
@@ -171,7 +165,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
 function sendMessageToWebsocketTeams(req, message) {
     req.websocketServer.clients.forEach((client) => {
         console.log(client.session);
-        if(!client.session.account && req.quiz.quizCode === client.session.quizCode){
+        if(!client.session.account && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
@@ -179,7 +173,7 @@ function sendMessageToWebsocketTeams(req, message) {
 
 function sendMessageToWebsocketQuizmaster(req, message){
     req.websocketServer.clients.forEach((client) => {
-        if(!client.session.team){
+        if(!client.session.team && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
@@ -187,23 +181,24 @@ function sendMessageToWebsocketQuizmaster(req, message){
 
 function sendMessageToWebsocketScoreboard(req, message){
     req.websocketServer.clients.forEach((client) => {
-        // TODO: verifieer op een andere manier dat de websocket connectie een scoreboard is
+        // TODO: hoeveel scoreborden willen we eigenlijk maximaal toestaan?
         if(!client.session.team && !client.session.account){
-            client.send(JSON.stringify({type: message}));
+            if(!req.quiz.code === client.session.quizCode){
+                client.send(JSON.stringify({type: message}));
+            }
         }
     })
 }
 
 function filterWebsocketConnectionsForDefinitiveTeam(req, teams){
     req.websocketServer.clients.forEach((el) => {
-        if(el.session.team){
+        if(el.session.team && el.session.quizCode === req.quiz.code){
+            console.log(el.session.team);
             if(!teams.includes(el.session.team.teamName)){
                 el.close();
             }
         }
     });
-
-    console.log(req.websocketServer.clients.size);
-};
+}
 
 module.exports = quizRouter;
