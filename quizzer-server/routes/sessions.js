@@ -12,10 +12,10 @@ const Account  = mongoose.model('Account');
 sessionRouter.post('/', async function(req, res, next) {
     try {
         req.session.account = await Account.loginAccount(req.body.email, req.body.password);
-        res.json("Ok").status(200);
+        res.sendStatus(200);
     } catch (err) {
-        console.log("er is een error gegooid");
-        res.json(err.message);
+        console.log(err.message);
+        res.sendStatus(401);
     }
 });
 

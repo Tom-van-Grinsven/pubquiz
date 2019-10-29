@@ -10,10 +10,8 @@ const Account  = mongoose.model('Account');
 
 accountRouter.post('/', async function(req, res, next) {
     try {
-        await Account.registerAccount(req.body.email, req.body.password);
-        res.sendStatus(201)
         req.session.account = await Account.registerAccount(req.body.email, req.body.password);
-        res.json("Ok");
+        res.sendStatus(201)
     } catch (err) {
         res.status(400).json({err: err.message});
     }
