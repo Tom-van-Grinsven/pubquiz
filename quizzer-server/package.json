@@ -17,6 +17,8 @@
     "ws": "latest"
   },
   "devDependencies": {
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
     "express-session": "^1.17.0"
   }
 }
