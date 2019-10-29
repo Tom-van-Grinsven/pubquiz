@@ -77,10 +77,14 @@
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({"teamName": "sfgrth124235645123463546123478"})
+            body: JSON.stringify({"teamName": getRandomCodeForQuiz()})
         }).then((result) => {let wsConnection = initWebsocket()});
 
         //console.log(result);
+    };
+
+    getRandomCodeForQuiz = () => {
+        return Math.random().toString(36).substr(2, 6);
     };
     asdf();
 

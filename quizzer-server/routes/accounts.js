@@ -14,7 +14,7 @@ const Account  = mongoose.model('Account');
 
 accountRouter.post('/', async function(req, res, next) {
     try {
-        await Account.registerAccount(req.body.email, req.body.password);
+        req.session.account = await Account.registerAccount(req.body.email, req.body.password);
         res.json("Ok");
     } catch (err) {
         res.json(err.message);

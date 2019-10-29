@@ -6,6 +6,7 @@ mongoose.set('debug', true);
 const quizSchema = new mongoose.Schema({
     code: {type: String, maxLength: 6},
     name: {type: String, required: true},
+    //quizOwner: {_id: {type: mongoose.Types.ObjectId, ref: 'Account'}}
     teams: [{teamName: {type: String}, points: {type: Number, required: true, default: 0}}],
     isActive: {type: Boolean, required: true, default: false},
     roundNumber: {type: Number, required: true, default: 0},

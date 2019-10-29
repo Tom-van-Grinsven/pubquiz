@@ -26,6 +26,12 @@ quizRouter.post('/', async function(req, res, next){
     }
 });
 
+// quizRouter.use('/', async function(req, res, next){
+//    if(!req.session.account){
+//        next("You need to login")
+//    }
+// });
+
 quizRouter.get('/:quizcode', async function(req, res, next){
    try {
        res.json(req.quiz);
@@ -58,19 +64,19 @@ quizRouter.get('/:quizcode/teams', async function(req, res, next) {
         let result = await req.quiz.getJoinedTeamsOfQuiz();
         res.json(result);
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.json(err.message);
     }
 });
 
 quizRouter.post('/:quizcode/teams', async function(req, res, next) {
     try{
-        console.log(" in de endpoint ")
         if(req.body.teamName){
             console.log(req.body);
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
-
+            req.session.quizCode = req.quiz.code;
             console.log(req.session);
+            console.log(req.websocketServer.clients);
             //req.session.save();
 
 
