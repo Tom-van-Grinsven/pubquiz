@@ -31,7 +31,7 @@ function CreateQuizForm(props) {
                         </Form.Group>
                         <Form.Group className='text-center'>
                             <Button variant="primary" onClick={createQuiz} size="lg">Create Quiz
-                                {props.isSending ? '<span className="right-icon loading">&nbsp;</span>' : '' }</Button>
+                                {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button>
                         </Form.Group>
                     </div>
                 </Card.Body>

@@ -5,14 +5,14 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
-import {setRegisterEmail, setRegisterPassword} from "../reducers/registerReducer";
+import {registerAccount, setRegisterEmail, setRegisterPassword} from "../reducers/registerReducer";
 
 
 function RegisterForm(props) {
 
     const setEmail      = (event) => props.doSetEmail(event.target.value);
     const setPassword   = (event) => props.doSetPassword(event.target.value);
-    const doRegister       = () => props.history.push('/quiz');
+    const doRegister    = (email, password, history) => props.doRegisterAccount(email, password, history);
 
     return (
         <Container className='login-register-form'>
@@ -20,10 +20,10 @@ function RegisterForm(props) {
                 <Card.Body>
                     <h3>Quizmaster Register</h3>
                     <Form.Group>
-                        <Form.Control type='text' onChange={setEmail} placeholder='example@domain.com'/>
+                        <Form.Control type='text' onChange={setEmail} value={props.email} placeholder='example@domain.com'/>
                     </Form.Group>
                     <Form.Group>
-                        <Form.Control type='password' onChange={setPassword} placeholder='password'/>
+                        <Form.Control type='password' onChange={setPassword} value={props.password} placeholder='password'/>
                     </Form.Group>
                     <Form.Group>
                         <Button variant="primary" onClick={doRegister} block>Register</Button>
@@ -44,7 +44,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         doSetEmail: (email) => dispatch(setRegisterEmail(email)),
-        doSetPassword: (password) => dispatch(setRegisterPassword(password))
+        doSetPassword: (password) => dispatch(setRegisterPassword(password)),
+        doRegisterAccount: (email, password, history) => dispatch(registerAccount(email, password, history))
     }
 }
 export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(RegisterForm));

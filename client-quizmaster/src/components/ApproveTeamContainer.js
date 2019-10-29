@@ -31,7 +31,7 @@ function ApproveTeamContainer(props) {
                             <ErrorComponent err={props.err} />
                             <Form.Group className='text-center'>
                                 {props.teams.length > 0 ? <Button onClick={approveTeams} variant="primary">Approve Teams
-                                    {props.isSending ? '<span className="right-icon loading">&nbsp;</span>' : '' }</Button> : '' }
+                                    {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button> : '' }
                             </Form.Group>
                         </div>
                     </Card.Body>

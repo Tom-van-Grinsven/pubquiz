@@ -27,7 +27,8 @@ function RoundCategorySelect(props) {
                     <RoundCategoryList  />
                     <Form.Group className='text-center'>
                         <Button variant="danger">End Quiz</Button>
-                        <Button variant="success" onClick={sendCategories}>Start Round {props.isSending ? '<span className="right-icon loading">&nbsp;</span>' : '' }</Button>
+                        <Button variant="success" onClick={sendCategories}>Start Round
+                            {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button>
                     </Form.Group>
                 </div>
             </Card.Body>
