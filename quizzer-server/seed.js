@@ -7,7 +7,7 @@ require('./models/question.js');
 require('./models/quiz.js');
 require('./models/account.js');
 
-const dbName = 'quizzer-nt';
+const dbName = 'quizzer';
 
 const db = mongoose.connection;
 const Question = mongoose.model('Question');
@@ -16,7 +16,7 @@ const Account = mongoose.model('Account');
 
 
 
-mongoose.connect(`mongodb://quizzer-nt:ra1nbow-warriors@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
+mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
     return seedQuestion();
 }).then(() => {
     return seedQuiz();
@@ -44,29 +44,20 @@ seedQuestion = async () => {
 seedQuiz = async () => {
     await Quiz.deleteMany();
 
-    // await Quiz.insertMany([{
-    //         code: "code",
-    //         name: "De eerste Quiz",
-    //         teams: [{teamName: "Harry's Doner", points: 5},
-    //             {teamName: "Zuipschuiten", points: 6}],
-    //         isActive: 0,
-    //         roundNumber: 1,
-    //         questions: [{_id: "5db1b4f4cf57af17bc021d6c", isActive: 1, isClosed: 0}],
-    //         answeredQuestions: {
-    //             _id: "5db1b4f4cf57af17bc021d6c",
-    //             answers: [
-    //                 {
-    //                     teamName: "Harry's Doner",
-    //                     givenAnswer: "Antwoord",
-    //                 },
-    //                 {
-    //                     teamName: "Zuipschuiten",
-    //                     givenAnswer: "Geen idee",
-    //                 }
-    //             ]
-    //         }
-    //     }]
-    // )
+    await Quiz.insertMany([{
+            code: "qhhhnt",
+            name: "De eerste Quiz",
+            teams: [],
+            isActive: 0,
+            roundNumber: 1,
+            questions: [],
+            answeredQuestions: {
+                answers: [
+
+                ]
+            }
+        }]
+    )
 };
 
 seedAccount = async () => {
