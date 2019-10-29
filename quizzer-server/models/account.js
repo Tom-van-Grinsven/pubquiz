@@ -2,9 +2,6 @@ const mongoose      = require('mongoose');
 const bcrypt        = require('bcryptjs');
 
 const accountSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Types.ObjectId,
-    },
     email: {
         type: String,
         required: true,

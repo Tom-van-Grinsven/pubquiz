@@ -1,11 +1,11 @@
 <html>
 <head>
-    <title></title>
+    <title>QUIZMASTER!!!!!!!</title>
     <style>
     </style>
 </head>
 <body>
-<h1>Connect to the random number server!</h1>
+<h1>QUIZMASTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h1>
 <hr>
 <form id="messageForm">
     <label for="teamNameField">team name:</label><input id="teamNameField" type="text" value="Team 1" autofocus><br>
@@ -13,7 +13,7 @@
     <button id="sendMessageButton">Send Message!</button>
 </form>
 <hr>
-<h3>messages:</h3>
+<h3>QUIZMASTER!!!!!!!!!!!!!!!!!!!!!!!:</h3>
 <ul id="messageList">
 </ul>
 <hr>
@@ -48,8 +48,12 @@
          */
         document.getElementById("messageForm").addEventListener( "submit", function(eventInfo) {
             eventInfo.preventDefault();
-            console.log("SUBMIT FORM");
-            sendData();
+            fetch('http://localhost:3000/quizzes',{
+                method: "POST",
+                credentials: "include",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"quizName": "nieuwe quiz man"})
+            }).then((result) => {let wsConnection = initWebsocket()});
         });
 
 
@@ -73,11 +77,11 @@
         return wsConnection;
     };
     asdf = () => {
-        fetch('http://localhost:3000/quizzes/6qh7xh/teams',{
+        fetch('http://localhost:3000/accounts',{
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({"teamName": getRandomCodeForQuiz()})
+            body: JSON.stringify({"email": getRandomCodeForQuiz() + "@gmail.com", "password": "wachtwoord"})
         }).then((result) => {let wsConnection = initWebsocket()});
     };
 
@@ -85,9 +89,5 @@
         return Math.random().toString(36).substr(2, 6);
     };
     asdf();
-
-
-
-
 </script>
 </html>
