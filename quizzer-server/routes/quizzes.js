@@ -174,7 +174,7 @@ function sendMessageToWebsocketTeams(req, message) {
     req.websocketServer.clients.forEach((client) => {
         console.log(client.session);
         if(!client.session.account){
-            client.send(message);
+            client.send(JSON.stringify({type: message}));
         }
     })
 }
@@ -182,7 +182,7 @@ function sendMessageToWebsocketTeams(req, message) {
 function sendMessageToWebsocketQuizmaster(req, message){
     req.websocketServer.clients.forEach((client) => {
         if(!client.session.team){
-            client.send(message);
+            client.send(JSON.stringify({type: message}));
         }
     })
 }
@@ -191,7 +191,7 @@ function sendMessageToWebsocketScoreboard(req, message){
     req.websocketServer.clients.forEach((client) => {
         // TODO: verifieer op een andere manier dat de websocket connectie een scoreboard is
         if(!client.session.team && !client.session.account){
-            client.send(message);
+            client.send(JSON.stringify({type: message}));
         }
     })
 }
