@@ -19,4 +19,13 @@ sessionRouter.post('/', async function(req, res, next) {
     }
 });
 
+sessionRouter.get('/', async function(req, res, next) {
+    try {
+        res.json(req.session.account);
+    } catch (err){
+        console.log(err.message);
+        res.sendStatus(401);
+    }
+})
+
 module.exports = sessionRouter;
