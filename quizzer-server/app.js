@@ -49,12 +49,12 @@ httpServer.on('upgrade', (req, networkSocket, head) => {
             console.log("Geen quizcode jammerdebammer");
             networkSocket.destroy();
             return;
-        }
-        if (req.session.account === undefined) {
+        } else if (req.session.account === undefined && req.session.team === undefined) {
             console.log("Geen account jammerdebammer");
             networkSocket.destroy();
             return;
         }
+
 
         //console.log('Session is parsed and we have a User!');
 
@@ -69,6 +69,11 @@ httpServer.on('upgrade', (req, networkSocket, head) => {
 });
 
 websocketServer.on('connection', (socket, req) => {
+
+    socket.session = req.session;
+
+    console.log(socket.session.account);
+
     socket.on('message', (message) => {
         req.session.reload((err)=>{
 

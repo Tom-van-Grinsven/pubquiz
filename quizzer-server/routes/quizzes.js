@@ -19,6 +19,7 @@ quizRouter.use('/:quizcode', async (req, res, next) => {
 quizRouter.post('/', async function(req, res, next){
     try {
         let quiz = await Quiz.createNewQuiz(req.body.quizName);
+        req.session.quizCode = quiz.code;
         res.json(quiz.code);
     } catch (err) {
         console.log(err);
@@ -72,16 +73,12 @@ quizRouter.get('/:quizcode/teams', async function(req, res, next) {
 quizRouter.post('/:quizcode/teams', async function(req, res, next) {
     try{
         if(req.body.teamName){
-            console.log(req.body);
+
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
             req.session.quizCode = req.quiz.code;
-            console.log(req.session);
-            console.log(req.websocketServer.clients);
-            //req.session.save();
 
+            await sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
 
-            await sendMessageToWebsocketClients(req, "UPDATE_JOINED_TEAMS");
-            console.log("ja hier");
             res.send("ok");
         } else {
             res.send("Niet oke")
@@ -96,7 +93,12 @@ quizRouter.post('/:quizcode/teams', async function(req, res, next) {
 quizRouter.put('/:quizcode/teams', async function(req, res, next) {
     try{
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
-        sendMessageToWebsocketClients(req, "UPDATE_DEFINITIVE_TEAMS");
+
+        // console.log(req.body);
+        filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
+
+
+        sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
         res.send("ok");
     } catch (err) {
         console.log(err);
@@ -108,11 +110,11 @@ quizRouter.put('/:quizcode/active-questions', async function(req, res, next) {
     try{
         if(req.body.id){
             await req.quiz.setActiveQuestion(req.body.id);
-            sendMessageToWebsocketClients(req, "UPDATE_ACTIVE_QUESTION");
+            sendMessageToWebsocketTeams(req, "UPDATE_ACTIVE_QUESTION");
             res.json("Ok");
         } else if (req.body.closed){
             await req.quiz.setClosedQuestion(req.body.closed);
-            sendMessageToWebsocketClients(req, "UPDATE_CLOSED_QUESTION");
+            sendMessageToWebsocketTeams(req, "UPDATE_CLOSED_QUESTION");
             res.json("ok");
         }
     } catch (err) {
@@ -160,7 +162,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
        }
        else {
            await req.quiz.setTeamAnswerForQuestion(req.body.team, req.body.answer);
-           sendMessageToWebsocketClients(req, "UPDATE_GIVEN_TEAM_ANSWERS");
+           sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
            res.json("Ok");
        }
    } catch (err) {
@@ -168,10 +170,42 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
    }
 });
 
-function sendMessageToWebsocketClients(req, message) {
+function sendMessageToWebsocketTeams(req, message) {
     req.websocketServer.clients.forEach((client) => {
-        client.send(message);
+        console.log(client.session);
+        if(!client.session.account){
+            client.send(message);
+        }
     })
 }
+
+function sendMessageToWebsocketQuizmaster(req, message){
+    req.websocketServer.clients.forEach((client) => {
+        if(!client.session.team){
+            client.send(message);
+        }
+    })
+}
+
+function sendMessageToWebsocketScoreboard(req, message){
+    req.websocketServer.clients.forEach((client) => {
+        // TODO: verifieer op een andere manier dat de websocket connectie een scoreboard is
+        if(!client.session.team && !client.session.account){
+            client.send(message);
+        }
+    })
+}
+
+function filterWebsocketConnectionsForDefinitiveTeam(req, teams){
+    req.websocketServer.clients.forEach((el) => {
+        if(el.session.team){
+            if(!teams.includes(el.session.team.teamName)){
+                el.close();
+            }
+        }
+    });
+
+    console.log(req.websocketServer.clients.size);
+};
 
 module.exports = quizRouter;
