@@ -50,8 +50,12 @@ quizSchema.statics.createNewQuiz = async function(quizName) {
 
 quizSchema.methods.getQuestionsForRound = async function () {
     try {
+        console.log('hiero');
+        console.log(this.questions);
         let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).map(el => el._id);
-        console.log(refQuestionIds.length);
+
+
+        //console.log(refQuestionIds.length);
         let questions = await Question.getQuestionsById(refQuestionIds);
 
         return mapQuestionsToOrganizedByCategory(questions);
@@ -85,10 +89,10 @@ quizSchema.methods.setRoundQuestionsByCategories = async function(categories) {
 quizSchema.methods.addJoinedTeamToQuiz = async function(team){
     try {
         team.points = 0;
-        console.log(team.points);
         if(!this.teams.some(e => e.teamName === team.teamName)){
             this.teams.push(team);
             this.save();
+            return team;
         } else {
             throw new Error("A team name must be unique");
         }
@@ -107,7 +111,7 @@ quizSchema.methods.getJoinedTeamsOfQuiz = async function(){
 
 quizSchema.methods.setDefinitiveTeamsForQuiz = async function(teams){
     try {
-        this.teams = teams;
+        this.teams = formatTeamArrayForMongooseModel(teams);
         this.save();
     } catch (err) {
         console.log(err);
@@ -262,6 +266,15 @@ saveOrUpdateTeamAnswer = (schema, givenAnswerIndex, answeredQuestionIndex, team,
         schema.answeredQuestions[answeredQuestionIndex].answers[givenAnswerIndex].givenAnswer = answer;
     }
 };
+
+function formatTeamArrayForMongooseModel(teams) {
+    return teams.map((el) => {
+        return {
+            teamName: el,
+            points: 0
+        }
+    });
+}
 
 
 const Quiz = mongoose.model("Quiz", quizSchema);

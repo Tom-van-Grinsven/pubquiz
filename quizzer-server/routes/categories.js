@@ -14,7 +14,6 @@ const Question  = mongoose.model('Question');
 categoryRouter.get('/', async function(req, res, next) {
     try {
         let categories = await Question.getCategories();
-        console.log(categories);
         res.json(categories)
     } catch (err) {
         console.log(err);

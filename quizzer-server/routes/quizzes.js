@@ -55,7 +55,7 @@ quizRouter.get('/:quizcode/categories/questions', async function(req, res, next)
 
 quizRouter.get('/:quizcode/teams', async function(req, res, next) {
     try {
-        let result = await req.quiz.getJoinedTeamsOfQuiz()
+        let result = await req.quiz.getJoinedTeamsOfQuiz();
         res.json(result);
     } catch (err) {
         console.log(err)
@@ -65,13 +65,23 @@ quizRouter.get('/:quizcode/teams', async function(req, res, next) {
 
 quizRouter.post('/:quizcode/teams', async function(req, res, next) {
     try{
+        console.log(" in de endpoint ")
         if(req.body.teamName){
-            let result = await req.quiz.addJoinedTeamToQuiz(req.body);
+            console.log(req.body);
+            req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
+
+            console.log(req.session);
+            //req.session.save();
+
+
+            await sendMessageToWebsocketClients(req, "UPDATE_JOINED_TEAMS");
+            console.log("ja hier");
             res.send("ok");
         } else {
             res.send("Niet oke")
         }
     } catch (err) {
+        console.log(err);
         res.json(err.message);
     }
 });
@@ -80,6 +90,7 @@ quizRouter.post('/:quizcode/teams', async function(req, res, next) {
 quizRouter.put('/:quizcode/teams', async function(req, res, next) {
     try{
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
+        sendMessageToWebsocketClients(req, "UPDATE_DEFINITIVE_TEAMS");
         res.send("ok");
     } catch (err) {
         console.log(err);
@@ -91,9 +102,11 @@ quizRouter.put('/:quizcode/active-questions', async function(req, res, next) {
     try{
         if(req.body.id){
             await req.quiz.setActiveQuestion(req.body.id);
+            sendMessageToWebsocketClients(req, "UPDATE_ACTIVE_QUESTION");
             res.json("Ok");
         } else if (req.body.closed){
             await req.quiz.setClosedQuestion(req.body.closed);
+            sendMessageToWebsocketClients(req, "UPDATE_CLOSED_QUESTION");
             res.json("ok");
         }
     } catch (err) {
@@ -104,8 +117,18 @@ quizRouter.put('/:quizcode/active-questions', async function(req, res, next) {
 
 quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
     try{
-        let result = await req.quiz.getActiveQuestion();
-        res.json(result);
+        if(req.session.account){
+            let result = await req.quiz.getActiveQuestion();
+            res.json(result);
+        } else if (req.session.team){
+            let result = await req.quiz.getActiveQuestion();
+            let questionObjectForTeams = {
+                question: result.question,
+                category: result.category,
+                _id: result._id,
+            };
+            res.json(questionObjectForTeams);
+        }
     } catch (err) {
         console.log(err);
         res.json("nope");
@@ -121,25 +144,28 @@ quizRouter.get('/:quizcode/active-questions/answers', async function(req, res, n
     }
 });
 
-// TODO: implementeer onderscheid tussen quizmaster/team
-// quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, next) {
-//    try {
-//        await req.quiz.setTeamAnswerForQuestion(req.body.team, req.body.answer);
-//        res.json("Ok");
-//    } catch (err) {
-//        console.log(err);
-//    }
-// });
-
 quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, next) {
    try {
-        await req.quiz.judgeGivenAnswers(req.body);
-        res.json("Ok");
+       if(req.session.account){
+           console.log(req.session.account);
+           await req.quiz.judgeGivenAnswers(req.body);
+           sendMessageToWebsocketClients(req, "UPDATE_JUDGED_QUESTIONS");
+           res.json("Ok");
+       }
+       else {
+           await req.quiz.setTeamAnswerForQuestion(req.body.team, req.body.answer);
+           sendMessageToWebsocketClients(req, "UPDATE_GIVEN_TEAM_ANSWERS");
+           res.json("Ok");
+       }
    } catch (err) {
        console.log(err);
    }
 });
 
+function sendMessageToWebsocketClients(req, message) {
+    req.websocketServer.clients.forEach((client) => {
+        client.send(message);
+    })
+}
+
 module.exports = quizRouter;
-
-
