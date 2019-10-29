@@ -15,8 +15,41 @@ export const setRegisterPassword = (password) => {
     }
 };
 
+const validateEmail = (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+};
+
+const validateRegister = (email, password) => {
+
+    console.log(password);
+    const err = [];
+    if (email.length === 0) {
+        err.push('Please enter an e-mailadres')
+    } else if (!validateEmail(email)) {
+        err.push('Please enter an valid e-mailadres')
+    }
+
+    if (password.length === 0) {
+        err.push('Please enter a password')
+    } else if (password.length < 6) {
+        err.push('A password needs to be at least 6 characters')
+    }
+
+    return err
+};
+
 export const registerAccount = (email, password, history) => {
     return dispatch => {
+
+        const err = validateRegister(email, password);
+        if(err.length > 0) {
+            dispatch(setError({
+                messages: err
+            }));
+            return
+        }
+
         dispatch(registerAccountRequest());
         fetch(process.env.REACT_APP_API_URL + '/accounts/', {
             method: 'POST',
@@ -28,14 +61,24 @@ export const registerAccount = (email, password, history) => {
                 email: email,
                 password: password
             })
+        }).then(response => {
+            if(response.status === 400) {
+                return Promise.reject(response)
+            } else {
+                return true
+            }
         }).then(() => {
             dispatch(registerAccountRequestSuccess());
             history.push('/quiz');
-        }, err => {
+        }, response => {
             dispatch(registerAccountRequestFailure());
-            dispatch(setError({
-                messages: [err.message]
-            }))
+            response.json().then((json) => {
+                dispatch(setError({
+                    messages: [json.err]
+                }))
+        }, err => dispatch(setError({
+                    messages: [err.message]
+                })));
         })
     }
 };

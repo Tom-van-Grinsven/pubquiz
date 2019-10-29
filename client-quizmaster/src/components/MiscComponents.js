@@ -6,7 +6,7 @@ export function ErrorComponent(props) {
     if(props.err.messages) {
 
         const errorMessages = props.err.messages.map((mssg, index) => <li key={`error-mssg-${index}`}>{mssg}</li>);
-        return <Collapse in='true' appear='true'>
+        return <Collapse in={true} appear={true}>
             <Alert className={props.className} variant='danger'>
                 <p>Oooooops an error occurred.....</p>
                 <ul>{errorMessages}</ul>
@@ -27,4 +27,10 @@ export const LoadingComponent = (props) => {
             </Card.Body>
         </Card>
     )
+};
+
+export const submitOnEnter = (callback) => {
+    return (event) => {
+        if(event.key === 'Enter') callback();
+    }
 };

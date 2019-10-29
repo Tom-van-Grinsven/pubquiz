@@ -45,7 +45,6 @@ export const updateTeamStatus = (teamName, status) => {
 export const approveTeams = (teams, quizCode, history) => {
     return dispatch => {
 
-        console.log(history)
         const err = [];
         const approvedTeams = teams.filter(team => team.approved === true).map(approvedTeam => approvedTeam.teamName);
         const rejectedTeams = teams.filter(team => team.approved === false);
@@ -69,7 +68,6 @@ export const approveTeams = (teams, quizCode, history) => {
             }));
         }
 
-        console.log(JSON.stringify(approvedTeams));
         dispatch(approveTeamsRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
             method: 'PUT',

@@ -15,7 +15,7 @@ function CreateQuizForm(props) {
 
     return (
         <Card className='orange'>
-            <Collapse in='true' appear='true'>
+            <Collapse in={true} appear={true}>
                 <Card.Body>
                     <div className='create-quiz-form-container'>
                         <h3 className='text-center'>Create new Quiz</h3>
