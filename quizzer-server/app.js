@@ -46,9 +46,12 @@ httpServer.on('upgrade', (req, networkSocket, head) => {
         // }
 
         if(req.session.quizCode === undefined){
+            console.log("Geen quizcode jammerdebammer");
             networkSocket.destroy();
             return;
-        } else if (req.session.account === undefined) {
+        }
+        if (req.session.account === undefined) {
+            console.log("Geen account jammerdebammer");
             networkSocket.destroy();
             return;
         }
@@ -70,7 +73,7 @@ websocketServer.on('connection', (socket, req) => {
         req.session.reload((err)=>{
 
 
-            //console.log(req.sessionID);
+            console.log(req.session.team);
 
             // if we don't call reload(), we'll get a old copy
             // of the session, and won't see changes made by
