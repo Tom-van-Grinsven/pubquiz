@@ -16,7 +16,6 @@ import {ErrorComponent} from "./MiscComponents";
 function TeamAnswersList(props) {
 
     if(!props.teamAnswers.isFetching && props.teamAnswers.isUpdated) {
-        console.log('hit!');
         props.doFetchTeamAnswers(props.quizCode);
     }
 
@@ -51,7 +50,6 @@ function TeamAnswersList(props) {
         props.doSendAnswerValidation(teamAnswers, props.quizCode);
     };
 
-    console.log(props.activeQuestion.question);
     return (
         <Card className='team-answers-list'>
             <Card.Header className='green'>

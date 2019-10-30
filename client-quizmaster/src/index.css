@@ -36,12 +36,35 @@ body {
     border:1px solid #FFFFFF
 }
 .card .card-header.green {
+     background: #44af69;
+ }
+.card .card-header.orange {
+    background: #e4572e;
+}
+.card .card-footer.green {
     background: #44af69;
-    color:#FFFFFF;
+}
+.card .card-footer.orange {
+    background: #e4572e;
+}
+.card .card-header {
     border-radius: calc(1rem - 5px) calc(1rem - 5px) 0 0;
+}
+
+.card .card-header {
+    color:#FFFFFF;
     font-weight: bold;
     border-bottom: 5px solid #FFFFFF;
 }
+.card .card-footer {
+    border-radius: 0 0 calc(1rem - 5px) calc(1rem - 5px);
+}
+.card .card-footer {
+    color:#FFFFFF;
+    font-weight: bold;
+    border-top: 5px solid #FFFFFF;
+}
+
 .card.purple {
     background: #88498f;
     color:#FFFFFF;
@@ -246,8 +269,14 @@ div.quiz-link-container {
     flex-direction: column;
     flex:1 1 auto;
 }
+.team-question-answers-container .quiz-round-info .card {
+    margin-bottom: 1rem;
+}
 .team-question-answers-container .current-question-display {
     margin-bottom: 1rem;
+}
+.team-question-answers-container .current-question-display p:last-child {
+    margin-bottom: 0;
 }
 .team-question-answers-container .team-answers-list .form-group button.btn:first-child {
     margin-right: 1rem;

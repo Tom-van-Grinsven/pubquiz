@@ -10,13 +10,14 @@ const quizSchema = new mongoose.Schema({
     teams: [{teamName: {type: String}, points: {type: Number, required: true, default: 0}}],
     isActive: {type: Boolean, required: true, default: false},
     roundNumber: {type: Number, required: true, default: 0},
-    questionNumber: {type: Number, required: true, default: 1},
+    questionNumber: {type: Number, required: true, default: 0},
     questions: [
         {
             _id: {type: mongoose.Types.ObjectId, ref: 'Question', /*unique: true*/},
             // roundNumber: Number,
             isActive: {type: Boolean, required: true, default: false},
             isClosed: {type: Boolean, required: true, default: false},
+            isValidated: {type: Boolean, required: true, default: false},
         }
     ],
     answeredQuestions: [
@@ -71,7 +72,8 @@ quizSchema.methods.getActiveQuestion = async function() {
             let question = await Question.findById(activeQuestion._id);
             return {
                 ...question._doc,
-                isClosed: activeQuestion.isClosed
+                isClosed: activeQuestion.isClosed,
+                isValidated: activeQuestion.isValidated
             }
         }
         return {};
@@ -86,6 +88,7 @@ quizSchema.methods.setRoundQuestionsByCategories = async function(categories) {
         let questions = await Question.getQuestionsForRound(categories, currentQuestions);
         this.questions = [...this.questions, ...questions];
         this.roundNumber++;
+        this.questionNumber = 0;
         this.save();
     } catch (err) {
         console.log(err)
@@ -131,10 +134,10 @@ quizSchema.methods.setActiveQuestion = async function(questionId) {
         if(currentActiveQuestionIndex >= 0){
             this.questions[currentActiveQuestionIndex].isActive = false;
         }
-
         // get the next current question
         let currentQuestionIndex = this.questions.findIndex(e => e._id.toString() === questionId);
         this.questions[currentQuestionIndex].isActive = true;
+        this.questionNumber++;
         await this.save();
     } catch (err) {
         console.log(err)
@@ -205,12 +208,14 @@ quizSchema.methods.getGivenAnswers = async function() {
 
 quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
     try {
-        let currentQuestionId = this.questions.find(question => question.isActive === true)._id;
+        let currentQuestion = this.questions.find(question => question.isActive === true);
+        let currentQuestionId = currentQuestion._id;
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
         givenAnswers.forEach((item) => {
             let teamAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
             this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.isRight;
         });
+        currentQuestion.isValidated = true;
         await this.save();
     } catch (err) {
         console.log(err);

@@ -1,6 +1,7 @@
 import {produce} from "immer";
 import {setActiveQuestionIsUpdated} from "./activeQuestionReducer";
 import {clearError, setError} from "./errorReducer";
+import {incrementQuestionNr} from "./quizReducer";
 
 
 export const fetchCategoryQuestions = (quizCode) => {
@@ -64,8 +65,9 @@ export const sendActiveQuestion = (questionId, quizCode) => {
                 'id': questionId
             })
         }).then(() => {
-            dispatch(sendActiveQuestionRequestSuccess())
+            dispatch(sendActiveQuestionRequestSuccess());
             dispatch(setActiveQuestionIsUpdated(true))
+            dispatch(incrementQuestionNr());
         }, err => {
             dispatch(setError({
                 message: [err]
@@ -94,10 +96,16 @@ const sendActiveQuestionRequestFailure = () => {
     }
 };
 
+export const setCategoryQuestionsUpdated = () => {
+    return {
+        type: 'CATEGORY_QUESTIONS_UPDATED'
+    }
+};
 
 const initialState = {
     isFetching: false,
     isSending: false,
+    isUpdated: true,
     selectedQuestionId: null,
     list: []
 };
@@ -106,17 +114,23 @@ export const categoryQuestionsReducer = produce((state, action) => {
 
    switch (action.type) {
 
+       case 'CATEGORY_QUESTIONS_UPDATED':
+           state.isUpdated = true;
+           return;
+
        case 'FETCH_CATEGORY_QUESTIONS_REQUEST':
            state.isFetching = true;
            return;
 
        case 'FETCH_CATEGORY_QUESTIONS_REQUEST_SUCCESS':
            state.isFetching = false;
+           state.isUpdated = false;
            state.list = action.payload;
            return;
 
        case 'FETCH_CATEGORY_QUESTIONS_REQUEST_FAILURE':
            state.isFetching = false;
+           state.isUpdated = false;
            state.err = action.payload;
            return;
 

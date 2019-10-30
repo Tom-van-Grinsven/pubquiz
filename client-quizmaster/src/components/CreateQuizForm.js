@@ -5,13 +5,14 @@ import Button from "react-bootstrap/Button";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
 import {createQuiz, setQuizName} from "../reducers/quizReducer";
-import {ErrorComponent} from "./MiscComponents";
+import {ErrorComponent, submitOnEnter} from "./MiscComponents";
 import {Collapse} from "react-bootstrap";
 
 function CreateQuizForm(props) {
 
-    const setQuizName = (event) => props.doSetQuizName(event.target.value);
-    const createQuiz = () => props.doCreateQuiz(props.quizName, props.history);
+    const setQuizName       = (event) => props.doSetQuizName(event.target.value);
+    const createQuiz        = () => props.doCreateQuiz(props.quizName, props.history);
+    const doSubmitOnEnter   = (event) => submitOnEnter(createQuiz)(event);
 
     return (
         <Card className='orange'>
@@ -23,6 +24,7 @@ function CreateQuizForm(props) {
                         <Form.Group>
                             <Form.Control
                                 type='text'
+                                onKeyPress={doSubmitOnEnter}
                                 onChange={setQuizName}
                                 value={props.quizName}
                                 placeholder='Quiz Name'

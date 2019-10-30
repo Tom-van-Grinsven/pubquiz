@@ -6,15 +6,14 @@ import Form from "react-bootstrap/Form";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import {fetchCategoryQuestions, sendActiveQuestion} from "../reducers/categoryQuestionsReducer";
+import {countRemainingQuestions} from "./MiscComponents";
 
 function QuestionNav (props) {
 
-    if(props.categoryQuestions.length === 0 && !props.isFetching) {
-        props.doFetchCategoryQuestions(props.quizCode);
-        return null;
-    }
 
-    const disabled = props.activeQuestion.question !== null;
+    const numberOfRemainingQuestions = countRemainingQuestions(props.categoryQuestions);
+
+    const disabled = props.activeQuestion.question !== null && !props.activeQuestion.question.isValidated;
     const sendActiveQuestion = () => props.doSendActiveQuestion(props.selectedQuestionId, props.quizCode);
     const questionCategories = props.categoryQuestions.map(categoryItem => <QuestionNavCategory key={categoryItem.category} disabled={disabled} categoryItem={categoryItem} />);
 
@@ -36,7 +35,6 @@ const mapStateToProps = (state) => {
     return {
         quizCode: state.quiz.code,
         selectedQuestionId: state.dashboard.categoryQuestions.selectedQuestionId,
-        isFetching: state.dashboard.categoryQuestions.isFetching,
         categoryQuestions: state.dashboard.categoryQuestions.list,
         activeQuestion: state.dashboard.activeQuestion
     }
@@ -44,7 +42,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        doFetchCategoryQuestions: (quizCode) => dispatch(fetchCategoryQuestions(quizCode)),
         doSendActiveQuestion: (questionId, quizCode) => dispatch(sendActiveQuestion(questionId, quizCode))
     }
 };

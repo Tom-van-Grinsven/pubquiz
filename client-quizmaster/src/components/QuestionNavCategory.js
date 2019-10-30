@@ -5,6 +5,10 @@ import {toggleSelectedQuestion} from "../reducers/categoryQuestionsReducer";
 
 function QuestionNavCategory(props) {
 
+    if(props.categoryItem.questions.length === 0) {
+        return null
+    }
+
     const questionItems = props.categoryItem.questions.map(q => <QuestionNavCategoryQuestion
         key={q._id}
         disabled={props.disabled}

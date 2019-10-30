@@ -7,10 +7,13 @@ import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 
 function TeamQuestionAnswers(props) {
 
+
+    const showTeamAnswers = (props.activeQuestion.question !== null && !props.activeQuestion.question.isValidated);
+
     return (
         <div className='team-question-answers-container'>
             <CurrentQuestionDisplay/>
-            {props.activeQuestion.question !== null ? <TeamAnswersList/> : ''}
+            {showTeamAnswers ? <TeamAnswersList/> : ''}
         </div>
     )
 }

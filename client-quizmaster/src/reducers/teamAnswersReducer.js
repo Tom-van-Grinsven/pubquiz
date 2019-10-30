@@ -1,6 +1,7 @@
 import {produce} from "immer";
-import {clearActiveQuestion} from "./activeQuestionReducer";
+import {clearActiveQuestion, setActiveQuestionValidated} from "./activeQuestionReducer";
 import {clearError, setError} from "./errorReducer";
+import {incrementQuestionNr} from "./quizReducer";
 
 export const fetchTeamAnswers = (quizCode) => {
     return dispatch => {
@@ -76,7 +77,7 @@ export const sendTeamAnswersValidation = (teamAnswers, quizCode) => {
             body: JSON.stringify(teamAnswers)
         }).then(() => {
             dispatch(sendTeamAnswersValidationRequestSuccess());
-            dispatch(clearActiveQuestion())
+            dispatch(setActiveQuestionValidated());
         }, err => {
             sendTeamAnswersValidationRequestFailure();
             dispatch(setError({

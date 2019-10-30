@@ -13,7 +13,7 @@ function ApproveTeamForm(props) {
     const updateTeamStatus = (status) => props.doUpdateTeamStatus(props.teamName, status);
 
     return (
-        <Collapse in='true' appear='false'>
+        <Collapse in={true} appear={true}>
         <div className='approve-teams-form'>
             <p>{props.teamName}</p>
             <ButtonGroup aria-label="Approve Team">
