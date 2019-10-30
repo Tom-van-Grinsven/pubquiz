@@ -26,7 +26,7 @@ const quizSchema = new mongoose.Schema({
                 {
                     teamName: String,
                     givenAnswer: {type: String, required: true},
-                    isRight: {type: Boolean, default: null},
+                    isRight: {type: Boolean, required: true, default: null},
                 }
             ]
         }
@@ -209,7 +209,7 @@ quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
         givenAnswers.forEach((item) => {
             let teamAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
-            this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.correct;
+            this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.isRight;
         });
         await this.save();
     } catch (err) {
