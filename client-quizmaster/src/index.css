@@ -92,9 +92,8 @@ input.error {
     border:1px solid red;
     color:red;
 }
-
 .main-content-container {
-    width: 992px;
+    max-width: 1140px;
 }
 .login-register-form {
     padding:0 20px;
@@ -212,7 +211,6 @@ div.quiz-link-container {
     display: flex;
     flex-direction: column;
     flex: 1 0 auto;
-    height:100%;
 }
 .question-nav {
     position: relative;
@@ -286,5 +284,6 @@ div.quiz-link-container {
     border-right:none
 }
 .quiz-master-dashboard > .col:first-child {
-    height: 800px;
+    max-height: 800px;
+    margin-bottom: 1rem;
 }

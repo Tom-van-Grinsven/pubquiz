@@ -152,7 +152,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
            console.log(req.session.account);
            await req.quiz.judgeGivenAnswers(req.body);
            sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
-           sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
+           //sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
            res.json("Ok");
        }
        else {

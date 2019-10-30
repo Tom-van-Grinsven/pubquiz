@@ -131,7 +131,8 @@ export const categoryQuestionsReducer = produce((state, action) => {
        case 'SEND_ACTIVE_QUESTION_REQUEST_SUCCESS':
            state.isSending = false;
            state.list.forEach((category, index) => {
-               state.list[index].questions = category.questions.filter(question => question.id !== state.selectedQuestionId)
+               console.log(state.selectedQuestionId);
+               state.list[index].questions = category.questions.filter(question => question._id !== state.selectedQuestionId)
            });
            state.selectedQuestionId = null;
            return;

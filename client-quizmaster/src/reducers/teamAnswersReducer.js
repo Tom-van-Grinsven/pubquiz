@@ -55,24 +55,34 @@ export const validateTeamAnswer =(teamId, status) => {
 export const sendTeamAnswersValidation = (teamAnswers, quizCode) => {
     return dispatch => {
         console.log(teamAnswers);
-        // dispatch(clearError());
-        // dispatch(sendTeamAnswersValidationRequest());
-        // fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions/answers', {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Content-Type': 'Application/JSON'
-        //     },
-        //     credentials: 'include',
-        //     body: JSON.stringify(teamAnswers)
-        // }).then(() => {
-        //     dispatch(sendTeamAnswersValidationRequestSuccess());
-        //     dispatch(clearActiveQuestion())
-        // }, err => {
-        //     sendTeamAnswersValidationRequestFailure(err)
-        //     dispatch(setError({
-        //         message: [err]
-        //     }));
-        // })
+
+        const validateTeamAnswers = teamAnswers.filter(answer => answer.isRight === true || answer.isRight === false);
+        if(validateTeamAnswers.length !== teamAnswers.length) {
+            return dispatch(setError({
+                teamAnswers: {
+                    messages: ['Please validate all of the given answers'],
+                }
+            }));
+        }
+
+        dispatch(clearError());
+        dispatch(sendTeamAnswersValidationRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions/answers', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/JSON'
+            },
+            credentials: 'include',
+            body: JSON.stringify(teamAnswers)
+        }).then(() => {
+            dispatch(sendTeamAnswersValidationRequestSuccess());
+            dispatch(clearActiveQuestion())
+        }, err => {
+            sendTeamAnswersValidationRequestFailure();
+            dispatch(setError({
+                message: [err]
+            }));
+        })
     }
 };
 
