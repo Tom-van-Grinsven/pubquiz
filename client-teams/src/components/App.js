@@ -1,6 +1,6 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container'
-import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import JoinQuizForm from './JoinQuizForm'
 import AnswerQuestion from './AnswerQuestion';
 
@@ -19,7 +19,7 @@ function App(props) {
   return (
       <Container className='main-content-container'>
         <div className='logo'>
-          <img src={process.env.PUBLIC_URL + '/images/logo.png'}  />
+          <img src={process.env.PUBLIC_URL + '/images/logo.png'}   alt="Oops"/>
         </div>
           {content}
       </Container>

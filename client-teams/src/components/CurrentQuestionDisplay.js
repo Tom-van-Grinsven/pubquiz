@@ -7,11 +7,11 @@ import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 function CurrentQuestionDisplay(props) {
 
     if(props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
-        props.doFetchActiveQuestion('qhhhnt');
+        props.doFetchActiveQuestion(props.match.params.code);
         return null;
     }
 
-    if(props.activeQuestion.question === null && !props.activeQuestion.isUpdated || props.activeQuestion.isFetching) {
+    if(props.activeQuestion.question === null && (!props.activeQuestion.isUpdated || props.activeQuestion.isFetching)) {
         return (
             <Collapse in={true} appear={true}>
                 <div className='current-question-display'>

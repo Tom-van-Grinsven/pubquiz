@@ -13,8 +13,6 @@ function AnswerQuestionForm(props) {
     const setAnswer = (event) => props.doSetAnswer(event.target.value);
     const sendAnswer = () => props.doSendAnswer(props.quizCode, props.teamName, props.answer);
 
-    console.log(props);
-
     return (
         <Card className='orange'>
             <Collapse in={true} appear={true}>
