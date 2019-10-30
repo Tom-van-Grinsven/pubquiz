@@ -151,11 +151,12 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
        if(req.session.account){
            console.log(req.session.account);
            await req.quiz.judgeGivenAnswers(req.body);
-           sendMessageToWebsocketClients(req, "UPDATE_JUDGED_QUESTIONS");
+           sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
+           sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
            res.json("Ok");
        }
        else {
-           await req.quiz.setTeamAnswerForQuestion(req.body.team, req.body.answer);
+           await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
            sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
            res.json("Ok");
        }

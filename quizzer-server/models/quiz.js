@@ -153,34 +153,37 @@ quizSchema.methods.setClosedQuestion = async function(questionId) {
 
 quizSchema.methods.setTeamAnswerForQuestion = async function(teamName, answer) {
     try {
-        let currentlyAnsweredQuestion;
-        // get the current active question
-        let currentQuestion = this.questions.find(question => question.isActive === true);
+        // check if the team that has given the answer belongs to this quiz
+        if(this.teams.some((team) => team.teamName === teamName)){
+            let currentlyAnsweredQuestion;
+            // get the current active question
+            let currentQuestion = this.questions.find(question => question.isActive === true);
 
-        if(!currentQuestion.isClosed === true){
-            let currentQuestionId = currentQuestion._id;
+            // check if the current question isn't marked as closed
+            if(!currentQuestion.isClosed === true) {
+                let currentQuestionId = currentQuestion._id;
 
-            // get the questions index from the answeredquestions array
-            currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+                // get the questions index from the answeredquestions array
+                currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
-            // if the questions has not yet been added to the array and its index is thus <1
-            if(currentlyAnsweredQuestion < 0) {
-                //add it
-                this.answeredQuestions.push(currentQuestionId);
+                // if the questions has not yet been added to the array and its index is thus <1
+                if (currentlyAnsweredQuestion < 0) {
+                    //add it
+                    this.answeredQuestions.push(currentQuestionId);
+                }
+
+                // get the questions index from the answeredquestions array AGAIN because it just has been added
+                currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+
+                // get the answer index for the question based on teamname
+                let givenAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, teamName);
+
+                // save or update the team answer based on whether this is their first answer or not
+                saveOrUpdateTeamAnswer(this, givenAnswerIndex, currentlyAnsweredQuestion, teamName, answer);
+
+                await this.save();
             }
-
-            // get the questions index from the answeredquestions array AGAIN because it just has been added
-            currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
-
-            // get the answer index for the question based on teamname
-            let givenAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, teamName);
-
-            // save or update the team answer based on whether this is their first answer or not
-            saveOrUpdateTeamAnswer(this, givenAnswerIndex, currentlyAnsweredQuestion, teamName, answer);
-
-            await this.save();
         }
-
     } catch (err) {
         console.log(err);
     }
@@ -203,12 +206,9 @@ quizSchema.methods.getGivenAnswers = async function() {
 quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
     try {
         let currentQuestionId = this.questions.find(question => question.isActive === true)._id;
-        console.log(currentQuestionId);
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
-        console.log(currentlyAnsweredQuestion);
         givenAnswers.forEach((item) => {
             let teamAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
-            console.log(teamAnswerIndex);
             this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.correct;
         });
         await this.save();
