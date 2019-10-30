@@ -26,7 +26,7 @@ const quizSchema = new mongoose.Schema({
                 {
                     teamName: String,
                     givenAnswer: {type: String, required: true},
-                    isRight: {type: Boolean, required: true, default: null},
+                    isRight: {type: Boolean, default: null},
                 }
             ]
         }
