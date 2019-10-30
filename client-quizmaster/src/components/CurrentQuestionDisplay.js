@@ -1,11 +1,11 @@
-import {Button, Card, Collapse} from "react-bootstrap";
+import {Button, Card, Col, Collapse, Row} from "react-bootstrap";
 import React from "react";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 import {connect} from "react-redux";
 
 function CurrentQuestionDisplay(props) {
 
-    if(props.activeQuestion.question === null && !props.activeQuestion.isUpdated || props.activeQuestion.isFetching) {
+    if((props.activeQuestion.question === null || props.activeQuestion.question.isValidated) && (!props.activeQuestion.isUpdated || props.activeQuestion.isFetching)) {
         return (
             <Collapse in={true} appear={true}>
                 <div className='current-question-display'>
@@ -23,30 +23,44 @@ function CurrentQuestionDisplay(props) {
     const {question, category, answer} = props.activeQuestion.question;
 
     return (
-        <Card className='current-question-display'>
-            <Card.Header className='green'>
-                {category}
-            </Card.Header>
-            <Card.Body>
-                <p><b>Question:</b><br/> {question}</p>
-                <p><b>Answer:</b> {answer}</p>
-            </Card.Body>
-        </Card>
+        <div>
+            <Row className='quiz-round-info'>
+                <Col sm='6'>
+                    <Card className='orange text-center'>
+                        <Card.Body>
+                            <b>Round: {props.quiz.roundNr}</b>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col sm='6'>
+                    <Card className='orange text-center'>
+                        <Card.Body>
+                            <b>Question: {props.quiz.questionNr}</b>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+
+            <Card className='current-question-display'>
+                <Card.Header className='green'>
+                    {category}
+                </Card.Header>
+                <Card.Body>
+                    <p><b>Question:</b><br/> {question}</p>
+                    <p><b>Answer:</b> {answer}</p>
+                </Card.Body>
+            </Card>
+        </div>
     )
 }
 
 const mapStateToProps = (state) => {
     return {
-        quizCode: state.quiz.code,
+        quiz: state.quiz,
         activeQuestion: state.dashboard.activeQuestion,
     }
 };
 
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        doFetchActiveQuestion: (quizCode) => dispatch(fetchActiveQuestion(quizCode))
-    }
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(CurrentQuestionDisplay);
+export default connect(mapStateToProps)(CurrentQuestionDisplay);

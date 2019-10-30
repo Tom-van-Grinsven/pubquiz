@@ -95,6 +95,15 @@ export const clearActiveQuestion = () => {
     }
 };
 
+export const setActiveQuestionValidated = () => {
+    return {
+        type: 'ACTIVE_QUESTION_VALIDATED'
+    }
+};
+
+
+
+
 const initialState = {
     isFetching: false,
     isUpdated: true,
@@ -107,6 +116,10 @@ export const activeQuestionReducer = produce((state, action) => {
 
         case 'ACTIVE_QUESTION_IS_UPDATED':
             state.isUpdated = action.payload;
+            return;
+
+        case 'ACTIVE_QUESTION_VALIDATED':
+            state.question.isValidated = true;
             return;
 
         case 'FETCH_ACTIVE_QUESTION':

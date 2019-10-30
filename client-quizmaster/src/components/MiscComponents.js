@@ -33,3 +33,7 @@ export const submitOnEnter = (callback) => {
         if(event.key === 'Enter') callback();
     }
 };
+
+export const countRemainingQuestions = (categoryQuestions) => {
+    return categoryQuestions.reduce((acc, category) => acc + category.questions.length, 0)
+};

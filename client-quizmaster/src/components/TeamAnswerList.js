@@ -10,12 +10,12 @@ import {
 } from "../reducers/teamAnswersReducer";
 import {connect} from "react-redux";
 import {sendCloseQuestion} from "../reducers/activeQuestionReducer";
+import {ErrorComponent} from "./MiscComponents";
 
 
 function TeamAnswersList(props) {
 
     if(!props.teamAnswers.isFetching && props.teamAnswers.isUpdated) {
-        console.log('hit!');
         props.doFetchTeamAnswers(props.quizCode);
     }
 
@@ -50,7 +50,6 @@ function TeamAnswersList(props) {
         props.doSendAnswerValidation(teamAnswers, props.quizCode);
     };
 
-    console.log(props.activeQuestion.question);
     return (
         <Card className='team-answers-list'>
             <Card.Header className='green'>
@@ -61,6 +60,7 @@ function TeamAnswersList(props) {
                 {!props.activeQuestion.question.isClosed ? loadingDiv : ''}
 
                 {teamAnswers}
+                <ErrorComponent err={props.err.teamAnswers} />
 
                 <Form.Group className='text-center'>
                     {props.activeQuestion.question.isClosed ? <Button onClick={sendAnswerValidation} variant="success">Validate Answers</Button> :
@@ -74,6 +74,7 @@ function TeamAnswersList(props) {
 
 const mapStateToProps = (state) => {
     return {
+        err: state.err,
         quizCode: state.quiz.code,
         activeQuestion: state.dashboard.activeQuestion,
         teamAnswers: state.dashboard.teamAnswers

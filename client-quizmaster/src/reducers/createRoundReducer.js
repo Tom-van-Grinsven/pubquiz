@@ -1,6 +1,9 @@
 import {produce} from "immer";
 import {updateApprovedTeams} from "./approveTeamsReducer";
 import {clearError, setError} from "./errorReducer";
+import {incrementRoundNr, resetQuestionNr} from "./quizReducer";
+import {setCategoryQuestionsUpdated} from "./categoryQuestionsReducer";
+import {clearActiveQuestion} from "./activeQuestionReducer";
 
 export const fetchCategories = () => {
     return dispatch => {
@@ -64,7 +67,11 @@ export const sendRoundCategories = (selectedCategories, quizCode, history) => {
           credentials: 'include',
           body: JSON.stringify(selectedCategories)
       }).then(() => {
+            dispatch(clearActiveQuestion());
             dispatch(sendRoundCategoriesRequestSuccess());
+            dispatch(setCategoryQuestionsUpdated());
+            dispatch(incrementRoundNr());
+            dispatch(resetQuestionNr());
             dispatch(clearError());
             history.push('/quiz/' + quizCode + '/dashboard')
           },

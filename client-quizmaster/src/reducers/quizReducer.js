@@ -103,6 +103,25 @@ const fetchQuizRequestFailure = () => {
 
 };
 
+export const incrementRoundNr = () => {
+    return {
+        type: 'INCREMENT_ROUND_NR'
+    }
+};
+
+export const incrementQuestionNr= () => {
+    return {
+        type: 'INCREMENT_QUESTION_NR'
+    }
+};
+
+export const resetQuestionNr = () => {
+    return {
+        type: 'RESET_QUESTION_NR'
+    }
+};
+
+
 const initialState = {
     isFetching: false,
     isSending: false,
@@ -116,6 +135,18 @@ export const quizReducer = produce((state, action) => {
 
     switch (action.type) {
 
+        case 'INCREMENT_ROUND_NR':
+            state.roundNr++;
+            return;
+
+        case 'INCREMENT_QUESTION_NR':
+            state.questionNr++;
+            return;
+
+        case 'RESET_QUESTION_NR':
+            state.questionNr = 0;
+            return;
+
         case 'FETCH_QUIZ_REQUEST':
             state.isFetching = true;
             return state;
@@ -126,7 +157,7 @@ export const quizReducer = produce((state, action) => {
             state.isUpdated     = false;
             state.isActive      = quiz.isActive;
             state.roundNr       = quiz.roundNumber;
-            state.questionNr    = quiz.questionNr;
+            state.questionNr    = quiz.questionNumber;
             state.name          = quiz.name;
             state.code          = quiz.code;
             return state;

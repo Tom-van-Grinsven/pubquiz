@@ -31,6 +31,9 @@ function QuizComponent(props) {
         props.doSetupSocketConnection();
     }
 
+
+
+
     return (
         <div>
             <Router>
@@ -47,6 +50,8 @@ function QuizComponent(props) {
 
 const mapStateToProps = (state) => {
     return {
+        categoryQuestions: state.dashboard.categoryQuestions,
+        activeQuestion: state.dashboard.activeQuestion,
         websocket: state.websocket.socket,
         quiz: state.quiz
     }

@@ -23,7 +23,7 @@ function ApproveTeamContainer(props) {
                             <Form.Group as={Row}>
                                 <Form.Label column md='3'>Quiz Link</Form.Label>
                                 <Col md='9'>
-                                    <Form.Control type='text' readonly value={process.env.REACT_APP_TEAM_CLIENT_URL + '/' + props.quizCode} />
+                                    <Form.Control type='text' readOnly value={process.env.REACT_APP_TEAM_CLIENT_URL + '/' + props.quizCode} />
                                 </Col>
                             </Form.Group>
                         </Card.Body>
