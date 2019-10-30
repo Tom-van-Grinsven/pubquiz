@@ -53,7 +53,7 @@ quizSchema.methods.getQuestionsForRound = async function () {
     try {
         console.log('hiero');
         console.log(this.questions);
-        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => !q.isActive).map(el => el._id);
+        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => q.isActive === false && q.isClosed === false).map(el => el._id);
 
         //console.log(refQuestionIds.length);
         let questions = await Question.getQuestionsById(refQuestionIds);
