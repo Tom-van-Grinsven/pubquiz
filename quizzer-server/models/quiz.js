@@ -39,7 +39,6 @@ quizSchema.statics.createNewQuiz = async function(quizName) {
         let randomCode = getRandomCodeForQuiz();
         while(codes.some(el => el === randomCode)){
            randomCode = getRandomCodeForQuiz();
-           console.log("er is een dubbele");
         }
         let quiz = new Quiz({code: randomCode, name: quizName});
         await quiz.save();
@@ -51,11 +50,8 @@ quizSchema.statics.createNewQuiz = async function(quizName) {
 
 quizSchema.methods.getQuestionsForRound = async function () {
     try {
-        console.log('hiero');
-        console.log(this.questions);
         let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => q.isActive === false && q.isClosed === false).map(el => el._id);
 
-        //console.log(refQuestionIds.length);
         let questions = await Question.getQuestionsById(refQuestionIds);
 
         return mapQuestionsToOrganizedByCategory(questions);
@@ -165,7 +161,7 @@ quizSchema.methods.setTeamAnswerForQuestion = async function(teamName, answer) {
             // check if the current question isn't marked as closed
             if(!currentQuestion.isClosed === true) {
                 let currentQuestionId = currentQuestion._id;
-                console.log(currentQuestionId);
+
                 // get the questions index from the answeredquestions array
                 currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
@@ -254,7 +250,6 @@ getActiveQuestionIndex = (schema) => {
 
 // get the INDEX of the CURRENT active question with answers (which is not the same array as the questions array)
 getCurrentAnsweredQuestionIndexByQuestionId = (schema, currentQuestionId) => {
-    console.log(currentQuestionId);
     return schema.answeredQuestions.findIndex(e => e._id.toString() === currentQuestionId.toString());
 };
 
