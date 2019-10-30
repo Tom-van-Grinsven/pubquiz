@@ -27,7 +27,7 @@ function QuizMasterDashboard(props) {
     }
 
     if(!props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
-        if(props.quiz.questionNr === 2 && remainingQuestions === 0 && props.activeQuestion.question && props.activeQuestion.question.isValidated) {
+        if(props.quiz.questionNr === 12 && remainingQuestions === 0 && props.activeQuestion.question && props.activeQuestion.question.isValidated) {
             return <Redirect to={'/quiz/' + props.quiz.code + '/select-categories'} />
         }
     }
