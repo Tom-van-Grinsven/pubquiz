@@ -10,7 +10,7 @@ const quizSchema = new mongoose.Schema({
     teams: [{teamName: {type: String}, points: {type: Number, required: true, default: 0}}],
     isActive: {type: Boolean, required: true, default: false},
     roundNumber: {type: Number, required: true, default: 0},
-    questionNumber: {type: Number, required: true, default: 1},
+    questionNumber: {type: Number, required: true, default: 0},
     questions: [
         {
             _id: {type: mongoose.Types.ObjectId, ref: 'Question', /*unique: true*/},
@@ -135,6 +135,7 @@ quizSchema.methods.setActiveQuestion = async function(questionId) {
         // get the next current question
         let currentQuestionIndex = this.questions.findIndex(e => e._id.toString() === questionId);
         this.questions[currentQuestionIndex].isActive = true;
+
         await this.save();
     } catch (err) {
         console.log(err)
@@ -155,14 +156,16 @@ quizSchema.methods.setTeamAnswerForQuestion = async function(teamName, answer) {
     try {
         // check if the team that has given the answer belongs to this quiz
         if(this.teams.some((team) => team.teamName === teamName)){
+
             let currentlyAnsweredQuestion;
+
             // get the current active question
             let currentQuestion = this.questions.find(question => question.isActive === true);
 
             // check if the current question isn't marked as closed
             if(!currentQuestion.isClosed === true) {
                 let currentQuestionId = currentQuestion._id;
-
+                console.log(currentQuestionId);
                 // get the questions index from the answeredquestions array
                 currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
@@ -211,6 +214,7 @@ quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
             let teamAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
             this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.isRight;
         });
+        this.questionNr++;
         await this.save();
     } catch (err) {
         console.log(err);
@@ -250,6 +254,7 @@ getActiveQuestionIndex = (schema) => {
 
 // get the INDEX of the CURRENT active question with answers (which is not the same array as the questions array)
 getCurrentAnsweredQuestionIndexByQuestionId = (schema, currentQuestionId) => {
+    console.log(currentQuestionId);
     return schema.answeredQuestions.findIndex(e => e._id.toString() === currentQuestionId.toString());
 };
 

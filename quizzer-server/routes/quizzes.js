@@ -123,13 +123,13 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
             console.log('result', result);
             res.json(result);
         } else if (req.session.team){
-            let result = await req.quiz.getActiveQuestion();
-            let questionObjectForTeams = {
-                question: result.question,
-                category: result.category,
-                _id: result._id,
-            };
-            res.json(questionObjectForTeams);
+                let result = await req.quiz.getActiveQuestion();
+                let questionObjectForTeams = {
+                    question: result.question,
+                    category: result.category,
+                    _id: result._id,
+                };
+                res.json(questionObjectForTeams);
         }
     } catch (err) {
         console.log(err);
@@ -156,6 +156,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, n
            res.json("Ok");
        }
        else {
+           console.log('hiero');
            await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
            sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
            res.json("Ok");
