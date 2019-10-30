@@ -55,8 +55,6 @@ export const validateTeamAnswer =(teamId, status) => {
 
 export const sendTeamAnswersValidation = (teamAnswers, quizCode) => {
     return dispatch => {
-        console.log(teamAnswers);
-
         const validateTeamAnswers = teamAnswers.filter(answer => answer.isRight === true || answer.isRight === false);
         if(validateTeamAnswers.length !== teamAnswers.length) {
             return dispatch(setError({

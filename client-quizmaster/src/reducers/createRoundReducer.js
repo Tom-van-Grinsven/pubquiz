@@ -102,6 +102,7 @@ const sendRoundCategoriesRequestFailure = () => {
     }
 };
 
+
 const initialState = {
     isFetching: false,
     isSending: false,
@@ -131,6 +132,10 @@ export const createRoundReducer = produce((state, action) => {
             return state;
 
         case 'SEND_ROUND_CATEGORIES_REQUEST_SUCCESS':
+            state.isSending = false;
+            state.selectedCategories = [];
+            return state;
+
         case 'SEND_ROUND_CATEGORIES_REQUEST_FAILURE':
             state.isSending = false;
             return state;

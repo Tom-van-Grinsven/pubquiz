@@ -52,14 +52,17 @@ quizSchema.statics.createNewQuiz = async function(quizName) {
 
 quizSchema.methods.getQuestionsForRound = async function () {
     try {
-        console.log('hiero');
-        console.log(this.questions);
-        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => q.isActive === false && q.isClosed === false).map(el => el._id);
 
-        //console.log(refQuestionIds.length);
-        let questions = await Question.getQuestionsById(refQuestionIds);
+        let refQuizQuestions = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length);
+        let questions = await Question.getQuestionsById(refQuizQuestions.map(el => el._id));
 
-        return mapQuestionsToOrganizedByCategory(questions);
+        //console.log(refQuizQuestions);
+
+        return refQuizQuestions.reduce((acc, refQuestion) => {
+            Object.assign(acc.find(question => String(question._id) === String(refQuestion._id))._doc, refQuestion._doc);
+            return acc;
+        }, questions);
+
     } catch (err) {
         console.log(err);
     }
@@ -223,7 +226,7 @@ quizSchema.methods.judgeGivenAnswers = async function(givenAnswers) {
 };
 
 // helper function to format the questions to a more frontend friendly format.
-mapQuestionsToOrganizedByCategory = (questions) => {
+mapQuestionsToOrganizedByCategory = (questions, quizQuestions) => {
     let result = [];
     let distinctCategories = [...new Set(questions.map(el => el.category))];
     let category = {};

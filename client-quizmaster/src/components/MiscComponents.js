@@ -1,6 +1,7 @@
 import {Alert, Collapse} from "react-bootstrap";
 import React from "react";
 import Card from "react-bootstrap/Card";
+import {filterQuizQuestions} from "./QuestionNav";
 
 export function ErrorComponent(props) {
     if(props.err !== undefined &&  props.err.messages) {
@@ -34,6 +35,6 @@ export const submitOnEnter = (callback) => {
     }
 };
 
-export const countRemainingQuestions = (categoryQuestions) => {
-    return categoryQuestions.reduce((acc, category) => acc + category.questions.length, 0)
+export const countRemainingQuestions = (questions) => {
+    return questions.filter(question => !question.isClosed || !question.isValidated).length
 };
