@@ -8,6 +8,7 @@ import mainReducer from './reducers'
 import './index.css'
 import App from './components/App'
 
+
 const theStore = createStore(mainReducer,
     applyMiddleware(
         thunkMiddleware

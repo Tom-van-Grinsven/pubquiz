@@ -65,8 +65,8 @@ export const sendActiveQuestion = (questionId, quizCode) => {
                 'id': questionId
             })
         }).then(() => {
+            dispatch(setActiveQuestionIsUpdated(true));
             dispatch(sendActiveQuestionRequestSuccess());
-            dispatch(setActiveQuestionIsUpdated(true))
             dispatch(incrementQuestionNr());
         }, err => {
             dispatch(setError({
@@ -107,57 +107,72 @@ const initialState = {
     isSending: false,
     isUpdated: true,
     selectedQuestionId: null,
+    activeQuestion: null,
     list: []
 };
 
 export const categoryQuestionsReducer = produce((state, action) => {
 
-   switch (action.type) {
+    let activeQuestion;
 
-       case 'CATEGORY_QUESTIONS_UPDATED':
-           state.isUpdated = true;
-           return;
+    switch (action.type) {
 
-       case 'FETCH_CATEGORY_QUESTIONS_REQUEST':
-           state.isFetching = true;
-           return;
+        case 'CATEGORY_QUESTIONS_UPDATED':
+            state.isUpdated = true;
+            return;
 
-       case 'FETCH_CATEGORY_QUESTIONS_REQUEST_SUCCESS':
-           state.isFetching = false;
-           state.isUpdated = false;
-           state.list = action.payload;
-           return;
+        case 'FETCH_CATEGORY_QUESTIONS_REQUEST':
+            state.isFetching = true;
+            return;
 
-       case 'FETCH_CATEGORY_QUESTIONS_REQUEST_FAILURE':
-           state.isFetching = false;
-           state.isUpdated = false;
-           state.err = action.payload;
-           return;
+        case 'FETCH_CATEGORY_QUESTIONS_REQUEST_SUCCESS':
+            state.isFetching = false;
+            state.isUpdated = false;
+            state.list = action.payload;
+            state.activeQuestion = state.list.find(question => question.isActive === true);
+            return;
 
-       case 'TOGGLE_SELECTED_QUESTION':
-           state.selectedQuestionId = action.payload;
-           return;
+        case 'FETCH_CATEGORY_QUESTIONS_REQUEST_FAILURE':
+            state.isFetching = false;
+            state.isUpdated = false;
+            state.err = action.payload;
+            return;
 
-       case 'SEND_ACTIVE_QUESTION_REQUEST':
-           state.isSending = true;
-           return;
+        case 'TOGGLE_SELECTED_QUESTION':
+            state.selectedQuestionId = action.payload;
+            return;
 
-       case 'SEND_ACTIVE_QUESTION_REQUEST_SUCCESS':
-           state.isSending = false;
-           state.list.forEach((category, index) => {
-               console.log(state.selectedQuestionId);
-               state.list[index].questions = category.questions.filter(question => question._id !== state.selectedQuestionId)
-           });
-           state.selectedQuestionId = null;
-           return;
+        case 'SEND_ACTIVE_QUESTION_REQUEST':
+            state.isSending = true;
+            return;
 
-       case 'SEND_ACTIVE_QUESTION_REQUEST_FAILURE':
-           state.isSending = false;
-           state.err = action.payload;
-           return;
+        case 'SEND_ACTIVE_QUESTION_REQUEST_SUCCESS':
+            activeQuestion = state.list.find(question => question.isActive === true);
+            if (activeQuestion) {
+                activeQuestion.isActive = false;
+            }
 
+            state.list.find(question => question._id === state.selectedQuestionId).isActive = true;
+            state.selectedQuestionId = null;
+            state.isSending = false;
+            return;
 
-       default:
-           return state
-   }
+        case 'SEND_ACTIVE_QUESTION_REQUEST_FAILURE':
+            state.isSending = false;
+            state.err = action.payload;
+            return;
+
+        case 'SEND_CLOSE_QUESTION_REQUEST_SUCCESS':
+            activeQuestion = state.list.find(question => question.isActive === true);
+            activeQuestion.isClosed = true;
+            return;
+
+        case 'ACTIVE_QUESTION_VALIDATED':
+            activeQuestion = state.list.find(question => question.isActive === true);
+            activeQuestion.isValidated = true;
+            return;
+
+        default:
+            return state
+    }
 }, initialState);

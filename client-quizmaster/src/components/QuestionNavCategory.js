@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Button, ButtonGroup, Card, Collapse} from "react-bootstrap";
 import {connect} from "react-redux";
 import {toggleSelectedQuestion} from "../reducers/categoryQuestionsReducer";
 
 function QuestionNavCategory(props) {
+
 
     if(props.categoryItem.questions.length === 0) {
         return null
@@ -21,11 +22,9 @@ function QuestionNavCategory(props) {
         <Card className='question-nav-category'>
             <Card.Header className='green'>{props.categoryItem.category}</Card.Header>
             <Card.Body className='no-padding d-flex'>
-                <Collapse in={true} appear={true}>
                 <ButtonGroup vertical>
                     {questionItems}
                 </ButtonGroup>
-                </Collapse>
             </Card.Body>
         </Card>
     )
@@ -46,8 +45,14 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(QuestionNavCategory);
 
 function QuestionNavCategoryQuestion(props) {
+
+    const [open, setOpen] = useState(false);
+    useLayoutEffect(() => setOpen(true));
+
     return (
-        <Button variant="outline-orange" disabled={props.disabled} active={props.active} onClick={props.onToggle} block>{props.question}</Button>
+        <Collapse in={open} >
+            <Button variant="outline-orange" disabled={props.disabled} active={props.active} onClick={props.onToggle} block>{props.question}</Button>
+        </Collapse>
     )
 }
 

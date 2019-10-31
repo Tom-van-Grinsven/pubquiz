@@ -51,11 +51,15 @@ quizSchema.statics.createNewQuiz = async function(quizName) {
 
 quizSchema.methods.getQuestionsForRound = async function () {
     try {
-        let refQuestionIds = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length).filter(q => q.isActive === false && q.isClosed === false).map(el => el._id);
 
-        let questions = await Question.getQuestionsById(refQuestionIds);
+        let refQuizQuestions = this.questions.slice(((this.roundNumber -1) * 12), this.questions.length);
+        let questions = await Question.getQuestionsById(refQuizQuestions.map(el => el._id));
 
-        return mapQuestionsToOrganizedByCategory(questions);
+        return refQuizQuestions.reduce((acc, refQuestion) => {
+            Object.assign(acc.find(question => String(question._id) === String(refQuestion._id))._doc, refQuestion._doc);
+            return acc;
+        }, questions);
+
     } catch (err) {
         console.log(err);
     }
@@ -130,7 +134,6 @@ quizSchema.methods.setActiveQuestion = async function(questionId) {
         if(currentActiveQuestionIndex >= 0){
             this.questions[currentActiveQuestionIndex].isActive = false;
         }
-
         // get the next current question
         let currentQuestionIndex = this.questions.findIndex(e => e._id.toString() === questionId);
         this.questions[currentQuestionIndex].isActive = true;

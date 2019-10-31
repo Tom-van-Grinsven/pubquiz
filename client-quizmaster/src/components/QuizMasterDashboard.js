@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Col, Row} from "react-bootstrap";
-import QuestionNav from "./QuestionNav";
+import QuestionNav, {filterQuizQuestions} from "./QuestionNav";
 import TeamQuestionAnswers from "./TeamQuestionAnswers";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 import {connect} from "react-redux";
@@ -12,29 +12,26 @@ function QuizMasterDashboard(props) {
 
     if(props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
         props.doFetchActiveQuestion(props.quiz.code);
-        return null;
     }
 
     if(props.categoryQuestions.isUpdated && !props.categoryQuestions.isFetching) {
         props.doFetchCategoryQuestions(props.quiz.code);
-        return null;
     }
 
     let offset = 0;
-    const remainingQuestions = countRemainingQuestions(props.categoryQuestions.list);
-    if(remainingQuestions === 0) {
+    if(filterQuizQuestions(props.categoryQuestions.list).length === 0 && props.activeQuestion.question) {
         offset = 2;
     }
 
-    if(!props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
-        if(props.quiz.questionNr === 2 && remainingQuestions === 0 && props.activeQuestion.question && props.activeQuestion.question.isValidated) {
-            return <Redirect to={'/quiz/' + props.quiz.code + '/select-categories'} />
+    if(!props.categoryQuestions.isUpdated && !props.categoryQuestions.isFetching) {
+        if (props.categoryQuestions.list.length > 0 && countRemainingQuestions(props.categoryQuestions.list) === 0) {
+            return <Redirect to={'/quiz/' + props.quiz.code + '/select-categories'}/>
         }
     }
 
     return (
         <Row className='quiz-master-dashboard' >
-            {remainingQuestions > 0  ? <Col className='col' md='4'><QuestionNav/></Col> : '' }
+            {offset === 0  ? <Col className='col' md='4'><QuestionNav/></Col> : '' }
             <Col className='col' md={{ span: 8, offset: offset }}><TeamQuestionAnswers/></Col>
         </Row>
     )

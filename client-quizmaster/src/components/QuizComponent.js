@@ -31,9 +31,6 @@ function QuizComponent(props) {
         props.doSetupSocketConnection();
     }
 
-
-
-
     return (
         <div>
             <Router>
