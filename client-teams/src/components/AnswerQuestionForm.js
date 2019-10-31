@@ -11,7 +11,7 @@ import {sendAnswer, setAnswer} from "../reducers/answerQuestionReducer";
 function AnswerQuestionForm(props) {
 
     const setAnswer = (event) => props.doSetAnswer(event.target.value);
-    const sendAnswer = () => props.doSendAnswer(props.quizCode, props.teamName, props.answer);
+    const sendAnswer = () => props.doSendAnswer(props.match.params.code, props.teamName, props.answer);
 
     return (
         <Card className='orange'>

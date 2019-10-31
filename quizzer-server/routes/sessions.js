@@ -28,7 +28,13 @@ sessionRouter.get('/', async function(req, res, next) {
                 _id: req.session.account._id,
                 email: req.session.account.email
             })
-        } else {
+        } else if(req.session.team) {
+            res.send({
+                teamName: req.session.team.teamName,
+                quizCode: req.session.quizCode,
+            })
+        }
+        else {
             res.send({
                 isLoggedIn: false,
             })
