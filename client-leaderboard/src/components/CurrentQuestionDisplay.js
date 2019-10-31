@@ -1,14 +1,15 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Card, Collapse} from "react-bootstrap";
+import {Card, Col, Collapse, Row} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
+import { Textfit } from 'react-textfit';
 
 function CurrentQuestionDisplay(props) {
 
     if(props.activeQuestion.isUpdated && !props.activeQuestion.isFetching) {
-        props.doFetchActiveQuestion(props.match.params.code);
-        return null;
+        //props.doFetchActiveQuestion(props.match.params.code);
+        //return null;
     }
 
     if(props.activeQuestion.question === null && (!props.activeQuestion.isUpdated || props.activeQuestion.isFetching)) {
@@ -26,19 +27,20 @@ function CurrentQuestionDisplay(props) {
         )
     }
 
-    const {question, category} = props.activeQuestion.question;
+    //const {question, category} = props.activeQuestion.question;
 
     return (
         <div className='current-question-display'>
-        <Card className='category-card purple text-center'>
+        <Card className='orange text-center'>
             <Card.Body>
-                <h3><b>{category}</b></h3>
-            </Card.Body>
-        </Card>
-        <Card className='current-question-display green text-center'>
-            <Card.Body>
-            <h3><b>Question:</b></h3>
-                <h5>{question}</h5>
+                <Row>
+                    <Col sm='6' className='text-right'><h5>Round: 4</h5></Col>
+                    <Col sm='6' className='text-left'><h5>Question: 4</h5></Col>
+                </Row>
+                <h5 className='cat-text'><b>Art and Literature</b></h5>
+                <Textfit mode="multi" style={{maxHeight: '9vmin'}}>Which famous writer, who used the line `God for Harry, England and St. George!` in one of his works, was said to have been born and died on St George`s Day?</Textfit>
+                {/*<Textfit max='18' mode="multi" style={{height: '5vmin'}}>Who wrote Lord of the Rings</Textfit>*/}
+
             </Card.Body>
         </Card>
         </div>

@@ -8,13 +8,6 @@ export const setQuizCode = (quizCode) => {
     }
 };
 
-export const setTeamName = (teamName) => {
-    return {
-        type: 'SET_TEAM_NAME',
-        payload: teamName
-    }
-};
-
 export const joinQuiz = (quizCode, teamName, history) => {
     return dispatch => {
         dispatch(clearError());
@@ -45,7 +38,6 @@ export const joinQuiz = (quizCode, teamName, history) => {
 
 const initialState = {
     quizCode: '',
-    teamName: '',
     isSending: false,
 };
 
@@ -54,10 +46,6 @@ export const joinQuizReducer = produce((state, action) => {
 
         case 'SET_QUIZ_CODE':
             state.quizCode = action.payload;
-            return;
-
-        case 'SET_TEAM_NAME':
-            state.teamName = action.payload;
             return;
 
         default:

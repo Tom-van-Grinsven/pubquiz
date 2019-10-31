@@ -50,6 +50,11 @@ body {
 .card .card-header {
     border-radius: calc(1rem - 5px) calc(1rem - 5px) 0 0;
 }
+.leaderboard .card-header {
+    padding: 1.25rem;
+    border-bottom: 5px solid #FFFFFF;
+    text-align: center;
+}
 
 .card .card-header {
     color:#FFFFFF;
@@ -125,42 +130,59 @@ input.error {
 .card h3 {
     margin-bottom: 15px;
 }
-.create-quiz-form-container {
+
+.join-quiz-form-container {
     max-width: 500px;
     margin:auto;
     padding: 3rem 0;
 }
-.create-quiz-form-container input {
+.join-quiz-form-container input, .answer-question-form-container input {
     text-align: center;
 }
-.create-quiz-form-container input::placeholder {
+.join-quiz-form-container input::placeholder, .answer-question-form-container input::placeholder {
     text-align: center;
 }
-.create-quiz-form-container button {
+.join-quiz-form-container button, .answer-question-form-container button {
     width: 50%;
 }
-
-div.quiz-link-container {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 1rem;
+.quiz-leaderboard .card .card-body {
+    padding:2vmin
+}
+.quiz-leaderboard h5 {
+    font-size: 2.5vmin;
+    margin-bottom: .5vmin;
 }
 
-div.quiz-link-container .form-group {
-    max-width: 500px;
-    margin: 0 auto;
+.current-question-display {
+    margin-bottom: 1vmin;
 }
-div.quiz-link-container {
+.current-question-display .row {
+    margin:0;
+}
+.current-question-display .row > div {
+    border-bottom: 1px solid #fff;
+}
+.current-question-display .row > div > h5 {
+    margin-bottom: 1vmin;
+}
+.current-question-display .row {
+    margin-bottom: 1vmin;
+}
+.current-question-display .cat-text {
+    margin-bottom: 1vmin;
+}
+.current-question-display .quest-text {
 
 }
-
 .approve-teams-container {
     max-width: 500px;
     margin:auto
 }
+
 .approve-teams-container button.btn-primary {
     padding: .375rem 2.5rem;
 }
+
 .approve-teams-container .loading-div {
     margin-bottom: 2rem;
 }
@@ -270,15 +292,14 @@ div.quiz-link-container {
     flex-direction: column;
     flex:1 1 auto;
 }
-.team-question-answers-container .quiz-round-info .card {
+.quiz-round-info .card {
     margin-bottom: 1rem;
 }
-.team-question-answers-container .current-question-display {
-    margin-bottom: 1rem;
-}
-.team-question-answers-container .current-question-display p:last-child {
+.quiz-round-info .card h5 {
     margin-bottom: 0;
 }
+
+
 .team-question-answers-container .team-answers-list .form-group button.btn:first-child {
     margin-right: 1rem;
 }

@@ -4,17 +4,16 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {ErrorComponent} from "./MiscComponents";
 import {Collapse} from "react-bootstrap";
-import {joinQuiz, setQuizCode, setTeamName} from "../reducers/joinQuizReducer";
+import {ErrorComponent} from "./MiscComponents";
+import {joinQuiz, setQuizCode} from "../reducers/joinQuizReducer";
 
 
 
 function JoinQuizForm(props) {
 
     const setQuizCode = (event) => props.doSetQuizCode(event.target.value);
-    const setTeamName = (event) => props.doSetTeamName(event.target.value);
-    const joinQuiz = () => props.doJoinQuiz(props.quizCode, props.teamName, props.history);
+    const joinQuiz = () => props.history.push('/'+ props.quizCode + '/leaderboard'); // props.doJoinQuiz(props.quizCode);
 
     return (
         <Card className='orange'>
@@ -22,21 +21,13 @@ function JoinQuizForm(props) {
                 <Card.Body>
                     <div className='join-quiz-form-container'>
                         <h3 className='text-center'>Join Quiz</h3>
-                        <ErrorComponent err={props.err}/>
+                        <ErrorComponent err={undefined}/>
                         <Form.Group>
                             <Form.Control
                                 type='text'
                                 value={props.quizCode}
                                 onChange={setQuizCode}
                                 placeholder='Quiz Code'
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Control
-                                type='text'
-                                value={props.teamName}
-                                onChange={setTeamName}
-                                placeholder='Team Name'
                             />
                         </Form.Group>
                         <Form.Group className='text-center'>
@@ -54,7 +45,6 @@ function JoinQuizForm(props) {
 
 const mapStateToProps = (state) => {
     return {
-        teamName: state.joinQuiz.teamName,
         quizCode: state.joinQuiz.quizCode
     }
 };
@@ -62,7 +52,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         doSetQuizCode: (quizCode) => dispatch(setQuizCode(quizCode)),
-        doSetTeamName: (teamName) => dispatch(setTeamName(teamName)),
         doJoinQuiz: (quizCode, teamName, history) => dispatch(joinQuiz(quizCode, teamName, history)),
     }
 };
