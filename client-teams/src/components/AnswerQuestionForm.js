@@ -11,7 +11,11 @@ import {sendAnswer, setAnswer} from "../reducers/answerQuestionReducer";
 function AnswerQuestionForm(props) {
 
     const setAnswer = (event) => props.doSetAnswer(event.target.value);
-    const sendAnswer = () => props.doSendAnswer(props.match.params.code, props.teamName, props.answer);
+    const sendAnswer = () => props.doSendAnswer(props.quizCode, props.teamName, props.answer);
+
+    if(props.activeQuestion === null){
+        return null;
+    }
 
     return (
         <Card className='orange'>
@@ -26,14 +30,19 @@ function AnswerQuestionForm(props) {
                                 onChange={setAnswer}
                                 value={props.answer}
                                 placeholder='Answer'
-                                //className={props.err.code === 'QUIZ_NAME' ? 'error' : ''}
+                                readOnly={
+                                    !!props.activeQuestion.isClosed
+                                }
                             />
                         </Form.Group>
                         <Form.Group className='text-center'>
                             <Button variant="primary"
                                     onClick={sendAnswer}
-                                    size="lg">Submit Answer
-                                {/*{props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }*/}
+                                    size="lg"
+                                    disabled={!!props.activeQuestion.isClosed}
+                            >
+                                {props.activeQuestion.isClosed ? "Question is Closed" : "Submit Answer"}
+                                {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }
                             </Button>
                         </Form.Group>
                     </div>
@@ -45,9 +54,10 @@ function AnswerQuestionForm(props) {
 
 const mapStateToProps = (state) => {
     return {
-        teamName: state.joinQuiz.teamName,
+        teamName: state.answerQuestion.teamName,
         answer: state.answerQuestion.answer,
-        quizCode: state.joinQuiz.quizCode
+        quizCode: state.answerQuestion.quizCode,
+        activeQuestion: state.activeQuestion.question,
     }
 };
 

@@ -8,12 +8,15 @@ require('../models/quiz.js');
 
 const quizRouter = express.Router();
 
-const Question  = mongoose.model('Question');
 const Quiz = mongoose.model('Quiz');
 
 quizRouter.use('/:quizcode', async (req, res, next) => {
     req.quiz = await Quiz.findOne({code: req.params.quizcode});
-    req.session.quizCode = req.quiz.code;
+    if(req.quiz){
+        req.session.quizCode = req.quiz.code;
+    } else if (!req.quiz){
+        return res.sendStatus(404)
+    }
     next();
 });
 
@@ -67,7 +70,7 @@ quizRouter.get('/:quizcode/teams', async function(req, res, next) {
 
 quizRouter.post('/:quizcode/teams', async function(req, res, next) {
     try{
-        if(req.body.teamName){
+        if(req.body.teamName && req.body.quizCode){
 
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
             req.session.quizCode = req.quiz.code;
@@ -75,8 +78,6 @@ quizRouter.post('/:quizcode/teams', async function(req, res, next) {
             await sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
 
             res.send("ok");
-        } else {
-            res.send("Niet oke")
         }
     } catch (err) {
         console.log(err);
@@ -126,6 +127,7 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
                 let questionObjectForTeams = {
                     question: result.question,
                     category: result.category,
+                    isClosed: result.isClosed,
                     _id: result._id,
                 };
                 res.json(questionObjectForTeams);
@@ -148,16 +150,19 @@ quizRouter.get('/:quizcode/active-questions/answers', async function(req, res, n
 quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, next) {
    try {
        if(req.session.account){
-           console.log(req.session.account);
            await req.quiz.judgeGivenAnswers(req.body);
            sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
            //sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
            res.json("Ok");
        }
        else {
-           await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
-           sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
-           res.json("Ok");
+           if(req.body.answer){
+               await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
+               sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
+               res.json("Ok");
+           } else {
+               res.json("No answer was given");
+           }
        }
    } catch (err) {
        console.log(err);

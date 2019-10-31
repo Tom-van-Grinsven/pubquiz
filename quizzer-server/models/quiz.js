@@ -102,11 +102,9 @@ quizSchema.methods.addJoinedTeamToQuiz = async function(team){
             this.teams.push(team);
             this.save();
             return team;
-        } else {
-            throw new Error("A team name must be unique");
         }
     } catch (err) {
-        throw err;
+        console.log(err);
     }
 };
 

@@ -68,6 +68,14 @@ export const activeQuestionReducer = produce((state, action) => {
             }
             return;
 
+        case 'UPDATE_ACTIVE_QUESTION':
+            state.isUpdated = true;
+            return state;
+
+        case 'UPDATE_CLOSED_QUESTION':
+            state.question.isClosed = true;
+            return state;
+
         case 'FETCH_ACTIVE_QUESTION_FAILURE':
             state.isFetching = false;
             return;

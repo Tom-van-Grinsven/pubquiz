@@ -17,8 +17,27 @@ export const setTeamName = (teamName) => {
 
 export const joinQuiz = (quizCode, teamName, history) => {
     return dispatch => {
+        if(teamName.length === 0) {
+            dispatch(setError({
+                joinquiz: {
+                    messages: ['Please enter a Team name'],
+                    code: 'TEAM_NAME'
+                }
+            }));
+            return;
+        }
+
+        if(quizCode.length === 0){
+            dispatch(setError({
+                joinquiz: {
+                    messages: ['Please enter a Quiz code'],
+                    code: 'QUIZ_CODE'
+                }
+            }));
+            return;
+        }
+
         dispatch(clearError());
-        //dispatch(sendActiveQuestionRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
             method: 'POST',
             headers: {
@@ -26,18 +45,28 @@ export const joinQuiz = (quizCode, teamName, history) => {
             },
             credentials: 'include',
             body: JSON.stringify({
-                'teamName': teamName
+                'teamName': teamName,
+                'quizCode': quizCode,
             })
-        }).then(() => {
-            // dispatch(sendActiveQuestionRequestSuccess())
-            // dispatch(setActiveQuestionIsUpdated(true))
-            history.push('/quiz/' + quizCode);
-
-        }, err => {
+        }).then(response => {
+            if(response.status === 404){
+                return Promise.reject();
+            } else {
+                console.log('Hiero00000');
+                return true;
+            }
+        }, fetchErr =>  {
+            console.log(' fetch err');
             dispatch(setError({
-                message: [err]
-            }));
-            //dispatch(sendActiveQuestionRequestFailure())
+                joinquiz: {messages: [fetchErr]}
+            }))
+        }).then(() => {
+            console.log('hier');
+            history.push('/quiz/' + quizCode);
+        }, () => {
+            dispatch(setError({
+                joinquiz: {messages: ["This Quiz does not exist"]}
+            }))
         });
 
     }

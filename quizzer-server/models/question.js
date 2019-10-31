@@ -20,7 +20,6 @@ const questionSchema = new mongoose.Schema({
 
 questionSchema.statics.getQuestionsForRound = async function (categories, currentQuizQuestions){
     try{
-        console.log(currentQuizQuestions);
         let questions = await this.aggregate([
                 { $match : { $and:
                                 [
