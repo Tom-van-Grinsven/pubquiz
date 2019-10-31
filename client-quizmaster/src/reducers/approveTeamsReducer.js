@@ -5,7 +5,10 @@ import {clearError, setError} from "./errorReducer";
 export const fetchTeams = (quizCode) => {
     return dispatch => {
         dispatch(fetchTeamsRequest());
-        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams')
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(response => response.json())
             .then(teams => dispatch(fetchTeamsRequestSuccess(teams)),
                 err => dispatch(fetchTeamsRequestFailure(err)))

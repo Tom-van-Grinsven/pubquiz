@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React from 'react';
 import {Col, Row} from "react-bootstrap";
 import QuestionNav, {filterQuizQuestions} from "./QuestionNav";
 import TeamQuestionAnswers from "./TeamQuestionAnswers";
@@ -37,7 +37,6 @@ function QuizMasterDashboard(props) {
     )
 }
 
-
 const mapStateToProps = (state) => {
     return {
         quiz: state.quiz,
@@ -45,7 +44,6 @@ const mapStateToProps = (state) => {
         categoryQuestions: state.dashboard.categoryQuestions,
     }
 };
-
 
 const mapDispatchToProps = (dispatch) => {
     return {
