@@ -10,97 +10,177 @@ const quizRouter = express.Router();
 
 const Quiz = mongoose.model('Quiz');
 
+const isAuthorized = (req, checkQuizOwner = true) => {
+
+    // for testing
+    // return true;
+
+    if(req.session.account === undefined || req.session.account._id === undefined) {
+        return false;
+    }
+
+    if(checkQuizOwner && req.quiz !== undefined) {
+        return String(req.quiz.quizOwner) === req.session.account._id
+    }
+
+    return true;
+
+};
+
 quizRouter.use('/:quizcode', async (req, res, next) => {
-    req.quiz = await Quiz.findOne({code: req.params.quizcode});
-    if(req.quiz){
-        req.session.quizCode = req.quiz.code;
-    } else if (!req.quiz){
-        return res.sendStatus(404)
+    try {
+        req.quiz = await Quiz.findOne({code: req.params.quizcode});
+        if(req.quiz){
+            req.session.quizCode = req.quiz.code;
+        } else if (!req.quiz){
+            return res.sendStatus(404)
+        }
+        next();
+    } catch(err) {
+        next(err);
     }
-    next();
 });
 
-quizRouter.post('/', async function(req, res, next){
+quizRouter.get('/:quizcode', async function(req, res){
     try {
-        let quiz = await Quiz.createNewQuiz(req.body.quizName);
+        const { isActive, roundNumber, questionNumber, _id, code, name } = req.quiz;
+        res.send({_id, code, isActive, roundNumber, questionNumber, name});
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500)
+    }
+});
+
+quizRouter.post('/', async function(req, res){
+    try {
+        if(!isAuthorized(req, false)) {
+            return res.sendStatus(403);
+        }
+
+        let quiz = await Quiz.createNewQuiz(req.body.quizName, req.session.account._id);
         req.session.quizCode = quiz.code;
-        res.json(quiz.code);
+        return res.status(201).json(quiz.code);
+
     } catch (err) {
         console.log(err);
-        res.json(err);
+        res.sendStatus(500)
     }
 });
 
-quizRouter.get('/:quizcode', async function(req, res, next){
-   try {
-       res.json(req.quiz);
-   } catch (err) {
-       res.json(err);
-   }
+quizRouter.put('/:quizcode', async function(req, res){
+    try {
+        if(!isAuthorized(req)) {
+            return res.sendStatus(403);
+        }
+
+        const isActive = req.body.isActive;
+        if(isActive === true || isActive === false) {
+            req.quiz.isActive = isActive;
+            await req.quiz.save();
+
+            if(!isActive) {
+                await req.quiz.updateTeamPoints();
+                // TODO: Send websocket message to leaderboard
+            }
+            res.sendStatus(204);
+        }
+
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500)
+    }
 });
 
-quizRouter.put('/:quizcode/categories', async function(req, res, next) {
+
+
+quizRouter.get('/:quizcode/score', function(req, res){
+    try {
+        return res.json(req.quiz.getScore());
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+});
+
+quizRouter.put('/:quizcode/categories', async function(req, res) {
     try{
+        if(!isAuthorized(req)) {
+            return res.sendStatus(403);
+        }
+
         await req.quiz.setRoundQuestionsByCategories(req.body);
-        res.send("ok");
+        await req.quiz.updateTeamPoints();
+
+        // TODO: Send websocket message to leaderboard
+
+        res.sendStatus(204)
     } catch (err) {
         console.log(err);
-        res.json("nope");
+        res.sendStatus(500);
     }
 });
 
-quizRouter.get('/:quizcode/categories/questions', async function(req, res, next) {
+quizRouter.get('/:quizcode/categories/questions', async function(req, res) {
     try {
+        if(!isAuthorized(req)) {
+            return res.sendStatus(403);
+        }
+
         let result = await req.quiz.getQuestionsForRound();
-        res.json(result);
+        res.send(result);
+
     } catch (err) {
         console.log(err);
+        res.sendStatus(500)
     }
 });
 
-quizRouter.get('/:quizcode/teams', async function(req, res, next) {
+quizRouter.get('/:quizcode/teams', async function(req, res) {
     try {
+
+        if(!isAuthorized(req)) {
+            return res.sendStatus(403);
+        }
+
         let result = await req.quiz.getJoinedTeamsOfQuiz();
-        res.json(result);
+        res.send(result);
     } catch (err) {
         console.log(err);
-        res.json(err.message);
+        res.sendStatus(500)
     }
 });
 
-quizRouter.post('/:quizcode/teams', async function(req, res, next) {
+quizRouter.post('/:quizcode/teams', async function(req, res) {
     try{
-        if(req.body.teamName && req.body.quizCode){
+        if(req.body.teamName){
 
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
             req.session.quizCode = req.quiz.code;
 
-            await sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
-
-            res.send("ok");
+            sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
+            res.sendStatus(201);
         }
     } catch (err) {
         console.log(err);
-        res.json(err.message);
+        res.sendStatus(500);
     }
 });
 
 
-quizRouter.put('/:quizcode/teams', async function(req, res, next) {
+quizRouter.put('/:quizcode/teams', async function(req, res) {
     try{
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
-
         filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
-
         sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
-        res.send("ok");
+        res.sendStatus(204)
+
     } catch (err) {
         console.log(err);
-        res.json("nope");
+        res.sendStatus(500)
     }
 });
 
-quizRouter.put('/:quizcode/active-questions', async function(req, res, next) {
+quizRouter.put('/:quizcode/active-questions', async function(req, res) {
     try{
         if(req.body.id){
             await req.quiz.setActiveQuestion(req.body.id);
@@ -117,7 +197,7 @@ quizRouter.put('/:quizcode/active-questions', async function(req, res, next) {
     }
 });
 
-quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
+quizRouter.get('/:quizcode/active-questions', async function(req, res) {
     try{
         if(req.session.account){
             let result = await req.quiz.getActiveQuestion();
@@ -138,34 +218,49 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res, next) {
     }
 });
 
-quizRouter.get('/:quizcode/active-questions/answers', async function(req, res, next) {
+quizRouter.get('/:quizcode/active-questions/answers', async function(req, res) {
     try {
+
+        if(!isAuthorized(req)) {
+            return res.sendStatus(403);
+        }
+
         let result = await req.quiz.getGivenAnswers();
-        res.json(result);
+        res.send(result);
+
     } catch (err) {
         console.log(err);
+        res.sendStatus(500)
     }
 });
 
-quizRouter.put('/:quizcode/active-questions/answers', async function(req, res, next) {
+quizRouter.put('/:quizcode/active-questions/answers', async function(req, res) {
    try {
        if(req.session.account){
+
+           if(!isAuthorized(req)) {
+               return res.sendStatus(403);
+           }
+
            await req.quiz.judgeGivenAnswers(req.body);
            sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
+
+           // TODO: Send websocket message to leaderboard
            //sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
-           res.json("Ok");
+           res.sendStatus(204);
        }
        else {
            if(req.body.answer){
                await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
                sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
-               res.json("Ok");
+               res.send(204)
            } else {
-               res.json("No answer was given");
+               res.sendStatus(400)
            }
        }
    } catch (err) {
        console.log(err);
+       res.sendStatus(500)
    }
 });
 
