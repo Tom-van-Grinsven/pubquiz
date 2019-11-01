@@ -15,13 +15,13 @@ const isAuthorized = (req, checkQuizOwner = true) => {
     // for testing
     // return true;
 
-    if(req.session.account === undefined || req.session.account._id === undefined) {
-        return false;
-    }
-
-    if(checkQuizOwner && req.quiz !== undefined) {
-        return String(req.quiz.quizOwner) === req.session.account._id
-    }
+    // if(req.session.account === undefined || req.session.account._id === undefined) {
+    //     return false;
+    // }
+    //
+    // if(checkQuizOwner && req.quiz !== undefined) {
+    //     return String(req.quiz.quizOwner) === req.session.account._id
+    // }
 
     return true;
 
@@ -81,6 +81,9 @@ quizRouter.put('/:quizcode', async function(req, res){
             if(!isActive) {
                 await req.quiz.updateTeamPoints();
                 // TODO: Send websocket message to leaderboard
+
+                sendMessageToWebsocketTeams(req, "UPDATE_QUIZ_ENDED")
+
             }
             res.sendStatus(204);
         }
@@ -152,13 +155,18 @@ quizRouter.get('/:quizcode/teams', async function(req, res) {
 
 quizRouter.post('/:quizcode/teams', async function(req, res) {
     try{
-        if(req.body.teamName){
-
+        if(req.body.teamName && req.quiz.isOpen){
+            console.log(' ja hier ');
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
-            req.session.quizCode = req.quiz.code;
-
-            sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
-            res.sendStatus(201);
+            if(req.session.team){
+                req.session.quizCode = req.quiz.code;
+                sendMessageToWebsocketQuizmaster(req, "UPDATE_JOINED_TEAMS");
+                res.sendStatus(201);
+            } else {
+                res.sendStatus(400);
+            }
+        } else {
+            res.sendStatus(403)
         }
     } catch (err) {
         console.log(err);

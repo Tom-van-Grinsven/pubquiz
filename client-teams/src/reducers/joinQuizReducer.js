@@ -49,24 +49,33 @@ export const joinQuiz = (quizCode, teamName, history) => {
                 'quizCode': quizCode,
             })
         }).then(response => {
-            if(response.status === 404){
-                return Promise.reject();
+            if(response.status === 404 || response.status === 400 || response.status === 403){
+                return Promise.reject(response.status);
             } else {
-                console.log('Hiero00000');
                 return true;
             }
         }, fetchErr =>  {
-            console.log(' fetch err');
             dispatch(setError({
                 joinquiz: {messages: [fetchErr]}
             }))
         }).then(() => {
             console.log('hier');
             history.push('/quiz/' + quizCode);
-        }, () => {
-            dispatch(setError({
-                joinquiz: {messages: ["This Quiz does not exist"]}
-            }))
+        }, (responseStatus) => {
+
+            if(responseStatus === 404){
+                dispatch(setError({
+                    joinquiz: {messages: ["This Quiz does not exist"]}
+                }))
+            } else if(responseStatus === 400){
+                dispatch(setError({
+                    joinquiz: {messages: ["This Team name is already taken"]}
+                }))
+            } else if (responseStatus === 403) {
+                dispatch(setError( {
+                    joinquiz: {messages: ["You can not apply as a Team for this Quiz"]}
+                }));
+            }
         });
 
     }

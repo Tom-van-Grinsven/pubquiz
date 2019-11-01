@@ -18,6 +18,17 @@ body {
 .logo img {
     width: 80%;
 }
+
+.thumb {
+    text-align: center;
+    padding: 2rem 3rem;
+    margin-bottom: 2rem;
+}
+
+.thumb img {
+    width: 50%;
+}
+
 .loading-div {
     text-align: center;
 }

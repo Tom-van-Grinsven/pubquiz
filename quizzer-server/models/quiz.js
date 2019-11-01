@@ -8,7 +8,8 @@ const quizSchema = new mongoose.Schema({
     name: {type: String, required: true},
     quizOwner: {type: mongoose.Types.ObjectId, ref: 'Account', required: true},
     teams: [{teamName: {type: String}, points: {type: Number, required: true, default: 0}}],
-    isActive: {type: Boolean, required: true, default: false},
+    isOpen: {type: Boolean, required: true, default: true},
+    isActive: {type: Boolean, required: true, default: true},
     roundNumber: {type: Number, required: true, default: 0},
     questionNumber: {type: Number, required: true, default: 0},
     questions: [
@@ -86,7 +87,6 @@ quizSchema.methods.setRoundQuestionsByCategories = async function (categories) {
     this.questions = [...this.questions, ...questions];
     this.roundNumber++;
     this.questionNumber = 0;
-    this.isActive = true;
     await this.save();
 };
 
@@ -97,6 +97,8 @@ quizSchema.methods.addJoinedTeamToQuiz = async function (team) {
             this.teams.push(team);
             this.save();
             return team;
+        } else {
+            return null;
         }
     } catch (err) {
         console.log(err);
@@ -114,6 +116,7 @@ quizSchema.methods.getJoinedTeamsOfQuiz = async function () {
 quizSchema.methods.setDefinitiveTeamsForQuiz = async function (teams) {
     try {
         this.teams = formatTeamArrayForMongooseModel(teams);
+        this.isOpen = false;
         this.save();
     } catch (err) {
         console.log(err);
