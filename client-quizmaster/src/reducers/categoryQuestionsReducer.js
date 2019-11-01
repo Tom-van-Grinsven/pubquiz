@@ -8,7 +8,10 @@ export const fetchCategoryQuestions = (quizCode) => {
     return dispatch => {
         dispatch(clearError());
         dispatch(fetchCategoryQuestionsRequest());
-        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/categories/questions')
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/categories/questions', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(response => response.json(),
                 err => {
                     dispatch(setError({
