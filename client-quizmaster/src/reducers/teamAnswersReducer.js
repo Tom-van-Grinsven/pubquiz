@@ -1,36 +1,26 @@
 import {produce} from "immer";
-import {clearActiveQuestion} from "./activeQuestionReducer";
+import {clearActiveQuestion, setActiveQuestionValidated} from "./activeQuestionReducer";
+import {clearError, setError} from "./errorReducer";
+import {incrementQuestionNr} from "./quizReducer";
 
-export const fetchTeamAnswers = () => {
+export const fetchTeamAnswers = (quizCode) => {
     return dispatch => {
-        dispatch(fetchTeamAnswersRequest())
-        return new Promise((resolve, reject) => {
-            resolve([{
-                team: 'Team 1',
-                answer: 'Geen Idee'
-            }, {
-                team: 'Team 2',
-                answer: 'Geen Idee'
-            },  {
-                team: 'Team 3',
-                answer: 'Geen Idee'
-            },  {
-                team: 'Team 4',
-                answer: 'Geen Idee'
-            },  {
-                team: 'Team 5',
-                answer: 'Geen Idee'
-            },  {
-                team: 'Team 6',
-                answer: 'Geen Idee'
-            },  {
-                team: 'Team 7',
-                answer: 'Geen Idee'
-            }, {
-                team: 'Team 8',
-                answer: 'Geen Idee'
-            }])
-        }).then(answers => dispatch(fetchTeamAnswersRequestSuccess(answers)), err => dispatch(fetchTeamAnswersRequestFailure(err)))
+        dispatch(clearError);
+        dispatch(fetchTeamAnswersRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions/answers', {
+            method: 'GET',
+            credentials: 'include'
+        }).then(response => response.json(), err => {
+            dispatch(fetchTeamAnswersRequestFailure(err));
+            dispatch(setError({
+                message: [err]
+            }));
+        }).then(answers => dispatch(fetchTeamAnswersRequestSuccess(answers)), err => {
+            dispatch(fetchTeamAnswersRequestFailure(err));
+            dispatch(setError({
+                message: [err]
+            }));
+        })
     }
 };
 
@@ -47,42 +37,51 @@ const fetchTeamAnswersRequestSuccess = (answers) => {
     }
 };
 
-const fetchTeamAnswersRequestFailure = (err) => {
+const fetchTeamAnswersRequestFailure = () => {
     return {
         type: 'FETCH_TEAM_ANSWERS_REQUEST_FAILURE',
-        payload: err,
     }
 };
 
-export const setTeamAnswersIsUpdated = (status) => {
-    return {
-        type: 'TEAM_ANSWERS_IS_UPDATED',
-        payload: status
-    }
-};
-
-export const validateTeamAnswer =(team, status) => {
+export const validateTeamAnswer =(teamId, status) => {
   return {
       type: 'VALIDATE_TEAM_ANSWER',
       payload: {
-          team: team,
+          teamId: teamId,
           status: status
       }
   }
 };
 
-
-
-export const sendTeamAnswersValidation = (teamAnswers) => {
+export const sendTeamAnswersValidation = (teamAnswers, quizCode) => {
     return dispatch => {
-        console.log(teamAnswers);
+        const validateTeamAnswers = teamAnswers.filter(answer => answer.isRight === true || answer.isRight === false);
+        if(validateTeamAnswers.length !== teamAnswers.length) {
+            return dispatch(setError({
+                teamAnswers: {
+                    messages: ['Please validate all of the given answers'],
+                }
+            }));
+        }
+
+        dispatch(clearError());
         dispatch(sendTeamAnswersValidationRequest());
-        return new Promise((resolve, reject) => {
-            resolve(true)
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions/answers', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/JSON'
+            },
+            credentials: 'include',
+            body: JSON.stringify(teamAnswers)
         }).then(() => {
-            dispatch(sendTeamAnswersValidationRequestSuccess())
-            dispatch(clearActiveQuestion())
-        }, err => sendTeamAnswersValidationRequestFailure(err))
+            dispatch(sendTeamAnswersValidationRequestSuccess());
+            dispatch(setActiveQuestionValidated());
+        }, err => {
+            sendTeamAnswersValidationRequestFailure();
+            dispatch(setError({
+                message: [err]
+            }));
+        })
     }
 };
 
@@ -98,10 +97,9 @@ const sendTeamAnswersValidationRequestSuccess = () => {
     }
 };
 
-const sendTeamAnswersValidationRequestFailure = (err) => {
+const sendTeamAnswersValidationRequestFailure = () => {
     return {
         type: 'TEAM_ANSWERS_VALIDATION_REQUEST_FAILURE',
-        payload: err
     }
 };
 
@@ -109,7 +107,7 @@ const sendTeamAnswersValidationRequestFailure = (err) => {
 const initialState = {
     isFetching: false,
     isSending: false,
-    isUpdated: false,
+    isUpdated: true,
     answers: []
 };
 
@@ -124,42 +122,30 @@ export const teamAnswersReducer = produce((state, action) => {
             state.isFetching = false;
             state.isUpdated = false;
 
-            //testing purposes
-            const length = state.answers.length;
-            if(length < 8) {
-                state.answers.push(action.payload[length]);
-            } else {
-                // only this one is needed
-                let previousAnswers = state.answers;
-                state.answers = action.payload;
-
-                // test
-                //action.payload[4].answer = 'Harry';
-
-                state.answers.some((stateTeamAnswer, index) => {
-                    previousAnswers.some(previousTeamAnswer => {
-                        if(stateTeamAnswer.team === previousTeamAnswer.team && stateTeamAnswer.answer === previousTeamAnswer.answer) {
-                            state.answers[index].isRight = previousTeamAnswer.isRight;
-                            return true;
-                        }
-                    })
+            let previousAnswers = state.answers;
+            state.answers = action.payload.answers;
+            state.answers.some((stateTeamAnswer, index) => {
+                previousAnswers.some(previousTeamAnswer => {
+                    if(stateTeamAnswer._id === previousTeamAnswer._id && stateTeamAnswer.givenAnswer === previousTeamAnswer.givenAnswer) {
+                        state.answers[index].isRight = previousTeamAnswer.isRight;
+                        return true;
+                    }
                 })
-            }
+            });
             return;
 
         case 'FETCH_TEAM_ANSWERS_REQUEST_FAILURE':
             state.isFetching = false;
             state.isUpdated = false;
-            state.err = action.payload;
             return;
 
-        case 'TEAM_ANSWERS_IS_UPDATED':
-            state.isUpdated = action.payload;
+        case 'UPDATE_GIVEN_TEAM_ANSWERS':
+            state.isUpdated = true;
             return;
 
         case 'VALIDATE_TEAM_ANSWER':
             state.answers.forEach((teamAnswer, index) => {
-               if(teamAnswer.team === action.payload.team) {
+               if(teamAnswer._id === action.payload.teamId) {
                    state.answers[index].isRight = action.payload.status
                }
             });
@@ -176,7 +162,6 @@ export const teamAnswersReducer = produce((state, action) => {
 
         case 'TEAM_ANSWERS_VALIDATION_REQUEST_FAILURE':
             state.isSending = false;
-            state.err = action.payload;
             return;
 
         default:

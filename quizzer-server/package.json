@@ -9,12 +9,16 @@
   "author": "Tom van Grinsven, Tim Hemmes",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "express": "latest",
     "mongoose": "^5.7.5",
+    "mongoose-unique-validator": "^2.0.3",
     "ws": "latest"
   },
   "devDependencies": {
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
     "express-session": "^1.17.0"
   }
 }

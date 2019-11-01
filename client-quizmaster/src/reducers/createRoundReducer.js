@@ -1,21 +1,16 @@
 import {produce} from "immer";
 import {updateApprovedTeams} from "./approveTeamsReducer";
+import {clearError, setError} from "./errorReducer";
+import {incrementRoundNr, resetQuestionNr} from "./quizReducer";
+import {setCategoryQuestionsUpdated} from "./categoryQuestionsReducer";
+import {clearActiveQuestion} from "./activeQuestionReducer";
 
 export const fetchCategories = () => {
     return dispatch => {
         dispatch(fetchCategoriesRequest());
-        return new Promise((resolve, reject) => {
-            resolve([
-                "Art and literature",
-                "Music",
-                "General Knowledge",
-                "Sports",
-                "TV & Film",
-                "Geography",
-                "History",
-                "Science & Nature"
-            ])
-        }).then(categories => dispatch(fetchCategoriesRequestSuccess(categories)),
+        fetch(process.env.REACT_APP_API_URL + '/categories')
+            .then(response => response.json())
+            .then(categories => dispatch(fetchCategoriesRequestSuccess(categories)),
             err => dispatch(fetchCategoriesRequestFailure(err)))
     }
 };
@@ -47,15 +42,66 @@ export const toggleCategory = (category) => {
     }
 };
 
-export const sendCategories = (selectedCategories, history) => {
+export const sendRoundCategories = (selectedCategories, quizCode, history) => {
   return dispatch => {
-      return new Promise((resolve, reject) => {
-          resolve(selectedCategories);
+
+      let err = null;
+      if(selectedCategories.length < 3) {
+          err = 'Please select 3 categories'
+      }
+
+      if(selectedCategories.length > 3) {
+          err = 'A round has a maximum of 3 categories'
+      }
+
+      if(err) {
+          return dispatch(setError({
+              messages: [err]
+          }))
+      }
+
+      dispatch(sendRoundCategoriesRequest());
+      fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/categories', {
+          method: 'PUT',
+          headers: {'Content-Type': 'Application/JSON'},
+          credentials: 'include',
+          body: JSON.stringify(selectedCategories)
       }).then(() => {
-          history.push('/quiz/dashboard')
+            dispatch(clearActiveQuestion());
+            dispatch(sendRoundCategoriesRequestSuccess());
+            dispatch(setCategoryQuestionsUpdated());
+            dispatch(incrementRoundNr());
+            dispatch(resetQuestionNr());
+            dispatch(clearError());
+            history.push('/quiz/' + quizCode + '/dashboard')
+          },
+          err => {
+              dispatch(sendRoundCategoriesRequestFailure());
+              dispatch(setError({
+                  messages: [err.message]
+              }))
       })
   }
 };
+
+const sendRoundCategoriesRequest = () => {
+    return {
+        type: 'SEND_ROUND_CATEGORIES_REQUEST'
+    }
+};
+
+const sendRoundCategoriesRequestSuccess = () => {
+    return {
+        type: 'SEND_ROUND_CATEGORIES_REQUEST_SUCCESS'
+    }
+};
+
+const sendRoundCategoriesRequestFailure = () => {
+    return {
+        type: 'SEND_ROUND_CATEGORIES_FAILURE'
+    }
+};
+
 
 const initialState = {
     isFetching: false,
@@ -80,6 +126,19 @@ export const createRoundReducer = produce((state, action) => {
             state.isFetching = false;
             state.err = action.payload;
             return;
+
+        case 'SEND_ROUND_CATEGORIES_REQUEST':
+            state.isSending = true;
+            return state;
+
+        case 'SEND_ROUND_CATEGORIES_REQUEST_SUCCESS':
+            state.isSending = false;
+            state.selectedCategories = [];
+            return state;
+
+        case 'SEND_ROUND_CATEGORIES_REQUEST_FAILURE':
+            state.isSending = false;
+            return state;
 
         case 'TOGGLE_CATEGORY':
             if(state.selectedCategories.includes(action.payload)) {

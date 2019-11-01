@@ -8,40 +8,63 @@ import {withRouter} from "react-router-dom";
 
 import * as ReactRedux from "react-redux";
 import {approveTeams} from "../reducers/approveTeamsReducer";
+import {ErrorComponent} from "./MiscComponents";
+import {Col, Collapse, Row} from "react-bootstrap";
 
 function ApproveTeamContainer(props) {
 
-    const approveTeams = () => props.doApproveTeams(props.teams.filter(team => team.approved === true), props.history);
+    const approveTeams = () => props.doApproveTeams(props.teams, props.quizCode, props.history);
 
     return (
-            <Card className='purple'>
-                <Card.Body>
-                    <div className='approve-teams-containers'>
-                        <h3 className='text-center'>Approve Teams</h3>
-                        <div className='loading-div'>
-                            <p>Waiting for teams</p>
-                            <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
-                        </div>
+            <div>
+                <div className='quiz-link-container'>
+                    <Card className='green'>
+                        <Card.Body>
+                            <Form.Group as={Row}>
+                                <Form.Label column md='3'>Quiz Link</Form.Label>
+                                <Col md='9'>
+                                    <Form.Control type='text' readOnly value={process.env.REACT_APP_TEAM_CLIENT_URL + '/' + props.quizCode} />
+                                </Col>
+                            </Form.Group>
+                        </Card.Body>
+                    </Card>
+                </div>
+                <Card className='purple'>
+                    <Collapse in={true} appear={true}>
+                        <Card.Body>
+                            <div className='approve-teams-container'>
+                                <h3 className='text-center'>Approve Teams</h3>
 
-                        <ApproveTeamList/>
+                                <div className='loading-div'>
+                                    <p>Waiting for teams</p>
+                                    <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner-white.svg'} alt="spinner" />
+                                </div>
 
-                        <Form.Group className='text-center'>
-                            <Button onClick={approveTeams} variant="primary">Approve Teams</Button>
-                        </Form.Group>
-                    </div>
-                </Card.Body>
-            </Card>
+                                <ApproveTeamList/>
+                                <ErrorComponent err={props.err} />
+                                <Form.Group className='text-center'>
+                                    {props.teams.length > 0 ? <Button onClick={approveTeams} variant="primary">Approve Teams
+                                        {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button> : '' }
+                                </Form.Group>
+                            </div>
+                        </Card.Body>
+                    </Collapse>
+                </Card>
+            </div>
     );
 }
 
 function mapStateToProps(state) {
     return {
-        teams: state.approveTeams.teams
+        quizCode: state.quiz.code,
+        err: state.err,
+        teams: state.approveTeams.teams,
+        isSending: state.approveTeams.isSending
     }
 }
 function mapDispatchToProps(dispatch) {
     return {
-        doApproveTeams: (approvedTeams, history) => dispatch(approveTeams(approvedTeams, history)),
+        doApproveTeams: (approvedTeams, quizCode, history) => dispatch(approveTeams(approvedTeams, quizCode, history)),
     }
 }
 

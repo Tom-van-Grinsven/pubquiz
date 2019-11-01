@@ -1,25 +1,28 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import thunkMiddleware from 'redux-thunk'
-import reduxWebsocket from 'react-redux-websocket'
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import mainReducer from './reducers/index'
 
 import './index.css'
 import App from './components/App'
+import {BrowserRouter} from "react-router-dom";
 
-//const socket = new WebSocket('ws://localhost:3000');
 const theStore = createStore(mainReducer,
-    applyMiddleware(
-        //reduxWebsocket(socket),
-        thunkMiddleware
+    composeWithDevTools(
+        applyMiddleware(
+            thunkMiddleware
+        )
     )
 );
 
 const mainComponent = (
     <Provider store={theStore}>
-        <App/>
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
     </Provider>
 );
 

@@ -1,12 +1,11 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
 }
 body {
     background: #f0a202;
-    height: 100%;
     position: relative;
+    margin-bottom: 2rem;
 }
 .no-padding {
     padding: 0 !important;
@@ -37,12 +36,35 @@ body {
     border:1px solid #FFFFFF
 }
 .card .card-header.green {
+     background: #44af69;
+ }
+.card .card-header.orange {
+    background: #e4572e;
+}
+.card .card-footer.green {
     background: #44af69;
-    color:#FFFFFF;
+}
+.card .card-footer.orange {
+    background: #e4572e;
+}
+.card .card-header {
     border-radius: calc(1rem - 5px) calc(1rem - 5px) 0 0;
+}
+
+.card .card-header {
+    color:#FFFFFF;
     font-weight: bold;
     border-bottom: 5px solid #FFFFFF;
 }
+.card .card-footer {
+    border-radius: 0 0 calc(1rem - 5px) calc(1rem - 5px);
+}
+.card .card-footer {
+    color:#FFFFFF;
+    font-weight: bold;
+    border-top: 5px solid #FFFFFF;
+}
+
 .card.purple {
     background: #88498f;
     color:#FFFFFF;
@@ -56,6 +78,9 @@ body {
 }
 .card.orange button.btn-primary {
     border:1px solid #FFFFFF
+}
+.btn {
+    position: relative;
 }
 .btn.large-border {
     border-width: 5px;
@@ -79,8 +104,19 @@ body {
     margin-bottom: -5px;
     font-weight: bold;
 }
+.btn .right-icon.loading {
+    background: url('/images/spinner-white.svg') no-repeat center center;
+    display: block;
+    width: 40px;
+    height: 40px;
+    top: 9px;
+}
+input.error {
+    border:1px solid red;
+    color:red;
+}
 .main-content-container {
-    width: 992px;
+    max-width: 1140px;
 }
 .login-register-form {
     padding:0 20px;
@@ -89,7 +125,7 @@ body {
     margin-bottom: 15px;
 }
 .create-quiz-form-container {
-    width: 500px;
+    max-width: 500px;
     margin:auto;
     padding: 3rem 0;
 }
@@ -102,26 +138,40 @@ body {
 .create-quiz-form-container button {
     width: 50%;
 }
-.approve-teams-containers {
+
+div.quiz-link-container {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 1rem;
+}
+
+div.quiz-link-container .form-group {
+    max-width: 500px;
+    margin: 0 auto;
+}
+div.quiz-link-container {
+
+}
+
+.approve-teams-container {
     max-width: 500px;
     margin:auto
 }
-.approve-teams-containers button.btn-primary {
+.approve-teams-container button.btn-primary {
     padding: .375rem 2.5rem;
 }
-.approve-teams-containers .loading-div {
+.approve-teams-container .loading-div {
     margin-bottom: 2rem;
 }
 
-
-.approve-teams-containers .approve-teams-form {
+.approve-teams-container .approve-teams-form {
     display: flex;
     margin-bottom: .375rem;
 }
-.approve-teams-containers .approve-teams-form:last-child {
+.approve-teams-container .approve-teams-form:last-child {
     margin-bottom: 1.5rem;
 }
-.approve-teams-containers .approve-teams-form p {
+.approve-teams-container .approve-teams-form p {
     padding: .75rem;
     flex-grow: 1;
     border: 1px solid rgba(0,0,0,.5);
@@ -131,17 +181,17 @@ body {
     background: #FFFFFF;
     color: #000000
 }
-.approve-teams-containers .approve-teams-form div button {
+.approve-teams-container .approve-teams-form div button {
     width: 5rem;
     padding: .75rem;
     font-weight: bold;
 }
-.approve-teams-containers .approve-teams-form div button.btn:not(.active):not(:hover) {
+.approve-teams-container .approve-teams-form div button.btn:not(.active):not(:hover) {
     border:1px solid gray;
     background: #FFFFFF;
     color: black;
 }
-.approve-teams-containers .approve-teams-form div button:first-child {
+.approve-teams-container .approve-teams-form div button:first-child {
     border-radius: 0 .25rem .25rem 0;
     border-right:none
 }
@@ -184,7 +234,6 @@ body {
     display: flex;
     flex-direction: column;
     flex: 1 0 auto;
-    height:100%;
 }
 .question-nav {
     position: relative;
@@ -220,8 +269,14 @@ body {
     flex-direction: column;
     flex:1 1 auto;
 }
+.team-question-answers-container .quiz-round-info .card {
+    margin-bottom: 1rem;
+}
 .team-question-answers-container .current-question-display {
     margin-bottom: 1rem;
+}
+.team-question-answers-container .current-question-display p:last-child {
+    margin-bottom: 0;
 }
 .team-question-answers-container .team-answers-list .form-group button.btn:first-child {
     margin-right: 1rem;
@@ -258,5 +313,6 @@ body {
     border-right:none
 }
 .quiz-master-dashboard > .col:first-child {
-    height: 800px;
+    max-height: 800px;
+    margin-bottom: 1rem;
 }

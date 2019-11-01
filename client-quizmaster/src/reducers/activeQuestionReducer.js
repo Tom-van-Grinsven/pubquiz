@@ -1,19 +1,27 @@
 import {produce} from "immer";
+import _ from 'lodash'
+import {clearError, setError} from "./errorReducer";
 
 
-export const fetchActiveQuestion = () => {
+export const fetchActiveQuestion = (quizCode) => {
     return dispatch => {
-        dispatch(fetchActiveQuestionRequest())
-        return new Promise((resolve, reject) => {
-            resolve({
-                id: 1,
-                question: 'Who wrote Twilight series of novels?',
-                category: 'Art & Literature',
-                answer: 'Stephenie Meyer',
-                closed: false
-            })
-        }).then(question => dispatch(fetchActiveQuestionRequestSuccess(question)),
-            err => dispatch(fetchActiveQuestionRequestFailure(err)))
+        dispatch(clearError());
+        dispatch(fetchActiveQuestionRequest());
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions', {
+            method: 'GET',
+            credentials: 'include'
+        }).then(response => response.json(), err => {
+            dispatch(fetchActiveQuestionRequestFailure());
+            dispatch(setError({
+                message: [err]
+            }));
+        })
+        .then(question => dispatch(fetchActiveQuestionRequestSuccess(question)), err => {
+            dispatch(fetchActiveQuestionRequestFailure());
+            dispatch(setError({
+                message: [err]
+            }));
+        })
     }
 };
 
@@ -30,10 +38,9 @@ const fetchActiveQuestionRequestSuccess = (activeQuestion) => {
     }
 };
 
-const fetchActiveQuestionRequestFailure = (err) => {
+const fetchActiveQuestionRequestFailure = () => {
     return {
         type: 'FETCH_ACTIVE_QUESTION_FAILURE',
-        payload: err
     }
 };
 
@@ -44,12 +51,23 @@ export const setActiveQuestionIsUpdated = (status) => {
     }
 };
 
-export const sendCloseQuestion = () => {
+export const sendCloseQuestion = (quizCode) => {
     return dispatch => {
+        dispatch(clearError());
         dispatch(sendCloseQuestionRequest());
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        }).then(() => dispatch(sendCloseQuestionSuccess()), err => sendCloseQuestionRequestFailure(err))
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/JSON'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ closed: true })
+        }).then(() => dispatch(sendCloseQuestionSuccess()), err => {
+            dispatch(setError({
+                message: [err]
+            }));
+            sendCloseQuestionRequestFailure()
+        })
     }
 };
 
@@ -65,10 +83,9 @@ const sendCloseQuestionSuccess = () => {
     }
 };
 
-const sendCloseQuestionRequestFailure = (err) => {
+const sendCloseQuestionRequestFailure = () => {
     return {
         type: 'SEND_CLOSE_QUESTION_REQUEST_FAILURE',
-        payload: err
     }
 };
 
@@ -78,10 +95,18 @@ export const clearActiveQuestion = () => {
     }
 };
 
+export const setActiveQuestionValidated = () => {
+    return {
+        type: 'ACTIVE_QUESTION_VALIDATED'
+    }
+};
+
+
+
 
 const initialState = {
     isFetching: false,
-    isUpdated: false,
+    isUpdated: true,
     question: null,
 };
 
@@ -93,6 +118,10 @@ export const activeQuestionReducer = produce((state, action) => {
             state.isUpdated = action.payload;
             return;
 
+        case 'ACTIVE_QUESTION_VALIDATED':
+            state.question.isValidated = true;
+            return;
+
         case 'FETCH_ACTIVE_QUESTION':
             state.isFetching = true;
             return;
@@ -100,12 +129,13 @@ export const activeQuestionReducer = produce((state, action) => {
         case 'FETCH_ACTIVE_QUESTION_SUCCESS':
             state.isFetching = false;
             state.isUpdated = false;
-            state.question = action.payload;
+            if(!_.isEmpty(action.payload)) {
+                state.question = action.payload;
+            }
             return;
 
         case 'FETCH_ACTIVE_QUESTION_FAILURE':
             state.isFetching = false;
-            state.err = action.payload;
             return;
 
         case 'SEND_CLOSE_QUESTION_REQUEST':
@@ -114,7 +144,7 @@ export const activeQuestionReducer = produce((state, action) => {
 
         case 'SEND_CLOSE_QUESTION_REQUEST_SUCCESS':
             state.isSending = false;
-            state.question.closed = true;
+            state.question.isClosed = true;
             return;
 
         case 'SEND_CLOSE_QUESTION_REQUEST_FAILURE':

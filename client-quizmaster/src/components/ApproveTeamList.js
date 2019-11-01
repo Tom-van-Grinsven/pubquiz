@@ -7,24 +7,30 @@ import {fetchTeams} from "../reducers/approveTeamsReducer";
 
 function ApproveTeamList(props) {
 
-    if(props.teams.length === 0 && !props.isFetching) {
-        props.doFetchTeams();
-        return null;
+    if(props.isUpdated && !props.isFetching && props.quizCode !== undefined) {
+        props.doFetchTeams(props.quizCode);
     }
 
-    const teamForms = props.teams.map((team) => <ApproveTeamForm key={team.name} teamName={team.name} approved={team.approved}/>);
-    return <div>{teamForms}</div>
+    if(props.teams.length > 0) {
+        const teamForms = props.teams.map((team) => <ApproveTeamForm key={team._id} teamName={team.teamName} approved={team.approved}/>);
+        return <div>{teamForms}</div>
+    } else {
+        return null
+    }
+
 }
 
 function mapStateToProps(state) {
     return {
+        isUpdated: state.approveTeams.isUpdated,
         isFetching: state.approveTeams.isFetching,
-        teams: state.approveTeams.teams
+        teams: state.approveTeams.teams,
+        quizCode: state.quiz.code
     }
 }
 function mapDispatchToProps(dispatch) {
     return {
-        doFetchTeams: () => dispatch(fetchTeams()),
+        doFetchTeams: (quizCode) => dispatch(fetchTeams(quizCode)),
     }
 }
 

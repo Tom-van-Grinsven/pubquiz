@@ -1,0 +1,93 @@
+<html>
+<head>
+    <title>QUIZMASTER!!!!!!!</title>
+    <style>
+    </style>
+</head>
+<body>
+<h1>QUIZMASTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h1>
+<hr>
+<form id="messageForm">
+    <label for="teamNameField">team name:</label><input id="teamNameField" type="text" value="Team 1" autofocus><br>
+    <label for="quizNameField">quiz code:</label><input id="quizNameField" type="text" value="qhhhnt"><br>
+    <button id="sendMessageButton">Send Message!</button>
+</form>
+<hr>
+<h3>QUIZMASTER!!!!!!!!!!!!!!!!!!!!!!!:</h3>
+<ul id="messageList">
+</ul>
+<hr>
+
+</body>
+<script >
+
+
+    let initWebsocket = () => {
+        let wsConnection = new WebSocket('ws://localhost:3000');
+
+        wsConnection.onopen = function(arg) {
+            //TODO Complete this event handler
+            console.log(" Client heeft connectie ");
+        };
+
+        wsConnection.onmessage = function(arg){
+            console.log(arg.data);
+            let message = JSON.parse(arg.data);
+            console.log(message);
+            addMessageItem(message.message);
+        };
+
+        wsConnection.onclose = function(arg){
+            console.log(" Connectie wordt nu gesloten ");
+            wsConnection.close();
+            wsConnection = null;
+        };
+
+        /**
+         * Function for handling form submissions
+         */
+        document.getElementById("messageForm").addEventListener( "submit", function(eventInfo) {
+            eventInfo.preventDefault();
+            fetch('http://localhost:3000/quizzes',{
+                method: "POST",
+                credentials: "include",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"quizName": "nieuwe quiz man"})
+            }).then((result) => {let wsConnection = initWebsocket()});
+        });
+
+
+        function sendData() {
+            var dataObject = {
+                teamName: document.getElementById("teamNameField").value,
+                quizCode: document.getElementById("quizNameField").value
+            };
+
+            let jsonStr = JSON.stringify(dataObject);
+            wsConnection.send(jsonStr);
+            console.log("SENT DATA:", jsonStr );
+        }
+
+        function addMessageItem(text) {
+            var el = document.createElement("li");
+            el.innerHTML = text;
+            document.getElementById("messageList").appendChild(el);
+        }
+
+        return wsConnection;
+    };
+    asdf = () => {
+        fetch('http://localhost:3000/accounts',{
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"email": getRandomCodeForQuiz() + "@gmail.com", "password": "wachtwoord"})
+        }).then((result) => {let wsConnection = initWebsocket()});
+    };
+
+    getRandomCodeForQuiz = () => {
+        return Math.random().toString(36).substr(2, 6);
+    };
+    asdf();
+</script>
+</html>

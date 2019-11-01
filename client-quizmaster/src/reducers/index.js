@@ -7,13 +7,18 @@ import {createRoundReducer} from "./createRoundReducer";
 import {categoryQuestionsReducer} from "./categoryQuestionsReducer";
 import {teamAnswersReducer} from "./teamAnswersReducer";
 import {activeQuestionReducer} from "./activeQuestionReducer";
+import {errorReducer} from "./errorReducer";
+import {webSocketReducer} from "./webSocketReducer";
+import {accountReducer} from "./accountReducer";
 
 const mainReducer = Redux.combineReducers({
+    websocket: webSocketReducer,
+    err: errorReducer,
     loginRegister: Redux.combineReducers({
         login: loginReducer,
         register: registerReducer,
-
     }),
+    account: accountReducer,
     quiz: quizReducer,
     approveTeams: approveTeamsReducer,
     createRound: createRoundReducer,

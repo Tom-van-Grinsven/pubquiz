@@ -2,45 +2,59 @@ import React from 'react';
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import {setLoginEmail, setLoginPassword} from "../reducers/loginReducer";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
-import {setQuizName} from "../reducers/quizReducer";
+import {createQuiz, setQuizName} from "../reducers/quizReducer";
+import {ErrorComponent, submitOnEnter} from "./MiscComponents";
+import {Collapse} from "react-bootstrap";
 
 function CreateQuizForm(props) {
 
-    const setQuizName = (event) => props.doSetQuizName(event.target.value);
-    const createQuiz = () => props.history.push('/quiz/approve-teams');
+    const setQuizName       = (event) => props.doSetQuizName(event.target.value);
+    const createQuiz        = () => props.doCreateQuiz(props.quizName, props.history);
+    const doSubmitOnEnter   = (event) => submitOnEnter(createQuiz)(event);
 
     return (
-
-            <Card className='orange'>
+        <Card className='orange'>
+            <Collapse in={true} appear={true}>
                 <Card.Body>
                     <div className='create-quiz-form-container'>
-                    <h3 className='text-center'>Create new Quiz</h3>
-                    <Form.Group>
-                        <Form.Control type='text' onChange={setQuizName} value={props.quizName} placeholder='Quiz Name'/>
-                    </Form.Group>
-                    <Form.Group className='text-center'>
-                        <Button variant="primary" onClick={createQuiz} size="lg">Create Quiz</Button>
-                    </Form.Group>
+                        <h3 className='text-center'>Create new Quiz</h3>
+                        <ErrorComponent err={props.err}/>
+                        <Form.Group>
+                            <Form.Control
+                                type='text'
+                                onKeyPress={doSubmitOnEnter}
+                                onChange={setQuizName}
+                                value={props.quizName}
+                                placeholder='Quiz Name'
+                                className={props.err.code === 'QUIZ_NAME' ? 'error' : ''}
+                            />
+                        </Form.Group>
+                        <Form.Group className='text-center'>
+                            <Button variant="primary" onClick={createQuiz} size="lg">Create Quiz
+                                {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button>
+                        </Form.Group>
                     </div>
                 </Card.Body>
-            </Card>
-
+            </Collapse>
+        </Card>
     )
 }
 
 function mapStateToProps(state) {
     return {
-        quizName: state.quiz.name
+        err: state.err,
+        isSending: false,
+        quizName: state.quiz.nameInput
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
+        doCreateQuiz: (quizName, history) => dispatch(createQuiz(quizName, history)),
         doSetQuizName: (quizName) => dispatch(setQuizName(quizName)),
+
     }
 }
 
