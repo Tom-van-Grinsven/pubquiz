@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
+import {Redirect, withRouter} from "react-router-dom";
 import {Collapse} from "react-bootstrap";
 import {ErrorComponent} from "./MiscComponents";
 import {joinQuiz, setQuizCode} from "../reducers/joinQuizReducer";
@@ -13,7 +13,19 @@ import {joinQuiz, setQuizCode} from "../reducers/joinQuizReducer";
 function JoinQuizForm(props) {
 
     const setQuizCode = (event) => props.doSetQuizCode(event.target.value);
-    const joinQuiz = () => props.history.push('/'+ props.quizCode + '/leaderboard'); // props.doJoinQuiz(props.quizCode);
+
+    let err;
+    if(!props.quiz.code && props.quiz.hasFetched || props.quiz.hasFetched && !props.quiz.isActive) {
+        err = {
+            messages: ["Sorry it looks like the quiz you tried to join is not available"]
+        }
+    }
+
+    if(props.quiz.code && props.quiz.isActive) {
+        return <Redirect to={`/${props.quiz.code}/leaderboard`}/>
+    }
+
+    const joinQuiz = () => props.doJoinQuiz(props.quizCode);
 
     return (
         <Card className='orange'>
@@ -21,7 +33,7 @@ function JoinQuizForm(props) {
                 <Card.Body>
                     <div className='join-quiz-form-container'>
                         <h3 className='text-center'>Join Quiz</h3>
-                        <ErrorComponent err={undefined}/>
+                        <ErrorComponent err={err}/>
                         <Form.Group>
                             <Form.Control
                                 type='text'
@@ -45,14 +57,15 @@ function JoinQuizForm(props) {
 
 const mapStateToProps = (state) => {
     return {
-        quizCode: state.joinQuiz.quizCode
+        quizCode: state.joinQuiz.quizCode,
+        quiz: state.quiz
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         doSetQuizCode: (quizCode) => dispatch(setQuizCode(quizCode)),
-        doJoinQuiz: (quizCode, teamName, history) => dispatch(joinQuiz(quizCode, teamName, history)),
+        doJoinQuiz: (quizCode) => dispatch(joinQuiz(quizCode)),
     }
 };
 

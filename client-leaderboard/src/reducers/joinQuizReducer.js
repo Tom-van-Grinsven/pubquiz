@@ -1,5 +1,13 @@
 import produce from 'immer'
 import {clearError, setError} from './errorReducer';
+import {fetchQuiz, resetHasFetched} from "./quizReducer";
+
+export const joinQuiz = (quizCode) => {
+    return dispatch => {
+        dispatch(resetHasFetched());
+        dispatch(fetchQuiz(quizCode))
+    }
+};
 
 export const setQuizCode = (quizCode) => {
     return {
@@ -8,37 +16,8 @@ export const setQuizCode = (quizCode) => {
     }
 };
 
-export const joinQuiz = (quizCode, teamName, history) => {
-    return dispatch => {
-        dispatch(clearError());
-        //dispatch(sendActiveQuestionRequest());
-        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'Application/JSON'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                'teamName': teamName
-            })
-        }).then(() => {
-            // dispatch(sendActiveQuestionRequestSuccess())
-            // dispatch(setActiveQuestionIsUpdated(true))
-            history.push('/quiz/' + quizCode);
-
-        }, err => {
-            dispatch(setError({
-                message: [err]
-            }));
-            //dispatch(sendActiveQuestionRequestFailure())
-        });
-
-    }
-};
-
 const initialState = {
     quizCode: '',
-    isSending: false,
 };
 
 export const joinQuizReducer = produce((state, action) => {

@@ -55,7 +55,6 @@ body {
     border-bottom: 5px solid #FFFFFF;
     text-align: center;
 }
-
 .card .card-header {
     color:#FFFFFF;
     font-weight: bold;
@@ -69,7 +68,6 @@ body {
     font-weight: bold;
     border-top: 5px solid #FFFFFF;
 }
-
 .card.purple {
     background: #88498f;
     color:#FFFFFF;
@@ -145,6 +143,11 @@ input.error {
 .join-quiz-form-container button, .answer-question-form-container button {
     width: 50%;
 }
+
+.quiz-leaderboard {
+    padding: 1vmin 0;
+}
+
 .quiz-leaderboard .card .card-body {
     padding:2vmin
 }
@@ -171,8 +174,51 @@ input.error {
 .current-question-display .cat-text {
     margin-bottom: 1vmin;
 }
-.current-question-display .quest-text {
 
+.team-answers-list {
+    padding: 2vmin;
+}
+.team-answer {
+    margin-bottom: 1vmin;
+}
+.team-answer > div {
+    padding: .75vmin 1.5vmin;
+    line-height: 1.5;
+}
+.team-answer > div:first-child {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem 0 0 0.25rem;
+    color: #495057;
+    padding-left:1vmin;
+}
+.team-answer > div:last-child {
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.team-answer > div:last-child.incorrect {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.team-answer > div:last-child.incorrect::after {
+    position: absolute;
+    right: 4px;
+    font-weight: bold;
+    content: '✗';
+}
+.team-answer > div:last-child.correct {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+.team-answer > div:last-child.correct::after {
+    position: absolute;
+    right: 4px;
+    font-weight: bold;
+    content: '✓'
 }
 .approve-teams-container {
     max-width: 500px;

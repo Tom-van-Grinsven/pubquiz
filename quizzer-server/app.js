@@ -37,19 +37,29 @@ const websocketServer = new ws.Server({ noServer: true });
 httpServer.on('upgrade', (req, networkSocket, head) => {
     sessionParser(req, {}, () => {
 
-        if(req.session.quizCode === undefined){
-            console.log("Geen quizcode jammerdebammer");
+
+        if(req.session.quizCode || req.session.account || req.session.team) {
+
+            console.log(req.session);
+
+            websocketServer.handleUpgrade(req, networkSocket, head, newWebSocket => {
+                websocketServer.emit('connection', newWebSocket, req);
+            });
+        } else {
             networkSocket.destroy();
-            return;
-        } else if (req.session.account === undefined && req.session.team === undefined) {
-            console.log("Geen account of team jammerdebammer");
-            networkSocket.destroy();
-            return;
         }
 
-        websocketServer.handleUpgrade(req, networkSocket, head, newWebSocket => {
-            websocketServer.emit('connection', newWebSocket, req);
-        });
+        // if(req.session.quizCode === undefined ){
+        //     console.log("Geen quizcode jammerdebammer");
+        //     networkSocket.destroy();
+        //     return;
+        // } else if (req.session.account === undefined && req.session.team === undefined) {
+        //     console.log("Geen account of team jammerdebammer");
+        //     networkSocket.destroy();
+        //     return;
+        // }
+
+
     });
 });
 

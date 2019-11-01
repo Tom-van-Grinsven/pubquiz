@@ -1,21 +1,26 @@
 import React from 'react';
 import {Container} from "react-bootstrap";
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
 import JoinQuizForm from "./JoinQuizForm";
 import LeaderBoardContainer from "./LeaderBoardContainer";
 
 function App(props) {
+
     return (
         <Container fluid className='main-content-container'>
             <Router>
                 <Switch>
-                    <Route exact path='/' component={JoinQuizForm}/>
+                    <Route exact path='/'>
+                        <div className='logo'>
+                            <img src={process.env.PUBLIC_URL + '/images/logo.png'}  />
+                        </div>
+                        <JoinQuizForm/>
+                    </Route>
                     <Route path='/:code/leaderboard' component={LeaderBoardContainer} />
                 </Switch>
             </Router>
-
         </Container>
     );
 }
 
-export default App;
+export default withRouter(App);

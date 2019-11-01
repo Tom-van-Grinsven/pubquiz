@@ -85,6 +85,10 @@ quizSchema.methods.setRoundQuestionsByCategories = async function (categories) {
     let currentQuestions = this.questions.map(question => question._id);
     let questions = await Question.getQuestionsForRound(categories, currentQuestions);
     this.questions = [...this.questions, ...questions];
+    const activeQuestion = this.questions.find(question => question.isActive === true);
+    if(activeQuestion) {
+        activeQuestion.isActive = false
+    }
     this.roundNumber++;
     this.questionNumber = 0;
     await this.save();
@@ -196,7 +200,13 @@ quizSchema.methods.getGivenAnswers = async function () {
 
         // get the answers for this question by matching the id's on string value and return the current answers
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
-        return this.answeredQuestions[currentlyAnsweredQuestion];
+        console.log(currentlyAnsweredQuestion);
+        if(currentlyAnsweredQuestion >= 0) {
+            return this.answeredQuestions[currentlyAnsweredQuestion];
+        } else {
+            return {answers: []};
+        }
+
     } catch (err) {
         console.log(err);
     }
@@ -287,6 +297,7 @@ quizSchema.methods.updateTeamPoints = async  function () {
 
     const roundNumber           = (this.isActive ? this.roundNumber - 1 : this.roundNumber);
     const roundQuestions        = getValidatedAndClosedRoundQuestions(this.questions, roundNumber);
+
 
     if(roundQuestions.length > 0) {
 

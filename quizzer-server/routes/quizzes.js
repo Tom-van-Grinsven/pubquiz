@@ -43,8 +43,8 @@ quizRouter.use('/:quizcode', async (req, res, next) => {
 
 quizRouter.get('/:quizcode', async function(req, res){
     try {
-        const { isActive, roundNumber, questionNumber, _id, code, name } = req.quiz;
-        res.send({_id, code, isActive, roundNumber, questionNumber, name});
+        const { isActive, isOpen, roundNumber, questionNumber, _id, code, name } = req.quiz;
+        res.send({_id, code, isActive, isOpen, roundNumber, questionNumber, name});
     } catch (err) {
         console.log(err);
         res.sendStatus(500)
@@ -81,7 +81,7 @@ quizRouter.put('/:quizcode', async function(req, res){
             if(!isActive) {
                 await req.quiz.updateTeamPoints();
                 // TODO: Send websocket message to leaderboard
-
+                sendMessageToWebsocketScoreboard(req, "UPDATE_QUIZ_ENDED");
                 sendMessageToWebsocketTeams(req, "UPDATE_QUIZ_ENDED")
 
             }
@@ -114,6 +114,7 @@ quizRouter.put('/:quizcode/categories', async function(req, res) {
         await req.quiz.setRoundQuestionsByCategories(req.body);
         await req.quiz.updateTeamPoints();
 
+        sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
         sendMessageToWebsocketScoreboard(req, "UPDATE_ROUND_POINTS");
 
         res.sendStatus(204)
@@ -177,6 +178,7 @@ quizRouter.post('/:quizcode/teams', async function(req, res) {
 
 quizRouter.put('/:quizcode/teams', async function(req, res) {
     try{
+
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
         filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
         sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
@@ -212,16 +214,27 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res) {
     try{
         if(req.session.account){
             let result = await req.quiz.getActiveQuestion();
-            res.json(result);
-        } else if (req.session.team){
-                let result = await req.quiz.getActiveQuestion();
-                let questionObjectForTeams = {
+            res.send(result);
+        } else if (req.session.team || req.session.quizCode){
+            let result = await req.quiz.getActiveQuestion();
+            if(result._id) {
+                let questionObject = {
+                    roundNr: req.quiz.roundNumber,
+                    questionNr: req.quiz.questionNumber,
                     question: result.question,
                     category: result.category,
                     isClosed: result.isClosed,
+                    isValidated: result.isValidated,
                     _id: result._id,
                 };
-                res.json(questionObjectForTeams);
+                if(result.isClosed) {
+                    questionObject['answer'] = result.answer
+                }
+                return res.send(questionObject);
+            } else {
+                res.send({});
+            }
+
         }
     } catch (err) {
         console.log(err);
@@ -232,7 +245,8 @@ quizRouter.get('/:quizcode/active-questions', async function(req, res) {
 quizRouter.get('/:quizcode/active-questions/answers', async function(req, res) {
     try {
 
-        if(!isAuthorized(req)) {
+        const currentQuestion = req.quiz.questions.find(question => question.isActive === true);
+        if(!isAuthorized(req) && currentQuestion.isClosed === false) {
             return res.sendStatus(403);
         }
 
@@ -257,7 +271,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res) {
            sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
 
            // TODO: Send websocket message to leaderboard
-           sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
+           sendMessageToWebsocketScoreboard(req,"UPDATE_JUDGED_QUESTIONS");
            res.sendStatus(204);
        }
        else {
@@ -286,7 +300,7 @@ function sendMessageToWebsocketTeams(req, message) {
 
 function sendMessageToWebsocketQuizmaster(req, message){
     req.websocketServer.clients.forEach((client) => {
-        if(!client.session.team && req.quiz.code === client.session.quizCode){
+        if(client.session.account && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
