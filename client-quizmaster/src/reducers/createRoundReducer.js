@@ -102,6 +102,23 @@ const sendRoundCategoriesRequestFailure = () => {
     }
 };
 
+export const endQuiz = (isActive, quizCode, history) => {
+    return dispatch => {
+        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode, {
+            method: 'PUT',
+            headers: {'Content-Type': 'Application/JSON'},
+            credentials: 'include',
+            body: JSON.stringify({isActive: isActive})
+        }).then(() => {
+                history.push('/quiz/' + quizCode + '/thanksforplaying')
+            },
+            err => {
+                dispatch(setError({
+                    messages: [err.message]
+                }))
+            })
+    }
+};
 
 const initialState = {
     isFetching: false,
