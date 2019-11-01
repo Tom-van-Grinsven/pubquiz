@@ -114,7 +114,7 @@ quizRouter.put('/:quizcode/categories', async function(req, res) {
         await req.quiz.setRoundQuestionsByCategories(req.body);
         await req.quiz.updateTeamPoints();
 
-        // TODO: Send websocket message to leaderboard
+        sendMessageToWebsocketScoreboard(req, "UPDATE_ROUND_POINTS");
 
         res.sendStatus(204)
     } catch (err) {
@@ -180,6 +180,7 @@ quizRouter.put('/:quizcode/teams', async function(req, res) {
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
         filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
         sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
+        sendMessageToWebsocketScoreboard(req, "UPDATE_DEFINITIVE_TEAMS");
         res.sendStatus(204)
 
     } catch (err) {
@@ -193,10 +194,12 @@ quizRouter.put('/:quizcode/active-questions', async function(req, res) {
         if(req.body.id){
             await req.quiz.setActiveQuestion(req.body.id);
             sendMessageToWebsocketTeams(req, "UPDATE_ACTIVE_QUESTION");
+            sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
             res.json("Ok");
         } else if (req.body.closed){
             await req.quiz.setClosedQuestion(req.body.closed);
             sendMessageToWebsocketTeams(req, "UPDATE_CLOSED_QUESTION");
+            sendMessageToWebsocketScoreboard(req, "UPDATE_CLOSED_ACTION");
             res.json("ok");
         }
     } catch (err) {
@@ -254,7 +257,7 @@ quizRouter.put('/:quizcode/active-questions/answers', async function(req, res) {
            sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
 
            // TODO: Send websocket message to leaderboard
-           //sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
+           sendMessageToWebsocketScoreboard("UPDATE_JUDGED_QUESTIONS");
            res.sendStatus(204);
        }
        else {
@@ -291,11 +294,8 @@ function sendMessageToWebsocketQuizmaster(req, message){
 
 function sendMessageToWebsocketScoreboard(req, message){
     req.websocketServer.clients.forEach((client) => {
-        // TODO: hoeveel scoreborden willen we eigenlijk maximaal toestaan?
         if(!client.session.team && !client.session.account){
-            if(!req.quiz.code === client.session.quizCode){
-                client.send(JSON.stringify({type: message}));
-            }
+            client.send(JSON.stringify({type: message}));
         }
     })
 }
