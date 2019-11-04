@@ -18,12 +18,16 @@ app.options("*", cors({ origin: true, credentials: true }));
 
 const sessionParser = session({
     saveUninitialized: false,
-    secret: 'littlelayerofsecurity',
+    secret: 'f`lN]F/XuT+gsu2E0GwC#?jY<l}2cTRg]\\Qq{;!gS$CvFnq$v^*vCf&%%H=/657,',
     resave: false
 });
 
 app.use(sessionParser);
 app.use(bodyParser.json());
+app.use(function(req, res, next) {
+    res.setHeader('Content-Type', 'Application/JSON');
+    next();
+});
 
 app.use('/', async function(req, res, next) {
     req.websocketServer = websocketServer;
@@ -48,33 +52,11 @@ httpServer.on('upgrade', (req, networkSocket, head) => {
         } else {
             networkSocket.destroy();
         }
-
-        // if(req.session.quizCode === undefined ){
-        //     console.log("Geen quizcode jammerdebammer");
-        //     networkSocket.destroy();
-        //     return;
-        // } else if (req.session.account === undefined && req.session.team === undefined) {
-        //     console.log("Geen account of team jammerdebammer");
-        //     networkSocket.destroy();
-        //     return;
-        // }
-
-
     });
 });
 
 websocketServer.on('connection', (socket, req) => {
     socket.session = req.session;
-
-    // TODO: andere manier van het bijhouden van websockets <--> quiz;
-
-    // if(websocketServer.quizClients === undefined){
-    //     websocketServer.quizClients = {};
-    // }
-    // if(websocketServer.quizClients[req.quiz.code] === undefined){
-    //     websocketServer.quizClients[req.quiz.code] = [];
-    // }
-    // websocketServer.quizClients[req.quiz.code].push(socket);
 });
 
 app.use('/quizzes', quizRouter);
@@ -90,4 +72,8 @@ httpServer.listen(3000, function() {
     mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true }, () => {
         console.log(`game server started on port ${httpServer.address().port}`);
     });
+});
+
+app.use( (err, req, res, next) => {
+    return res.status(500).send('Server Error')
 });

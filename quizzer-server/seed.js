@@ -14,8 +14,6 @@ const Question = mongoose.model('Question');
 const Quiz = mongoose.model('Quiz');
 const Account = mongoose.model('Account');
 
-
-
 mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
     return seedQuestion();
 }).then(() => {
@@ -30,7 +28,7 @@ mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27
 
 
 seedQuestion = async () => {
-    await Question.deleteMany();
+    //await Question.deleteMany();
 
     let questions = await Question.find({});
 
