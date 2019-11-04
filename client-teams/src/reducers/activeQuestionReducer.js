@@ -46,6 +46,7 @@ const initialState = {
     question: null,
     isFetching: false,
     isUpdated: true,
+    quizClosed: false,
 };
 
 export const activeQuestionReducer = produce((state, action) => {
@@ -78,6 +79,11 @@ export const activeQuestionReducer = produce((state, action) => {
 
         case 'FETCH_ACTIVE_QUESTION_FAILURE':
             state.isFetching = false;
+            return;
+
+        case "UPDATE_QUIZ_ENDED":
+            console.log( ' ja man hiero ');
+            state.quizClosed = true;
             return;
 
         default:

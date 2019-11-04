@@ -12,6 +12,7 @@ import Button from "react-bootstrap/Button";
 import {LoadingComponent} from "./MiscComponents";
 import {setupSocketConnection} from "../reducers/webSocketReducer";
 import {Col, Row} from "react-bootstrap";
+import QuizEnded from "./QuizEnded";
 
 
 function QuizComponent(props) {
@@ -37,7 +38,8 @@ function QuizComponent(props) {
                 <Switch>
                     <Route path={`${props.match.path}/approve-teams`} component={ApproveTeamContainer} />
                     <Route path={`${props.match.path}/select-categories`} component={RoundCategorySelect}/>
-                    <Route path={`${props.match.path}/dashboard`}  component={QuizMasterDashboard} />>
+                    <Route path={`${props.match.path}/dashboard`}  component={QuizMasterDashboard} />
+                    <Route path={`${props.match.path}/thanksforplaying`} component={QuizEnded} />
                 </Switch>
             </Router>
         </div>

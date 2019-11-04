@@ -52,8 +52,10 @@ export const activeQuestionReducer = produce((state, action) => {
 
     switch(action.type){
 
-        case 'ACTIVE_QUESTION_IS_UPDATED':
-            state.isUpdated = action.payload;
+        case 'UPDATE_CLOSED_ACTION':
+        case 'UPDATE_ACTIVE_QUESTION':
+        case 'UPDATE_JUDGED_QUESTIONS':
+            state.isUpdated = true;
             return;
 
         case 'FETCH_ACTIVE_QUESTION':
@@ -65,6 +67,8 @@ export const activeQuestionReducer = produce((state, action) => {
             state.isUpdated = false;
             if(!_.isEmpty(action.payload)) {
                 state.question = action.payload;
+            } else {
+                state.question = null
             }
             return;
 

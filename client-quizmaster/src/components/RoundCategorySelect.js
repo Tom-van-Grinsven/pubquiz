@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import {Button, Form, ButtonGroup, Collapse} from "react-bootstrap";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
-import {sendRoundCategories} from "../reducers/createRoundReducer";
+import {endQuiz, sendRoundCategories} from "../reducers/createRoundReducer";
 import RoundCategoryList from "./RoundCategoryList";
 import {ErrorComponent, LoadingComponent} from "./MiscComponents";
 
@@ -16,6 +16,11 @@ function RoundCategorySelect(props) {
     }
 
     const sendCategories = () => props.doSendCategories(props.selectedCategories, props.quizCode, props.history);
+    const endQuiz = () => {
+        if(window.confirm("Are you sure you want to end this quiz?")){
+            props.doEndQuiz(false, props.quizCode, props.history);
+        }
+    };
 
     return (
         <Card className='purple'>
@@ -26,7 +31,7 @@ function RoundCategorySelect(props) {
                     <ErrorComponent err={props.err}/>
                     <RoundCategoryList  />
                     <Form.Group className='text-center'>
-                        <Button variant="danger">End Quiz</Button>
+                        <Button variant="danger" onClick={endQuiz}>End Quiz</Button>
                         <Button variant="success" onClick={sendCategories}>Start Round
                             {props.isSending ? <span className="right-icon loading">&nbsp;</span> : '' }</Button>
                     </Form.Group>
@@ -48,7 +53,8 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
     return {
-        doSendCategories: (selectedCategories, quizCode, history) => dispatch(sendRoundCategories(selectedCategories, quizCode, history))
+        doSendCategories: (selectedCategories, quizCode, history) => dispatch(sendRoundCategories(selectedCategories, quizCode, history)),
+        doEndQuiz: (isActive, quizCode, history) => dispatch(endQuiz(isActive, quizCode, history))
     }
 }
 

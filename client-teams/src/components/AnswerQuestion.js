@@ -12,7 +12,6 @@ function AnswerQuestion(props) {
     const loadingComponent = <LoadingComponent text='Loading Quiz Info'/>
 
     if(props.hasFetched === false){
-        console.log(props.hasFetched);
         if(!props.isFetching && (_.isEmpty(props.teamName) || _.isEmpty(props.quizCode))) {
             props.doFetchTeam();
         }
@@ -25,6 +24,10 @@ function AnswerQuestion(props) {
 
     if((props.quizCode && props.teamName) && props.websocket === null){
         props.doSetupSocketConnection()
+    }
+
+    if(props.quizClosed) {
+        return <Redirect to={'/quiz/' + props.quizCode + '/thanksforplaying'}/>
     }
 
     return(
@@ -42,7 +45,8 @@ const mapStateToProps = (state) => {
         hasFetched: state.answerQuestion.hasFetched,
         teamName: state.answerQuestion.teamName,
         quizCode: state.answerQuestion.quizCode,
-        websocket: state.webSocket.socket
+        websocket: state.webSocket.socket,
+        quizClosed: state.activeQuestion.quizClosed,
     }
 };
 

@@ -8,7 +8,8 @@ const quizSchema = new mongoose.Schema({
     name: {type: String, required: true},
     quizOwner: {type: mongoose.Types.ObjectId, ref: 'Account', required: true},
     teams: [{teamName: {type: String}, points: {type: Number, required: true, default: 0}}],
-    isActive: {type: Boolean, required: true, default: false},
+    isOpen: {type: Boolean, required: true, default: true},
+    isActive: {type: Boolean, required: true, default: true},
     roundNumber: {type: Number, required: true, default: 0},
     questionNumber: {type: Number, required: true, default: 0},
     questions: [
@@ -84,9 +85,12 @@ quizSchema.methods.setRoundQuestionsByCategories = async function (categories) {
     let currentQuestions = this.questions.map(question => question._id);
     let questions = await Question.getQuestionsForRound(categories, currentQuestions);
     this.questions = [...this.questions, ...questions];
+    const activeQuestion = this.questions.find(question => question.isActive === true);
+    if(activeQuestion) {
+        activeQuestion.isActive = false
+    }
     this.roundNumber++;
     this.questionNumber = 0;
-    this.isActive = true;
     await this.save();
 };
 
@@ -97,6 +101,8 @@ quizSchema.methods.addJoinedTeamToQuiz = async function (team) {
             this.teams.push(team);
             this.save();
             return team;
+        } else {
+            return null;
         }
     } catch (err) {
         console.log(err);
@@ -114,6 +120,7 @@ quizSchema.methods.getJoinedTeamsOfQuiz = async function () {
 quizSchema.methods.setDefinitiveTeamsForQuiz = async function (teams) {
     try {
         this.teams = formatTeamArrayForMongooseModel(teams);
+        this.isOpen = false;
         this.save();
     } catch (err) {
         console.log(err);
@@ -193,7 +200,13 @@ quizSchema.methods.getGivenAnswers = async function () {
 
         // get the answers for this question by matching the id's on string value and return the current answers
         let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
-        return this.answeredQuestions[currentlyAnsweredQuestion];
+        console.log(currentlyAnsweredQuestion);
+        if(currentlyAnsweredQuestion >= 0) {
+            return this.answeredQuestions[currentlyAnsweredQuestion];
+        } else {
+            return {answers: []};
+        }
+
     } catch (err) {
         console.log(err);
     }
@@ -284,6 +297,7 @@ quizSchema.methods.updateTeamPoints = async  function () {
 
     const roundNumber           = (this.isActive ? this.roundNumber - 1 : this.roundNumber);
     const roundQuestions        = getValidatedAndClosedRoundQuestions(this.questions, roundNumber);
+
 
     if(roundQuestions.length > 0) {
 
