@@ -3,6 +3,7 @@ import {Container} from "react-bootstrap";
 import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
 import JoinQuizForm from "./JoinQuizForm";
 import LeaderBoardContainer from "./LeaderBoardContainer";
+import Podium from "./Podium";
 
 function App(props) {
 
@@ -17,6 +18,7 @@ function App(props) {
                         <JoinQuizForm/>
                     </Route>
                     <Route path='/:code/leaderboard' component={LeaderBoardContainer} />
+
                 </Switch>
             </Router>
         </Container>

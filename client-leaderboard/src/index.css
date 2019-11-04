@@ -384,3 +384,106 @@ input.error {
     max-height: 800px;
     margin-bottom: 1rem;
 }
+.podium-container {
+    position: relative;
+    padding-top: 200px;
+}
+.banner-container {
+    position: absolute;
+    left: 50%;
+    top:70px;
+    height: 200px;
+}
+.banner {
+    position: relative;
+    left: -50%;
+    display: block;
+    width: 600px;
+    height: 60px;
+    border: 1px solid #8a1;
+    font-size: 30px;
+    line-height: 60px;
+    font-weight: normal;
+    text-align: center;
+    color: #FFF;
+    background: #9b2;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0,0,0,.15) inset,
+    0 6px 10px rgba(0,0,0,.15);
+}
+.banner::before,
+.banner::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -70px;
+    top: 24px;
+    display: block;
+    width: 40px;
+    height: 0px;
+    border: 30px solid #9b2;
+    border-right: 20px solid #791;
+    border-bottom-color: #94b81e;
+    border-left-color: transparent;
+    transform: rotate(-5deg);
+    box-sizing: content-box;
+}
+.banner::after {
+    left: auto;
+    right: -70px;
+    border-left: 20px solid #791;
+    border-right: 30px solid transparent;
+    transform: rotate(5deg);
+}
+.podium {
+    height:500px;
+    padding: 15px;
+}
+.podium h1, .podium h2, .podium h3 {
+    margin-bottom: .5rem;
+}
+.podium h1:first-child, .podium h2:first-child, .podium h3:first-child {
+    border-bottom: 2px solid #FFF;
+}
+
+.podium .podium-col {
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-end;
+}
+.podium .podium-col:first-child {
+    margin-right: -5px;
+    margin-left: 5px;
+
+    position: relative;
+}
+.podium .podium-col:last-child {
+    margin-left: -5px;
+}
+.podium .podium-col .card {
+}
+.podium .podium-col:first-child {
+
+}
+.podium .podium-col:first-child .card {
+    border-radius: 1rem 0 0 0;
+    height: 33%;
+    display: flex;
+}
+.podium .podium-col:nth-child(2) {
+
+}
+.podium .podium-col:nth-child(2) .card {
+    border-radius: 1rem 1rem 0 0;
+    height: 50%;
+}
+.podium .podium-col:last-child {
+
+}
+.podium .podium-col:last-child .card {
+    border-radius: 0 1rem 0 0;
+    height: 25%;
+}

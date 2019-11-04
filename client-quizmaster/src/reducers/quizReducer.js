@@ -20,15 +20,15 @@ export const createQuiz = (quizName, history) => {
             credentials: 'include',
             body: JSON.stringify({quizName: quizName})
         }).then(response => response.json(), err => {
-            dispatch(createQuizRequestFailure())
+            dispatch(createQuizRequestFailure());
             dispatch(setError({
                 message: [err]
             }));
-        }).then(quizCode => {
-                dispatch(createQuizRequestSuccess(quizCode));
-                history.push('/quiz/' + quizCode + '/approve-teams')
+        }).then(quiz => {
+                dispatch(createQuizRequestSuccess(quiz.quizCode));
+                history.push('/quiz/' + quiz.quizCode + '/approve-teams')
             }, err => {
-            dispatch(createQuizRequestFailure())
+            dispatch(createQuizRequestFailure());
             dispatch(setError({
                 message: [err]
             }));

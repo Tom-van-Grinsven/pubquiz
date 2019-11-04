@@ -5,11 +5,10 @@ import Leaderboard from "./Leaderboard";
 import {Col, Row} from "react-bootstrap";
 import {fetchQuiz} from "../reducers/quizReducer";
 import {connect} from "react-redux";
-import {Redirect, withRouter} from "react-router-dom";
 import {LoadingComponent} from "./MiscComponents";
-import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
-import {fetchScore} from "../reducers/LeaderboardReducer";
+import {BrowserRouter as Router, Switch, Route, Redirect, withRouter} from 'react-router-dom'
 import {setupSocketConnection} from "../reducers/webSocketReducer";
+import Podium from "./Podium";
 
 
 function LeaderBoardContainer(props) {
@@ -35,17 +34,23 @@ function LeaderBoardContainer(props) {
         return <div className='quiz-leaderboard'><LoadingComponent text='Waiting for Quiz to start'/></div>;
     }
 
-
     return (
-        <Row className='quiz-leaderboard'>
-            <Col className='col' md='6'>
-                <CurrentQuestionDisplay/>
-                <LeaderboardTeamAnswersList/>
-            </Col>
-            <Col className='col' md='6'>
-                <Leaderboard/>
-            </Col>
-        </Row>
+        <Router>
+            <Switch>
+                <Route exact path={`${props.match.path}`}>
+                    <Row className='quiz-leaderboard'>
+                        <Col className='col' md='6'>
+                            <CurrentQuestionDisplay/>
+                            <LeaderboardTeamAnswersList/>
+                        </Col>
+                        <Col className='col' md='6'>
+                            <Leaderboard/>
+                        </Col>
+                    </Row>
+                </Route>
+                <Route path={`${props.match.path}/podium`} component={Podium}/>
+            </Switch>
+        </Router>
     )
 
 }
@@ -62,7 +67,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         doFetchQuiz: (quizCode) => dispatch(fetchQuiz(quizCode)),
-        doFetchScore: (quizCode) => dispatch(fetchScore(quizCode)),
         doSetupSocketConnection: () => dispatch(setupSocketConnection())
     }
 };
