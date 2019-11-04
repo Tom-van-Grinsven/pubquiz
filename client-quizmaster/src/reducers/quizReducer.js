@@ -24,9 +24,9 @@ export const createQuiz = (quizName, history) => {
             dispatch(setError({
                 message: [err]
             }));
-        }).then(quizCode => {
-                dispatch(createQuizRequestSuccess(quizCode));
-                history.push('/quiz/' + quizCode + '/approve-teams')
+        }).then(quiz => {
+                dispatch(createQuizRequestSuccess(quiz.quizCode));
+                history.push('/quiz/' + quiz.quizCode + '/approve-teams')
             }, err => {
             dispatch(createQuizRequestFailure())
             dispatch(setError({
