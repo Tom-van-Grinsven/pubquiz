@@ -107,10 +107,3 @@ module.exports = {
     getTeamRoundPositions,
     getValidatedAndClosedRoundQuestions
 };
-
-// module.exports.sendMessageToWebsocketTeams = sendMessageToWebsocketTeams;
-// module.exports.sendMessageToWebsocketQuizmaster = sendMessageToWebsocketQuizmaster;
-// module.exports.sendMessageToWebsocketScoreboard = sendMessageToWebsocketScoreboard;
-// module.exports.filterWebsocketConnectionsForDefinitiveTeam = filterWebsocketConnectionsForDefinitiveTeam;
-
-

@@ -18,7 +18,7 @@ app.options("*", cors({ origin: true, credentials: true }));
 
 const sessionParser = session({
     saveUninitialized: false,
-    secret: 'littlelayerof$ecurity',
+    secret: 'f`lN]F/XuT+gsu2E0GwC#?jY<l}2cTRg]\\Qq{;!gS$CvFnq$v^*vCf&%%H=/657,',
     resave: false
 });
 

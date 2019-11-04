@@ -71,12 +71,4 @@ module.exports = {
     getCurrentAnsweredQuestionAnswerByTeamName,
     saveOrUpdateTeamAnswer,
     formatTeamArrayForMongooseModel
-}
-
-// module.exports.mapQuestionsToOrganizedByCategory = mapQuestionsToOrganizedByCategory;
-// module.exports.getRandomCodeForQuiz = getRandomCodeForQuiz;
-// module.exports.getActiveQuestionIndex = getActiveQuestionIndex;
-// module.exports.getCurrentAnsweredQuestionIndexByQuestionId = getCurrentAnsweredQuestionIndexByQuestionId;
-// module.exports.getCurrentAnsweredQuestionAnswerByTeamName = getCurrentAnsweredQuestionAnswerByTeamName;
-// module.exports.saveOrUpdateTeamAnswer = saveOrUpdateTeamAnswer;
-// module.exports.formatTeamArrayForMongooseModel = formatTeamArrayForMongooseModel;
+};

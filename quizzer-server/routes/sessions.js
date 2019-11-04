@@ -14,7 +14,7 @@ sessionRouter.post('/', async function(req, res, next) {
         req.session.account = await Account.loginAccount(req.body.email, req.body.password);
         res.sendStatus(200);
     } catch (err) {
-        res.sendStatus(403);
+        res.sendStatus(401);
     }
 });
 
