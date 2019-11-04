@@ -57,5 +57,8 @@ typings/
 # next.js build output
 .next
 
-#idea folder
+#idea
 .idea
+
+#idea folder
+.idea/
