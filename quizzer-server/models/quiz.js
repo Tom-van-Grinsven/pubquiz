@@ -162,11 +162,12 @@ quizSchema.methods.setTeamAnswerForQuestion = async function (teamName, answer) 
             // get the current active question
             let currentQuestion = this.questions.find(question => question.isActive === true);
 
+            // TODO: Check if there is a question, otherwise results in exception
             // check if the current question isn't marked as closed
             if (!currentQuestion.isClosed === true) {
                 let currentQuestionId = currentQuestion._id;
 
-                // get the questions index from the answeredquestions array
+                // get the questions index from the answered questions array
                 currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
                 // if the questions has not yet been added to the array and its index is thus <1

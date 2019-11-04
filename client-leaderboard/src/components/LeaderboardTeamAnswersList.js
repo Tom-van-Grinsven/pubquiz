@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Col, Collapse, Row} from "react-bootstrap";
+import {Card, Col, Collapse, Row, Table} from "react-bootstrap";
 import {fetchTeamAnswers} from "../reducers/teamAnswersReducer";
 import {connect} from "react-redux";
 
@@ -10,47 +10,56 @@ function LeaderboardTeamAnswersList(props) {
         return null;
     }
 
-    if(!props.activeQuestion.question.isClosed || props.teamAnswers.isFetching) {
-        return (
-            <Collapse in={true} appear={true}>
-                <div className='current-question-display'>
-                    <Card>
-                        <Card.Body className='text-center'>
-                            <p>Waiting for the Team answers</p>
-                            <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
-                        </Card.Body>
-                    </Card>
-                </div>
-            </Collapse>
-        )
-    }
-
     if(!props.teamAnswers.isFetching && props.teamAnswers.isUpdated) {
         props.doFetchTeamAnswers(props.quiz.code);
         return null;
     }
 
-    let teamAnswersList;
-    if(props.teamAnswers.answers.length > 0 ) {
-        teamAnswersList = props.teamAnswers.answers.map(teamAnswer => <LeaderboardTeamAnswer
-            key={teamAnswer._id}
-            answer={teamAnswer}
-        />)
-    }
+    let content;
+    if(!props.activeQuestion.question.isClosed || props.teamAnswers.isFetching) {
 
-    let questionAnswer = '';
-    if(props.activeQuestion.question.isClosed && props.activeQuestion.question.answer !== undefined && props.activeQuestion.question.isValidated) {
-        questionAnswer = <h5 className='text-center'><b>Answer:</b> {props.activeQuestion.question.answer}</h5>
-    }
+        content = (
+            <Collapse in={true} appear={true}>
+                <Card.Body className='text-center'>
+                    <p>Waiting for the Team answers</p>
+                    <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
+                </Card.Body>
+            </Collapse>
+        )
 
-    return (
-        <Card className='green'>
+    } else {
+
+        let teamAnswersList;
+        if(props.teamAnswers.answers.length > 0 ) {
+            teamAnswersList = props.teamAnswers.answers.map(teamAnswer => <LeaderboardTeamAnswer
+                key={teamAnswer._id}
+                answer={teamAnswer}
+            />)
+        }
+
+        let questionAnswer = '';
+        if(props.activeQuestion.question.isClosed && props.activeQuestion.question.answer !== undefined && props.activeQuestion.question.isValidated) {
+            questionAnswer = <h5 className='text-center'><b>Answer:</b> {props.activeQuestion.question.answer}</h5>
+        }
+
+        content = (
             <Card.Body>
                 {questionAnswer}
                 <div className='team-answers-list'>
-                    {teamAnswersList ? teamAnswersList : <h5 className='text-center'>No Answers we're given by the teams</h5>}
+                    <Table bordered>
+                        <tbody>
+                        {teamAnswersList ? teamAnswersList : <tr><td className='text-center'>No Answers we're given by the teams</td></tr>}
+                        </tbody>
+                    </Table>
                 </div>
             </Card.Body>
+        )
+    }
+
+    return (
+        <Card>
+            <Card.Header className='green text-center'><h5><b>Team Answers</b></h5></Card.Header>
+            {content}
         </Card>
     )
 
@@ -83,9 +92,9 @@ function LeaderboardTeamAnswer(props) {
         }
     }
     return (
-        <Row className='team-answer'>
-            <Col xs='5'>{props.answer.teamName}</Col>
-            <Col xs='7' className={`text-center ${answerStatus}`}>{props.answer.givenAnswer}</Col>
-        </Row>
+        <tr className={answerStatus}>
+            <td>{props.answer.teamName}</td>
+            <td>{props.answer.givenAnswer}</td>
+        </tr>
     )
 }

@@ -1,17 +1,12 @@
 import {connect} from "react-redux";
-import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, withRouter, Redirect} from 'react-router-dom'
 import ApproveTeamContainer from "./ApproveTeamContainer";
 import RoundCategorySelect from "./RoundCategorySelect";
 import QuizMasterDashboard from "./QuizMasterDashboard";
 import React from "react";
 import {fetchQuiz} from "../reducers/quizReducer";
-import Card from "react-bootstrap/Card";
-import ApproveTeamList from "./ApproveTeamList";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import {LoadingComponent} from "./MiscComponents";
 import {setupSocketConnection} from "../reducers/webSocketReducer";
-import {Col, Row} from "react-bootstrap";
 import QuizEnded from "./QuizEnded";
 
 
@@ -32,6 +27,16 @@ function QuizComponent(props) {
         props.doSetupSocketConnection();
     }
 
+    if(props.quiz.isActive === false && props.location.pathname !== props.match.url + '/thanks-for-playing') {
+        return <Redirect to={`${props.match.url}/thanks-for-playing`} />
+    } else if(props.location.pathname === props.match.url) {
+        if(props.quiz.isOpen) {
+            return <Redirect to={`${props.location.pathname}/approve-teams`} />
+        } else {
+            return <Redirect to={`${props.location.pathname}/dashboard`} />
+        }
+    }
+
     return (
         <div>
             <Router>
@@ -39,7 +44,7 @@ function QuizComponent(props) {
                     <Route path={`${props.match.path}/approve-teams`} component={ApproveTeamContainer} />
                     <Route path={`${props.match.path}/select-categories`} component={RoundCategorySelect}/>
                     <Route path={`${props.match.path}/dashboard`}  component={QuizMasterDashboard} />
-                    <Route path={`${props.match.path}/thanksforplaying`} component={QuizEnded} />
+                    <Route path={`${props.match.path}/thanks-for-playing`} component={QuizEnded} />
                 </Switch>
             </Router>
         </div>
@@ -62,7 +67,5 @@ const mapDispatchToProps = (dispatch) => {
         doSetupSocketConnection: () => dispatch(setupSocketConnection())
     }
 };
-
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(QuizComponent));

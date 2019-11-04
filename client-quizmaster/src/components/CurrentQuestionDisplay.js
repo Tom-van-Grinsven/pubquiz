@@ -5,8 +5,9 @@ import {connect} from "react-redux";
 
 function CurrentQuestionDisplay(props) {
 
+    let content;
     if((props.activeQuestion.question === null || props.activeQuestion.question.isValidated) && (!props.activeQuestion.isUpdated || props.activeQuestion.isFetching)) {
-        return (
+        content = (
             <Collapse in={true} appear={true}>
                 <div className='current-question-display'>
                     <Card>
@@ -18,9 +19,24 @@ function CurrentQuestionDisplay(props) {
                 </div>
             </Collapse>
         )
+    } else {
+
+        const {question, category, answer} = props.activeQuestion.question;
+
+        content = (
+            <Card className='current-question-display'>
+                <Card.Header className='green'>
+                    {category}
+                </Card.Header>
+                <Card.Body>
+                    <p><b>Question:</b><br/> {question}</p>
+                    <p><b>Answer:</b> {answer}</p>
+                </Card.Body>
+            </Card>
+        )
     }
 
-    const {question, category, answer} = props.activeQuestion.question;
+
 
     return (
         <div>
@@ -40,16 +56,8 @@ function CurrentQuestionDisplay(props) {
                     </Card>
                 </Col>
             </Row>
+            {content}
 
-            <Card className='current-question-display'>
-                <Card.Header className='green'>
-                    {category}
-                </Card.Header>
-                <Card.Body>
-                    <p><b>Question:</b><br/> {question}</p>
-                    <p><b>Answer:</b> {answer}</p>
-                </Card.Body>
-            </Card>
         </div>
     )
 }
