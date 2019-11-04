@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const questionSchema = require('./question');
+const quizService = require('../service/quiz-schema-service');
 
 mongoose.set('debug', true);
 
@@ -38,14 +39,13 @@ const quizSchema = new mongoose.Schema({
 quizSchema.statics.createNewQuiz = async function (quizName, accountId) {
 
     let codes = await this.distinct('code');
-    let randomCode = getRandomCodeForQuiz();
+    let randomCode = quizService.getRandomCodeForQuiz();
     while (codes.some(el => el === randomCode)) {
-        randomCode = getRandomCodeForQuiz();
+        randomCode = quizService.getRandomCodeForQuiz();
     }
     let quiz = new Quiz({code: randomCode, name: quizName, quizOwner: new mongoose.Types.ObjectId(accountId)});
     await quiz.save();
     return quiz;
-
 };
 
 quizSchema.methods.getQuestionsForRound = async function () {
@@ -119,7 +119,7 @@ quizSchema.methods.getJoinedTeamsOfQuiz = async function () {
 
 quizSchema.methods.setDefinitiveTeamsForQuiz = async function (teams) {
     try {
-        this.teams = formatTeamArrayForMongooseModel(teams);
+        this.teams = quizService.formatTeamArrayForMongooseModel(teams);
         this.isOpen = false;
         this.save();
     } catch (err) {
@@ -130,7 +130,7 @@ quizSchema.methods.setDefinitiveTeamsForQuiz = async function (teams) {
 quizSchema.methods.setActiveQuestion = async function (questionId) {
     try {
         // get the current active question if it exists. Set it to false.
-        let currentActiveQuestionIndex = getActiveQuestionIndex(this);
+        let currentActiveQuestionIndex = quizService.getActiveQuestionIndex(this);
         if (currentActiveQuestionIndex >= 0) {
             this.questions[currentActiveQuestionIndex].isActive = false;
         }
@@ -146,7 +146,7 @@ quizSchema.methods.setActiveQuestion = async function (questionId) {
 
 quizSchema.methods.setClosedQuestion = async function (questionId) {
     try {
-        let currentQuestionIndex = getActiveQuestionIndex(this);
+        let currentQuestionIndex = quizService.getActiveQuestionIndex(this);
         this.questions[currentQuestionIndex].isClosed = true;
         await this.save();
     } catch (err) {
@@ -167,7 +167,7 @@ quizSchema.methods.setTeamAnswerForQuestion = async function (teamName, answer) 
                 let currentQuestionId = currentQuestion._id;
 
                 // get the questions index from the answeredquestions array
-                currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+                currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
                 // if the questions has not yet been added to the array and its index is thus <1
                 if (currentlyAnsweredQuestion < 0) {
@@ -176,13 +176,13 @@ quizSchema.methods.setTeamAnswerForQuestion = async function (teamName, answer) 
                 }
 
                 // get the questions index from the answeredquestions array AGAIN because it just has been added
-                currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+                currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
 
                 // get the answer index for the question based on teamname
-                let givenAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, teamName);
+                let givenAnswerIndex = quizService.getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, teamName);
 
                 // save or update the team answer based on whether this is their first answer or not
-                saveOrUpdateTeamAnswer(this, givenAnswerIndex, currentlyAnsweredQuestion, teamName, answer);
+                quizService.saveOrUpdateTeamAnswer(this, givenAnswerIndex, currentlyAnsweredQuestion, teamName, answer);
 
                 await this.save();
             }
@@ -195,11 +195,11 @@ quizSchema.methods.setTeamAnswerForQuestion = async function (teamName, answer) 
 quizSchema.methods.getGivenAnswers = async function () {
     try {
         // get the current questionID by checking which question is currently active
-        let currentQuestionIndex = getActiveQuestionIndex(this);
+        let currentQuestionIndex = quizService.getActiveQuestionIndex(this);
         let currentQuestionId = this.questions[currentQuestionIndex]._id;
 
         // get the answers for this question by matching the id's on string value and return the current answers
-        let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+        let currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
         console.log(currentlyAnsweredQuestion);
         if(currentlyAnsweredQuestion >= 0) {
             return this.answeredQuestions[currentlyAnsweredQuestion];
@@ -216,9 +216,9 @@ quizSchema.methods.judgeGivenAnswers = async function (givenAnswers) {
     try {
         let currentQuestion = this.questions.find(question => question.isActive === true);
         let currentQuestionId = currentQuestion._id;
-        let currentlyAnsweredQuestion = getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
+        let currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
         givenAnswers.forEach((item) => {
-            let teamAnswerIndex = getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
+            let teamAnswerIndex = quizService.getCurrentAnsweredQuestionAnswerByTeamName(this, currentlyAnsweredQuestion, item.teamName);
             this.answeredQuestions[currentlyAnsweredQuestion].answers[teamAnswerIndex].isRight = item.isRight;
         });
         currentQuestion.isValidated = true;
@@ -228,86 +228,85 @@ quizSchema.methods.judgeGivenAnswers = async function (givenAnswers) {
     }
 };
 
-// helper function to format the questions to a more frontend friendly format.
-mapQuestionsToOrganizedByCategory = (questions) => {
-    let result = [];
-    let distinctCategories = [...new Set(questions.map(el => el.category))];
-    let category = {};
-    category.questions = [];
-
-    distinctCategories.forEach((cat, index) => {
-        result.push({category: cat, questions: []});
-    });
-
-    questions.forEach((q, index) => {
-        result.forEach((cat, index) => {
-            if (q.category === cat.category) {
-                cat.questions.push(q);
-            }
-        })
-    });
-    return result;
-};
-
-// generate a random code to be the unique identifier of a quiz
-getRandomCodeForQuiz = () => {
-    return Math.random().toString(36).substr(2, 6);
-};
-
-// get the INDEX of the CURRENT active question
-getActiveQuestionIndex = (schema) => {
-    return schema.questions.findIndex(e => e.isActive === true);
-};
-
-// get the INDEX of the CURRENT active question with answers (which is not the same array as the questions array)
-getCurrentAnsweredQuestionIndexByQuestionId = (schema, currentQuestionId) => {
-    return schema.answeredQuestions.findIndex(e => e._id.toString() === currentQuestionId.toString());
-};
-
-// get the INDEX of the ANSWER a team has given to the CURRENT active question (the array where the answers are kept as well)
-getCurrentAnsweredQuestionAnswerByTeamName = (schema, currentlyAnsweredQuestion, teamName) => {
-    return schema.answeredQuestions[currentlyAnsweredQuestion].answers.findIndex(e => e.teamName === teamName);
-};
-
-// Helper method to check whether a team has already given an answer to a certain question
-// if not: push it to the array with its values
-// if so: update the answer value accordingly
-saveOrUpdateTeamAnswer = (schema, givenAnswerIndex, answeredQuestionIndex, team, answer) => {
-    if (givenAnswerIndex < 0) {
-        schema.answeredQuestions[answeredQuestionIndex].answers.push({
-            isRight: null,
-            teamName: team,
-            givenAnswer: answer
-        });
-    } else {
-        schema.answeredQuestions[answeredQuestionIndex].answers[givenAnswerIndex].givenAnswer = answer;
-    }
-};
-
-function formatTeamArrayForMongooseModel(teams) {
-    return teams.map((el) => {
-        return {
-            teamName: el,
-            points: 0
-        }
-    });
-}
+// // helper function to format the questions to a more frontend friendly format.
+// mapQuestionsToOrganizedByCategory = (questions) => {
+//     let result = [];
+//     let distinctCategories = [...new Set(questions.map(el => el.category))];
+//     let category = {};
+//     category.questions = [];
+//
+//     distinctCategories.forEach((cat, index) => {
+//         result.push({category: cat, questions: []});
+//     });
+//
+//     questions.forEach((q, index) => {
+//         result.forEach((cat, index) => {
+//             if (q.category === cat.category) {
+//                 cat.questions.push(q);
+//             }
+//         })
+//     });
+//     return result;
+// };
+//
+// // generate a random code to be the unique identifier of a quiz
+// getRandomCodeForQuiz = () => {
+//     return Math.random().toString(36).substr(2, 6);
+// };
+//
+// // get the INDEX of the CURRENT active question
+// getActiveQuestionIndex = (schema) => {
+//     return schema.questions.findIndex(e => e.isActive === true);
+// };
+//
+// // get the INDEX of the CURRENT active question with answers (which is not the same array as the questions array)
+// getCurrentAnsweredQuestionIndexByQuestionId = (schema, currentQuestionId) => {
+//     return schema.answeredQuestions.findIndex(e => e._id.toString() === currentQuestionId.toString());
+// };
+//
+// // get the INDEX of the ANSWER a team has given to the CURRENT active question (the array where the answers are kept as well)
+// getCurrentAnsweredQuestionAnswerByTeamName = (schema, currentlyAnsweredQuestion, teamName) => {
+//     return schema.answeredQuestions[currentlyAnsweredQuestion].answers.findIndex(e => e.teamName === teamName);
+// };
+//
+// // Helper method to check whether a team has already given an answer to a certain question
+// // if not: push it to the array with its values
+// // if so: update the answer value accordingly
+// saveOrUpdateTeamAnswer = (schema, givenAnswerIndex, answeredQuestionIndex, team, answer) => {
+//     if (givenAnswerIndex < 0) {
+//         schema.answeredQuestions[answeredQuestionIndex].answers.push({
+//             isRight: null,
+//             teamName: team,
+//             givenAnswer: answer
+//         });
+//     } else {
+//         schema.answeredQuestions[answeredQuestionIndex].answers[givenAnswerIndex].givenAnswer = answer;
+//     }
+// };
+//
+// function formatTeamArrayForMongooseModel(teams) {
+//     return teams.map((el) => {
+//         return {
+//             teamName: el,
+//             points: 0
+//         }
+//     });
+// }
 
 quizSchema.methods.updateTeamPoints = async  function () {
 
     const roundNumber           = (this.isActive ? this.roundNumber - 1 : this.roundNumber);
-    const roundQuestions        = getValidatedAndClosedRoundQuestions(this.questions, roundNumber);
-
+    const roundQuestions        = quizService.getValidatedAndClosedRoundQuestions(this.questions, roundNumber);
 
     if(roundQuestions.length > 0) {
 
-        const roundResult           = getRoundResult(roundQuestions, this.answeredQuestions, this.teams);
-        const roundTeamPositions    = getTeamRoundPositions(roundResult);
+        const roundResult           = quizService.getRoundResult(roundQuestions, this.answeredQuestions, this.teams);
+        const roundTeamPositions    = quizService.getTeamRoundPositions(roundResult);
         const lastPosition          = Object.keys(roundTeamPositions).length;
 
         for(let position = 0; position < lastPosition; position++) {
             roundTeamPositions[position].forEach(positionTeam => {
-                this.teams.find(team => team.teamName === positionTeam.teamName).points += getPositionPoints(position)
+                this.teams.find(team => team.teamName === positionTeam.teamName).points += quizService.getPositionPoints(position)
             })
         }
 
@@ -315,13 +314,13 @@ quizSchema.methods.updateTeamPoints = async  function () {
     }
 };
 
-const getPositionPoints = (position) => {
-    return [4, 2, 1, .1][position];
-};
+// const getPositionPoints = (position) => {
+//     return [4, 2, 1, .1][position];
+// };
 
 quizSchema.methods.getScore = function () {
 
-    const roundQuestions = getValidatedAndClosedRoundQuestions(this.questions, this.roundNumber);
+    const roundQuestions = quizService.getValidatedAndClosedRoundQuestions(this.questions, this.roundNumber);
     const validateQuestions = roundQuestions.filter(question => question.isValidated);
 
     let response = {
@@ -333,7 +332,7 @@ quizSchema.methods.getScore = function () {
     if (validateQuestions.length === 0) {
         return {
             ...response,
-            score: sortScoreArray(this.teams, 'points').map(team => {
+            score: quizService.sortScoreArray(this.teams, 'points').map(team => {
                 return {
                     ...team._doc,
                     correct: 0
@@ -341,10 +340,10 @@ quizSchema.methods.getScore = function () {
             })
         }
     } else {
-        const roundResult = getRoundResult(roundQuestions, this.answeredQuestions, this.teams);
+        const roundResult = quizService.getRoundResult(roundQuestions, this.answeredQuestions, this.teams);
         return {
             ...response,
-            score: sortScoreArray(this.teams, 'points').map(team => {
+            score: quizService.sortScoreArray(this.teams, 'points').map(team => {
                 const teamRoundResult = roundResult.find(result => result.teamName === team.teamName);
                 return {
                     ...team._doc,
@@ -353,71 +352,65 @@ quizSchema.methods.getScore = function () {
             })
         }
     }
-
 };
 
-const getInitialTeamRoundResult = (teams) => {
-    return teams.reduce((acc, team) => {
-        return {
-            ...acc,
-            [team.teamName] : 0
-        }
-    }, {})
-};
-
-const getRoundResult = function (roundQuestions, answeredQuestions, teams) {
-
-    const roundScore = getInitialTeamRoundResult(teams);
-    roundQuestions.forEach(question => {
-        const teamAnswersToQuestion = answeredQuestions.find(answers => String(answers._id) === String(question._id));
-        if (teamAnswersToQuestion !== undefined) {
-            teamAnswersToQuestion.answers.forEach(answer => {
-                if (answer.isRight === true) {
-                    if (!roundScore[answer.teamName]) roundScore[answer.teamName] = 0;
-                    roundScore[answer.teamName]++;
-                }
-            })
-        }
-    });
-
-    return Object.keys(roundScore).map((team) => {
-        return {
-            teamName: team,
-            correct: roundScore[team]
-        }
-    })
-
-};
-
-
-
-
-const sortScoreArray = (roundResults, key) => {
-    return roundResults.sort((teamA, teamB) => teamB[key] - teamA[key]);
-};
-
-const getTeamRoundPositions = (roundResult) => {
-    roundResult = sortScoreArray(roundResult, 'correct');
-
-    const positions     = {0: [], 1: [], 2: [], 3: []};
-    const lastPosition  = Object.keys(positions).length - 1;
-
-    for (let resultNr = 0; resultNr < roundResult.length; resultNr++) {
-        const position = (resultNr < lastPosition ? resultNr : lastPosition);
-        positions[position].push(roundResult[resultNr]);
-        for (let equalResultNr = (resultNr + 1); equalResultNr < roundResult.length; equalResultNr++) {
-            if (roundResult[equalResultNr].correct !== roundResult[position].correct) break;
-            positions[position].push(roundResult[equalResultNr]);
-            resultNr++;
-        }
-    }
-    return positions;
-};
-
-const getValidatedAndClosedRoundQuestions = (questions, roundNr) => {
-    return questions.slice((roundNr - 1) * 12, roundNr * 12).filter(question => question.isClosed === true && question.isValidated === true)
-};
-
+// const getInitialTeamRoundResult = (teams) => {
+//     return teams.reduce((acc, team) => {
+//         return {
+//             ...acc,
+//             [team.teamName] : 0
+//         }
+//     }, {})
+// };
+//
+// const getRoundResult = function (roundQuestions, answeredQuestions, teams) {
+//
+//     const roundScore = getInitialTeamRoundResult(teams);
+//     roundQuestions.forEach(question => {
+//         const teamAnswersToQuestion = answeredQuestions.find(answers => String(answers._id) === String(question._id));
+//         if (teamAnswersToQuestion !== undefined) {
+//             teamAnswersToQuestion.answers.forEach(answer => {
+//                 if (answer.isRight === true) {
+//                     if (!roundScore[answer.teamName]) roundScore[answer.teamName] = 0;
+//                     roundScore[answer.teamName]++;
+//                 }
+//             })
+//         }
+//     });
+//
+//     return Object.keys(roundScore).map((team) => {
+//         return {
+//             teamName: team,
+//             correct: roundScore[team]
+//         }
+//     })
+// };
+//
+// const sortScoreArray = (roundResults, key) => {
+//     return roundResults.sort((teamA, teamB) => teamB[key] - teamA[key]);
+// };
+//
+// const getTeamRoundPositions = (roundResult) => {
+//     roundResult = sortScoreArray(roundResult, 'correct');
+//
+//     const positions     = {0: [], 1: [], 2: [], 3: []};
+//     const lastPosition  = Object.keys(positions).length - 1;
+//
+//     for (let resultNr = 0; resultNr < roundResult.length; resultNr++) {
+//         const position = (resultNr < lastPosition ? resultNr : lastPosition);
+//         positions[position].push(roundResult[resultNr]);
+//         for (let equalResultNr = (resultNr + 1); equalResultNr < roundResult.length; equalResultNr++) {
+//             if (roundResult[equalResultNr].correct !== roundResult[position].correct) break;
+//             positions[position].push(roundResult[equalResultNr]);
+//             resultNr++;
+//         }
+//     }
+//     return positions;
+// };
+//
+// const getValidatedAndClosedRoundQuestions = (questions, roundNr) => {
+//     return questions.slice((roundNr - 1) * 12, roundNr * 12).filter(question => question.isClosed === true && question.isValidated === true)
+// };
 
 const Quiz = mongoose.model("Quiz", quizSchema);
 const Question = mongoose.model('Question', questionSchema);

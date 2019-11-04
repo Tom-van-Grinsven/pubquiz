@@ -14,8 +14,7 @@ sessionRouter.post('/', async function(req, res, next) {
         req.session.account = await Account.loginAccount(req.body.email, req.body.password);
         res.sendStatus(200);
     } catch (err) {
-        console.log(err.message);
-        res.sendStatus(401);
+        res.sendStatus(403);
     }
 });
 
@@ -23,26 +22,26 @@ sessionRouter.get('/', async function(req, res, next) {
     try {
 
         if(req.session.account) {
-            res.send({
+            res.status(200).send({
                 isLoggedIn: true,
                 _id: req.session.account._id,
                 email: req.session.account.email
             })
         } else if(req.session.team) {
-            res.send({
+            res.status(200).send({
                 teamName: req.session.team.teamName,
                 quizCode: req.session.quizCode,
             })
         }
         else {
-            res.send({
+            res.status(200).send({
                 isLoggedIn: false,
             })
         }
 
     } catch (err){
-        console.log(err.message);
-        res.sendStatus(500);
+        console.log(err);
+        return next(err);
     }
 });
 
