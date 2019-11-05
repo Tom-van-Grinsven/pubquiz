@@ -50,8 +50,6 @@ function App(props) {
         )
     }
 
-
-
     return (
         <Container fluid className='main-content-container'>
             <div className='logo'>

@@ -110,7 +110,7 @@ export const endQuiz = (isActive, quizCode, history) => {
             credentials: 'include',
             body: JSON.stringify({isActive: isActive})
         }).then(() => {
-                history.push('/quiz/' + quizCode + '/thanksforplaying')
+                history.push('/quiz/' + quizCode + '/thanks-for-playing')
             },
             err => {
                 dispatch(setError({

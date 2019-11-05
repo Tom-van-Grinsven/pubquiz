@@ -97,7 +97,8 @@ function ValidateTeamAnswerForm(props) {
     return (
         <Collapse in={true} appear={true}>
             <div className='approve-answer-form'>
-                <p>Team {props.index}: {props.teamAnswer.givenAnswer}</p>
+                <p>#{props.index}</p>
+                <p>Answer: {props.teamAnswer.givenAnswer}</p>
                 <ButtonGroup>
                     <Button
                         onClick={() => props.validateAnswer(props.teamAnswer._id, true)}
