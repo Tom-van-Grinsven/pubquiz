@@ -35,7 +35,6 @@ questionSchema.statics.getQuestionsForRound = async function (categories, curren
                 },
                 { $sample: { size: 12 } }
             ]);
-        console.log(questions);
         return questions;
     } catch (err) {
         console.log(err);

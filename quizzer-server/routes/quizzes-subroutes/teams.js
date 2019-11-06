@@ -25,7 +25,6 @@ quizTeamRouter.get('/', async function(req, res) {
 quizTeamRouter.post('/', async function(req, res) {
     try{
         if(req.body.teamName && req.quiz.isOpen){
-            console.log(' ja hier ');
             req.session.team = await req.quiz.addJoinedTeamToQuiz(req.body);
             if(req.session.team){
                 req.session.quizCode = req.quiz.code;
