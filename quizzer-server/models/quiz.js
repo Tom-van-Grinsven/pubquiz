@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const questionSchema = require('./question');
 const quizService = require('../service/quiz-schema-service');
 
-mongoose.set('debug', true);
-
 const quizSchema = new mongoose.Schema({
     code: {type: String, maxLength: 6},
     name: {type: String, required: true},
@@ -201,7 +199,6 @@ quizSchema.methods.getGivenAnswers = async function () {
 
         // get the answers for this question by matching the id's on string value and return the current answers
         let currentlyAnsweredQuestion = quizService.getCurrentAnsweredQuestionIndexByQuestionId(this, currentQuestionId);
-        console.log(currentlyAnsweredQuestion);
         if(currentlyAnsweredQuestion >= 0) {
             return this.answeredQuestions[currentlyAnsweredQuestion];
         } else {

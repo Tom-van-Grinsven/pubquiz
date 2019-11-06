@@ -13,13 +13,18 @@ quizCategoryRouter.put('/', async function(req, res) {
             return res.sendStatus(403);
         }
 
-        await req.quiz.setRoundQuestionsByCategories(req.body);
-        await req.quiz.updateTeamPoints();
+        if(req.body.length === 3){
+            await req.quiz.setRoundQuestionsByCategories(req.body);
+            await req.quiz.updateTeamPoints();
 
-        websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
-        websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ROUND_POINTS");
+            websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
+            websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ROUND_POINTS");
 
-        res.sendStatus(204)
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(400)
+        }
+
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
