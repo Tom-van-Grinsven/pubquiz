@@ -10,9 +10,11 @@ import {BrowserRouter as Router, Switch, Route, Redirect, withRouter} from 'reac
 import {setupSocketConnection} from "../reducers/webSocketReducer";
 import Podium from "./Podium";
 import Logo from "./Logo";
+import TimerComponent from "./TimerComponent";
 
 
 function LeaderBoardContainer(props) {
+
 
     if(props.quiz.isOpen) {
         return (
@@ -31,6 +33,7 @@ function LeaderBoardContainer(props) {
                 <LeaderboardTeamAnswersList/>
             </Col>
             <Col className='col' md='5'>
+                <TimerComponent activeQuestion={props.activeQuestion}/>
                 <Leaderboard/>
             </Col>
         </Row>

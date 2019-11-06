@@ -44,10 +44,9 @@ const fetchActiveQuestionRequestFailure = () => {
     }
 };
 
-export const setActiveQuestionIsUpdated = (status) => {
+export const setActiveQuestionIsUpdated = () => {
     return {
         type: 'ACTIVE_QUESTION_IS_UPDATED',
-        payload: status
     }
 };
 
@@ -114,8 +113,9 @@ export const activeQuestionReducer = produce((state, action) => {
 
     switch (action.type) {
 
+        case 'UPDATE_CLOSED_ACTION':
         case 'ACTIVE_QUESTION_IS_UPDATED':
-            state.isUpdated = action.payload;
+            state.isUpdated = true;
             return;
 
         case 'ACTIVE_QUESTION_VALIDATED':

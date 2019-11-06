@@ -75,6 +75,10 @@ body {
     font-weight: bold;
     border-top: 5px solid #FFFFFF;
 }
+.card .card-footer .form-group {
+    color:#212529;
+
+}
 
 .card.purple {
     background: #88498f;
@@ -283,7 +287,7 @@ div.quiz-link-container {
 .team-question-answers-container .quiz-round-info .card {
     margin-bottom: 1rem;
 }
-.team-question-answers-container .current-question-display {
+.team-question-answers-container .current-question-display, .team-question-answers-container .timer-container {
     margin-bottom: 1rem;
 }
 .team-question-answers-container .current-question-display p:last-child {
@@ -338,4 +342,29 @@ div.quiz-link-container {
 .quiz-master-dashboard > .col:first-child {
     max-height: 800px;
     margin-bottom: 1rem;
+}
+.timer {
+    text-align: center;
+    font-family: 'roboto', sans-serif;
+}
+.timer .cell {
+    text-align: left;
+    display: inline-block;
+    height: 35px;
+}
+.timer .cell.min {
+    width: 21px;
+}
+.timer .cell.sec {
+    width: 40px;
+}
+.timer .cell.colon {
+    width: 30px;
+    text-align: center;
+}
+.timer .cell span {
+    font-size: 35px;
+    line-height: 35px;
+    color: #444;
+    display: block;
 }

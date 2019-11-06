@@ -10,8 +10,10 @@ import {activeQuestionReducer} from "./activeQuestionReducer";
 import {errorReducer} from "./errorReducer";
 import {webSocketReducer} from "./webSocketReducer";
 import {accountReducer} from "./accountReducer";
+import {routerReducer} from "react-router-redux";
 
 const mainReducer = Redux.combineReducers({
+    routing: routerReducer,
     websocket: webSocketReducer,
     err: errorReducer,
     loginRegister: Redux.combineReducers({
