@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Card, Col, Row, Table} from "react-bootstrap";
-import {fetchScore} from "../reducers/LeaderboardReducer";
+import {fetchScore} from "../reducers/leaderboardReducer";
 import {connect} from "react-redux";
 import {Redirect} from "react-router-dom";
 import {getTeamPositionsByScore} from "./Leaderboard";
@@ -41,7 +41,7 @@ function Podium(props) {
             <Row className='podium'>
                 <Col className='podium-col' xs='4'>
                     <div className='text-center'>
-                        <img width='50%' src={process.env.PUBLIC_URL + '/images/trophy/silver.png'}  />
+                        <img alt='silver' width='50%' src={process.env.PUBLIC_URL + '/images/trophy/silver.png'}  />
                     </div>
                     <Card className='orange text-center'>
                         <Card.Body>
@@ -52,7 +52,7 @@ function Podium(props) {
                 </Col>
                 <Col className='podium-col' xs='4'>
                     <div className='text-center'>
-                        <img width='60%' src={process.env.PUBLIC_URL + '/images/trophy/gold.png'}  />
+                        <img alt='gold' width='60%' src={process.env.PUBLIC_URL + '/images/trophy/gold.png'}  />
                     </div>
                     <Card className='green text-center'>
                         <Card.Body>
@@ -63,7 +63,7 @@ function Podium(props) {
                 </Col>
                 <Col className='podium-col' xs='4'>
                     <div className='text-center'>
-                        <img width='40%' src={process.env.PUBLIC_URL + '/images/trophy/bronze.png'}  />
+                        <img alt='bronze' width='40%' src={process.env.PUBLIC_URL + '/images/trophy/bronze.png'}  />
                     </div>
                     <Card className='purple text-center'>
                         <Card.Body>
@@ -135,7 +135,7 @@ const initFireworks = () => {
         };
 
         const fireworks = new Fireworks(container, options);
-        const stop = fireworks.start()
+        fireworks.start()
     }
 
 }

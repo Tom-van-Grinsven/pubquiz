@@ -6,9 +6,8 @@ import {Col, Row} from "react-bootstrap";
 import {fetchQuiz} from "../reducers/quizReducer";
 import {connect} from "react-redux";
 import {LoadingComponent} from "./MiscComponents";
-import {BrowserRouter as Router, Switch, Route, Redirect, withRouter} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import {setupSocketConnection} from "../reducers/webSocketReducer";
-import Podium from "./Podium";
 import Logo from "./Logo";
 import TimerComponent from "./TimerComponent";
 

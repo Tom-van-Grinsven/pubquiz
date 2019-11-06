@@ -1,6 +1,5 @@
 import produce from "immer";
 import {clearError, setError} from "./errorReducer";
-import {setupSocketConnection} from "./webSocketReducer";
 
 export const createQuiz = (quizName, history) => {
     return dispatch => {

@@ -1,5 +1,4 @@
 import produce from 'immer'
-import {clearError, setError} from './errorReducer';
 import {fetchQuiz, resetHasFetched} from "./quizReducer";
 
 export const joinQuiz = (quizCode) => {

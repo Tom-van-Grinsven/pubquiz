@@ -1,7 +1,6 @@
-import {Button, Card, Col, Collapse, Row} from "react-bootstrap";
+import {Card, Col, Collapse, Row} from "react-bootstrap";
 import React from "react";
 import {connect} from "react-redux";
-import Timer from "react-compound-timer";
 import TimerComponent from "./TimerComponent";
 
 function CurrentQuestionDisplay(props) {
@@ -22,7 +21,7 @@ function CurrentQuestionDisplay(props) {
         )
     } else {
 
-        const {question, category, answer, timer, timestamp} = props.activeQuestion.question;
+        const {question, category, answer} = props.activeQuestion.question;
 
         content = (
             <div>
