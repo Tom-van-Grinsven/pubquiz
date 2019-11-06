@@ -1,10 +1,7 @@
-let mongoose    = require('mongoose');
-let Question    = require('../../models/question');
 let chai        = require('chai');
 let chaiHttp    = require('chai-http');
 let request     = require('supertest')
 let app         = require('../../app');
-
 
 let should      = chai.should();
 let {expect}    = chai;
