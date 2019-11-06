@@ -1,7 +1,8 @@
 import {Button, Card, Col, Collapse, Row} from "react-bootstrap";
 import React from "react";
-import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 import {connect} from "react-redux";
+import Timer from "react-compound-timer";
+import TimerComponent from "./TimerComponent";
 
 function CurrentQuestionDisplay(props) {
 
@@ -21,22 +22,26 @@ function CurrentQuestionDisplay(props) {
         )
     } else {
 
-        const {question, category, answer} = props.activeQuestion.question;
+        const {question, category, answer, timer, timestamp} = props.activeQuestion.question;
 
         content = (
-            <Card className='current-question-display'>
-                <Card.Header className='green'>
-                    {category}
-                </Card.Header>
-                <Card.Body>
-                    <p><b>Question:</b><br/> {question}</p>
-                    <p><b>Answer:</b> {answer}</p>
-                </Card.Body>
-            </Card>
+            <div>
+                <TimerComponent activeQuestion={props.activeQuestion} />
+                <Collapse in={true} appear={true}>
+                    <Card className='current-question-display'>
+                        <Card.Header className='green'>
+                            {category}
+                        </Card.Header>
+                        <Card.Body>
+                            <p><b>Question:</b><br/> {question}</p>
+                            <p><b>Answer:</b> {answer}</p>
+                        </Card.Body>
+                    </Card>
+                </Collapse>
+            </div>
+
         )
     }
-
-
 
     return (
         <div>

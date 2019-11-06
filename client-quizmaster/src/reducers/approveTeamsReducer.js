@@ -45,31 +45,8 @@ export const updateTeamStatus = (teamName, status) => {
     }
 };
 
-export const approveTeams = (teams, quizCode, history) => {
+export const approveTeams = (approvedTeams, quizCode, done) => {
     return dispatch => {
-
-        const err = [];
-        const approvedTeams = teams.filter(team => team.approved === true).map(approvedTeam => approvedTeam.teamName);
-        const rejectedTeams = teams.filter(team => team.approved === false);
-
-        if(approvedTeams.length < 2) {
-            err.push('You need to approve at least two team in order for the quiz to be playable')
-        }
-
-        if((approvedTeams.length + rejectedTeams.length) !== teams.length) {
-            err.push('Not all teams have been approved or rejected')
-        }
-
-        if(!quizCode) {
-            err.push('A system error has occurred, please contact an administrator if the problem persists')
-        }
-
-        if(err.length > 0) {
-            return dispatch(setError({
-                messages: err,
-                code: 'NUMBER_OF_TEAMS_APPROVED'
-            }));
-        }
 
         dispatch(approveTeamsRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
@@ -82,7 +59,7 @@ export const approveTeams = (teams, quizCode, history) => {
         }).then(() => {
                 dispatch(approveTeamsRequestSuccess(approvedTeams));
                 dispatch(clearError());
-                history.push('/quiz/' + quizCode + '/select-categories')
+                done();
             },
             err => {
                 dispatch(approveTeamsRequestFailure());

@@ -113,6 +113,35 @@ input.error {
     padding:2vmin
 }
 
+.timer-container {
+    margin-bottom: 1vmin;
+}
+.timer {
+    text-align: center;
+    font-family: 'roboto', sans-serif;
+}
+.timer .cell {
+    text-align: left;
+    display: inline-block;
+    height: 35px;
+}
+.timer .cell.min {
+    width: 21px;
+}
+.timer .cell.sec {
+    width: 40px;
+}
+.timer .cell.colon {
+    width: 30px;
+    text-align: center;
+}
+.timer .cell span {
+    font-size: 35px;
+    line-height: 35px;
+    color: #444;
+    display: block;
+}
+
 .current-question-display {
     margin-bottom: 1vmin;
 }
@@ -135,6 +164,10 @@ input.error {
 .team-answers-list {
     padding: 2vmin 0;
 }
+.team-answers-list td {
+    width: 50%;
+}
+
 .incorrect td {
     color: #721c24;
     background-color: #f8d7da;

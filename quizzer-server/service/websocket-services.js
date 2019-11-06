@@ -1,6 +1,6 @@
 function sendMessageToWebsocketTeams(req, message) {
     req.websocketServer.clients.forEach((client) => {
-        if(!client.session.account && req.quiz.code === client.session.quizCode){
+        if(client.session.team && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
@@ -16,7 +16,7 @@ function sendMessageToWebsocketQuizmaster(req, message){
 
 function sendMessageToWebsocketScoreboard(req, message){
     req.websocketServer.clients.forEach((client) => {
-        if(!client.session.team && !client.session.account){
+        if(!client.session.team && !client.session.account && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
     })
@@ -31,7 +31,6 @@ function filterWebsocketConnectionsForDefinitiveTeam(req, teams){
         }
     });
 }
-
 
 module.exports = {
     sendMessageToWebsocketTeams,

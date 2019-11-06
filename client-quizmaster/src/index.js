@@ -4,11 +4,11 @@ import thunkMiddleware from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
+import {BrowserRouter as Router} from "react-router-dom";
 import mainReducer from './reducers/index'
 
 import './index.css'
 import App from './components/App'
-import {BrowserRouter} from "react-router-dom";
 
 const theStore = createStore(mainReducer,
     composeWithDevTools(
@@ -20,9 +20,9 @@ const theStore = createStore(mainReducer,
 
 const mainComponent = (
     <Provider store={theStore}>
-        <BrowserRouter>
+        <Router>
             <App/>
-        </BrowserRouter>
+        </Router>
     </Provider>
 );
 

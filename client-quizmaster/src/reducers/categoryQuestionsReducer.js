@@ -54,7 +54,7 @@ export const toggleSelectedQuestion = (questionId) => {
     }
 };
 
-export const sendActiveQuestion = (questionId, quizCode) => {
+export const sendActiveQuestion = (questionId, quizCode, seconds) => {
     return dispatch => {
         dispatch(clearError());
         dispatch(sendActiveQuestionRequest());
@@ -65,10 +65,12 @@ export const sendActiveQuestion = (questionId, quizCode) => {
             },
             credentials: 'include',
             body: JSON.stringify({
-                'id': questionId
+                'id': questionId,
+                'timer': seconds > 0,
+                'seconds': parseInt(seconds)
             })
         }).then(() => {
-            dispatch(setActiveQuestionIsUpdated(true));
+            dispatch(setActiveQuestionIsUpdated());
             dispatch(sendActiveQuestionRequestSuccess());
             dispatch(incrementQuestionNr());
         }, err => {
@@ -105,20 +107,40 @@ export const setCategoryQuestionsUpdated = () => {
     }
 };
 
+
+
+export const setTimerInput = (value) => {
+    return {
+        type: 'SET_TIMER_INPUT',
+        payload: value
+    }
+};
+
+export const categoryQuestionActiveQuestionClosed = () => {
+    return {
+        type: 'CATEGORY_QUESTION_ACTIVE_QUESTION_CLOSED'
+    }
+};
+
+
 const initialState = {
     isFetching: false,
     isSending: false,
     isUpdated: true,
     selectedQuestionId: null,
-    activeQuestion: null,
-    list: []
+    list: [],
+    timerInput: 0,
 };
 
 export const categoryQuestionsReducer = produce((state, action) => {
 
-    let activeQuestion;
+    let activeQuestion, selectedQuestion;
 
     switch (action.type) {
+
+        case 'SET_TIMER_INPUT':
+            state.timerInput = action.payload;
+            return;
 
         case 'CATEGORY_QUESTIONS_UPDATED':
             state.isUpdated = true;
@@ -132,7 +154,6 @@ export const categoryQuestionsReducer = produce((state, action) => {
             state.isFetching = false;
             state.isUpdated = false;
             state.list = action.payload;
-            state.activeQuestion = state.list.find(question => question.isActive === true);
             return;
 
         case 'FETCH_CATEGORY_QUESTIONS_REQUEST_FAILURE':
@@ -155,7 +176,11 @@ export const categoryQuestionsReducer = produce((state, action) => {
                 activeQuestion.isActive = false;
             }
 
-            state.list.find(question => question._id === state.selectedQuestionId).isActive = true;
+            selectedQuestion = state.list.find(question => question._id === state.selectedQuestionId);
+            if(selectedQuestion) {
+                selectedQuestion.isActive = true;
+            }
+
             state.selectedQuestionId = null;
             state.isSending = false;
             return;
@@ -165,7 +190,7 @@ export const categoryQuestionsReducer = produce((state, action) => {
             state.err = action.payload;
             return;
 
-        case 'SEND_CLOSE_QUESTION_REQUEST_SUCCESS':
+        case 'UPDATE_CLOSED_ACTION':
             activeQuestion = state.list.find(question => question.isActive === true);
             activeQuestion.isClosed = true;
             return;
