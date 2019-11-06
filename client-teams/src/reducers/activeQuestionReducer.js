@@ -82,7 +82,6 @@ export const activeQuestionReducer = produce((state, action) => {
             return;
 
         case "UPDATE_QUIZ_ENDED":
-            console.log( ' ja man hiero ');
             state.quizClosed = true;
             return;
 

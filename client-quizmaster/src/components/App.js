@@ -51,7 +51,7 @@ function App(props) {
     return (
         <Container fluid className='main-content-container'>
             <div className='logo'>
-                <img src={process.env.PUBLIC_URL + '/images/logo.png'}  />
+                <img alt='logo' src={process.env.PUBLIC_URL + '/images/logo.png'}  />
             </div>
             {content}
         </Container>

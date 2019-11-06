@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Collapse, Table} from "react-bootstrap";
+import {Card, Collapse} from "react-bootstrap";
 import Timer from "react-compound-timer";
 
 

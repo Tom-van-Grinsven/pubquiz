@@ -1,5 +1,4 @@
 import {produce} from "immer";
-import {updateApprovedTeams} from "./approveTeamsReducer";
 import {clearError, setError} from "./errorReducer";
 import {incrementRoundNr, resetQuestionNr} from "./quizReducer";
 import {setCategoryQuestionsUpdated} from "./categoryQuestionsReducer";

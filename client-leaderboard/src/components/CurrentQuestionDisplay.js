@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {Card, Col, Collapse, Row} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
-import { Textfit } from 'react-textfit';
 
 function CurrentQuestionDisplay(props) {
 

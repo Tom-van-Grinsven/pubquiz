@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Col, Collapse, Row, Table} from "react-bootstrap";
+import {Card, Table} from "react-bootstrap";
 import {fetchTeamAnswers} from "../reducers/teamAnswersReducer";
 import {connect} from "react-redux";
 

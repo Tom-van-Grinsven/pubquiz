@@ -1,6 +1,6 @@
 import React from "react";
 import {Card, Collapse, Table} from "react-bootstrap";
-import {fetchScore} from "../reducers/LeaderboardReducer";
+import {fetchScore} from "../reducers/leaderboardReducer";
 import {connect} from "react-redux";
 import {produce} from "immer";
 

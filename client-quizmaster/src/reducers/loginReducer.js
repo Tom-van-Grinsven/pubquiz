@@ -12,9 +12,7 @@ const validateLogin = (email, password) => {
     if(password.length === 0) {
         err.push('Please enter an password')
     }
-
     return err;
-
 };
 
 export const login = (email, password) => {

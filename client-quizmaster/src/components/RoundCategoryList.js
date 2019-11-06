@@ -1,14 +1,11 @@
 import React from 'react';
 import Card from "react-bootstrap/Card";
-import {Button, ButtonGroup, Collapse} from "react-bootstrap";
+import {Button, ButtonGroup} from "react-bootstrap";
 import {fetchCategories, toggleCategory} from "../reducers/createRoundReducer";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
-import {LoadingComponent} from "./MiscComponents";
-
 
 function RoundCategoryList(props) {
-
 
     if(props.categories.length === 0 && !props.isFetching) {
         props.doFetchCategories();
@@ -50,11 +47,11 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(RoundCategoryList));
-
 function RoundCategoryListItem(props) {
     if(props.isActive) {
         return <Button variant="outline-orange" onClick={props.onToggle} value={props.category} active block>{props.category} <span className='right-icon'>✓</span></Button>
     }
     return <Button onClick={props.onToggle} variant="outline-orange" value={props.category} block>{props.category}</Button>
 }
+
+export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(RoundCategoryList));
