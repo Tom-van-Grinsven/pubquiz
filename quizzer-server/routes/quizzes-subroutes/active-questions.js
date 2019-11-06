@@ -12,7 +12,7 @@ quizActiveQuestionRouter.get('/', async function(req, res) {
         } else if (req.session.team || req.session.quizCode){
             let result = await req.quiz.getActiveQuestion();
             if(result._id) {
-                console.log(result);
+
                 let questionObject = {
                     roundNr: req.quiz.roundNumber,
                     questionNr: req.quiz.questionNumber,

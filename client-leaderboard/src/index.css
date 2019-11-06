@@ -164,6 +164,10 @@ input.error {
 .team-answers-list {
     padding: 2vmin 0;
 }
+.team-answers-list td {
+    width: 50%;
+}
+
 .incorrect td {
     color: #721c24;
     background-color: #f8d7da;

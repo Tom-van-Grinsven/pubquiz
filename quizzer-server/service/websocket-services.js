@@ -16,7 +16,6 @@ function sendMessageToWebsocketQuizmaster(req, message){
 
 function sendMessageToWebsocketScoreboard(req, message){
     req.websocketServer.clients.forEach((client) => {
-        console.log('session', client.session);
         if(!client.session.team && !client.session.account && req.quiz.code === client.session.quizCode){
             client.send(JSON.stringify({type: message}));
         }
