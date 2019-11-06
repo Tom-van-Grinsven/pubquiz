@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from "react-bootstrap/Card";
-import {Button, Form, ButtonGroup, Collapse} from "react-bootstrap";
+import {Button, Form, Collapse} from "react-bootstrap";
 import * as ReactRedux from "react-redux";
 import {withRouter} from "react-router-dom";
 import {endQuiz, sendRoundCategories} from "../reducers/createRoundReducer";

@@ -13,12 +13,13 @@ quizActiveQuestionAnswerRouter.get('/', async function(req, res) {
     try {
 
         const currentQuestion = req.quiz.questions.find(question => question.isActive === true);
-        if(!authorizationService.isAuthorized(req) && currentQuestion.isClosed === false) {
-            return res.sendStatus(403);
-        }
+        // if(!authorizationService.isAuthorized(req) && currentQuestion.isClosed === false) {
+        //     return res.sendStatus(403);
+        // }
 
         let result = await req.quiz.getGivenAnswers();
-        res.send(result);
+        return res.send(result);
+
 
     } catch (err) {
         console.log(err);
@@ -45,7 +46,8 @@ quizActiveQuestionAnswerRouter.put('/', async function(req, res) {
             if(req.body.answer){
                 await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
                 websocketService.sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
-                res.send(204)
+                websocketService.sendMessageToWebsocketScoreboard(req,"UPDATE_GIVEN_TEAM_ANSWERS");
+                res.sendStatus(204)
             } else {
                 res.sendStatus(400)
             }

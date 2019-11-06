@@ -1,6 +1,6 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container'
-import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, withRouter, Redirect} from 'react-router-dom'
 import RegisterLoginContainer from "./RegisterLoginContainer";
 import CreateQuizForm from "./CreateQuizForm";
 import QuizComponent from "./QuizComponent";
@@ -16,12 +16,10 @@ function App(props) {
     if(!props.account.isFetching && props.account.isUpdated) {
         props.doFetchAccount();
         return null
-
     }
 
     if (props.account.isLoggedIn && props.location.pathname === '/') {
-        props.history.push('/quiz');
-        return null
+        return <Redirect to='/quiz' />
     }
 
     if(!props.account.isFetching && !props.account.isLoggedIn && props.location.pathname !== '/') {
@@ -50,12 +48,10 @@ function App(props) {
         )
     }
 
-
-
     return (
         <Container fluid className='main-content-container'>
             <div className='logo'>
-                <img src={process.env.PUBLIC_URL + '/images/logo.png'}  />
+                <img alt='logo' src={process.env.PUBLIC_URL + '/images/logo.png'}  />
             </div>
             {content}
         </Container>

@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {Card, Col, Collapse, Row} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
-import { Textfit } from 'react-textfit';
 
 function CurrentQuestionDisplay(props) {
 
@@ -38,7 +37,7 @@ function CurrentQuestionDisplay(props) {
                     <Col sm='6' className='text-left'><h5>Question: {props.activeQuestion.question.questionNr}</h5></Col>
                 </Row>
                 <h5 className='cat-text'><b>{category}</b></h5>
-                <Textfit mode="multi" style={{maxHeight: '9vmin'}}>{question}</Textfit>
+                <h5>{question}</h5>
             </Card.Body>
         </Card>
         </div>

@@ -79,6 +79,8 @@ export const leaderboardReducer = produce((state, action) => {
             state.hasFetched = true;
             return;
 
+        default:
+            return state;
 
 
     }

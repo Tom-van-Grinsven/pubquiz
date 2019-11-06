@@ -15,7 +15,6 @@ export const getTeamInformation = () => {
         }).then(teamInfo => {
             dispatch(fetchTeamRequestSuccess(teamInfo))
         }, err => {
-            console.log(' error ');
             dispatch(setError({
                 message: [err]
             }));
@@ -38,7 +37,6 @@ const fetchTeamRequestSuccess = (team) => {
 };
 
 const fetchTeamRequestFailure = () => {
-    console.log(' in de request failure ');
     return {
         type: 'FETCH_TEAM_REQUEST_FAILURE'
     }
@@ -53,7 +51,6 @@ export const setAnswer = (answer) => {
 
 export const sendAnswer = (quizCode, teamName, answer) => {
 
-    console.log(' hiero ');
     return dispatch => {
         dispatch(clearError());
         //dispatch(sendActiveQuestionRequest());
@@ -99,7 +96,6 @@ export const answerQuestionReducer = produce((state, action) => {
             return;
 
         case 'FETCH_TEAM_REQUEST_SUCCESS':
-            console.log(action.payload);
             state.isFetching = false;
             if(!_.isEmpty(action.payload)) {
                 state.teamName = action.payload.teamName;

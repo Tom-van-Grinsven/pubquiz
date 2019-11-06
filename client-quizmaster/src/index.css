@@ -75,6 +75,10 @@ body {
     font-weight: bold;
     border-top: 5px solid #FFFFFF;
 }
+.card .card-footer .form-group {
+    color:#212529;
+
+}
 
 .card.purple {
     background: #88498f;
@@ -131,6 +135,7 @@ input.error {
 }
 .login-register-form {
     padding:0 20px;
+    margin-bottom:1rem;
 }
 .card h3 {
     margin-bottom: 15px;
@@ -283,7 +288,7 @@ div.quiz-link-container {
 .team-question-answers-container .quiz-round-info .card {
     margin-bottom: 1rem;
 }
-.team-question-answers-container .current-question-display {
+.team-question-answers-container .current-question-display, .team-question-answers-container .timer-container {
     margin-bottom: 1rem;
 }
 .team-question-answers-container .current-question-display p:last-child {
@@ -296,14 +301,26 @@ div.quiz-link-container {
     display: flex;
     margin-bottom: .375rem;
 }
+
 .team-answers-list  .approve-answer-form:last-child, .team-answers-list .approve-teams-form:only-child {
     margin-bottom: 1.5rem;
 }
-.team-answers-list  .approve-answer-form p {
+
+.team-answers-list  .approve-answer-form p:first-child {
+    display: inline-flex;
+    border: 1px solid rgba(0,0,0,.5);
+    border-radius: .25rem 0 0 .25rem;
+    padding: .75rem;
+    margin: 0;
+    background: #FFFFFF;
+    color: #000000;
+    border-right:none;
+}
+
+.team-answers-list  .approve-answer-form p:nth-child(2) {
     padding: .75rem;
     flex-grow: 1;
     border: 1px solid rgba(0,0,0,.5);
-    border-radius: .25rem 0 0 .25rem;
     margin: 0;
     border-right:none;
     background: #FFFFFF;
@@ -326,4 +343,29 @@ div.quiz-link-container {
 .quiz-master-dashboard > .col:first-child {
     max-height: 800px;
     margin-bottom: 1rem;
+}
+.timer {
+    text-align: center;
+    font-family: 'roboto', sans-serif;
+}
+.timer .cell {
+    text-align: left;
+    display: inline-block;
+    height: 35px;
+}
+.timer .cell.min {
+    width: 21px;
+}
+.timer .cell.sec {
+    width: 40px;
+}
+.timer .cell.colon {
+    width: 30px;
+    text-align: center;
+}
+.timer .cell span {
+    font-size: 35px;
+    line-height: 35px;
+    color: #444;
+    display: block;
 }

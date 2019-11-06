@@ -1,5 +1,4 @@
 import {produce} from "immer";
-import {updateApprovedTeams} from "./approveTeamsReducer";
 import {clearError, setError} from "./errorReducer";
 import {incrementRoundNr, resetQuestionNr} from "./quizReducer";
 import {setCategoryQuestionsUpdated} from "./categoryQuestionsReducer";
@@ -110,7 +109,7 @@ export const endQuiz = (isActive, quizCode, history) => {
             credentials: 'include',
             body: JSON.stringify({isActive: isActive})
         }).then(() => {
-                history.push('/quiz/' + quizCode + '/thanksforplaying')
+                history.push('/quiz/' + quizCode + '/thanks-for-playing')
             },
             err => {
                 dispatch(setError({

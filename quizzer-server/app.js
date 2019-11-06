@@ -44,8 +44,6 @@ httpServer.on('upgrade', (req, networkSocket, head) => {
 
         if(req.session.quizCode || req.session.account || req.session.team) {
 
-            console.log(req.session);
-
             websocketServer.handleUpgrade(req, networkSocket, head, newWebSocket => {
                 websocketServer.emit('connection', newWebSocket, req);
             });
@@ -70,10 +68,11 @@ httpServer.on('request', app);
 
 httpServer.listen(3000, function() {
     mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true }, () => {
-        console.log(`game server started on port ${httpServer.address().port}`);
     });
 });
 
 app.use( (err, req, res, next) => {
     return res.status(500).send('Server Error')
 });
+
+module.exports = app;

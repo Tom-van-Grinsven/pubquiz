@@ -2,7 +2,8 @@ import React from 'react';
 import {Container} from "react-bootstrap";
 import {BrowserRouter as Router, Switch, Route, withRouter} from 'react-router-dom'
 import JoinQuizForm from "./JoinQuizForm";
-import LeaderBoardContainer from "./LeaderBoardContainer";
+import Logo from "./Logo";
+import QuizComponent from "./QuizComponent";
 
 function App(props) {
 
@@ -11,12 +12,10 @@ function App(props) {
             <Router>
                 <Switch>
                     <Route exact path='/'>
-                        <div className='logo'>
-                            <img src={process.env.PUBLIC_URL + '/images/logo.png'}  />
-                        </div>
+                        <Logo />
                         <JoinQuizForm/>
                     </Route>
-                    <Route path='/:code/leaderboard' component={LeaderBoardContainer} />
+                    <Route path='/:code' component={QuizComponent} />
                 </Switch>
             </Router>
         </Container>

@@ -55,6 +55,12 @@ export const teamAnswersReducer = produce((state, action) => {
             state.isFetching = true;
             return;
 
+        case 'FETCH_ACTIVE_QUESTION_SUCCESS':
+            if(!action.payload.isClosed && !action.payload.isValidated) {
+                state.answers = [];
+            }
+            return;
+
         case 'FETCH_TEAM_ANSWERS_REQUEST_SUCCESS':
             state.isFetching = false;
             state.isUpdated = false;
@@ -67,6 +73,7 @@ export const teamAnswersReducer = produce((state, action) => {
             return;
 
         case 'UPDATE_CLOSED_ACTION':
+        case 'UPDATE_GIVEN_TEAM_ANSWERS':
         case 'UPDATE_JUDGED_QUESTIONS':
             state.isUpdated = true;
             return;

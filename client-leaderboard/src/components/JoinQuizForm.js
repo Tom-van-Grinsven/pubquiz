@@ -15,7 +15,7 @@ function JoinQuizForm(props) {
     const setQuizCode = (event) => props.doSetQuizCode(event.target.value);
 
     let err;
-    if(!props.quiz.code && props.quiz.hasFetched || props.quiz.hasFetched && !props.quiz.isActive) {
+    if((!props.quiz.code && props.quiz.hasFetched) || (props.quiz.hasFetched && !props.quiz.isActive)) {
         err = {
             messages: ["Sorry it looks like the quiz you tried to join is not available"]
         }

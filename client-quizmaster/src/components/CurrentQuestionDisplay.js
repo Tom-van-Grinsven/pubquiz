@@ -1,12 +1,13 @@
-import {Button, Card, Col, Collapse, Row} from "react-bootstrap";
+import {Card, Col, Collapse, Row} from "react-bootstrap";
 import React from "react";
-import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
 import {connect} from "react-redux";
+import TimerComponent from "./TimerComponent";
 
 function CurrentQuestionDisplay(props) {
 
+    let content;
     if((props.activeQuestion.question === null || props.activeQuestion.question.isValidated) && (!props.activeQuestion.isUpdated || props.activeQuestion.isFetching)) {
-        return (
+        content = (
             <Collapse in={true} appear={true}>
                 <div className='current-question-display'>
                     <Card>
@@ -18,9 +19,28 @@ function CurrentQuestionDisplay(props) {
                 </div>
             </Collapse>
         )
-    }
+    } else {
 
-    const {question, category, answer} = props.activeQuestion.question;
+        const {question, category, answer} = props.activeQuestion.question;
+
+        content = (
+            <div>
+                <TimerComponent activeQuestion={props.activeQuestion} />
+                <Collapse in={true} appear={true}>
+                    <Card className='current-question-display'>
+                        <Card.Header className='green'>
+                            {category}
+                        </Card.Header>
+                        <Card.Body>
+                            <p><b>Question:</b><br/> {question}</p>
+                            <p><b>Answer:</b> {answer}</p>
+                        </Card.Body>
+                    </Card>
+                </Collapse>
+            </div>
+
+        )
+    }
 
     return (
         <div>
@@ -40,16 +60,8 @@ function CurrentQuestionDisplay(props) {
                     </Card>
                 </Col>
             </Row>
+            {content}
 
-            <Card className='current-question-display'>
-                <Card.Header className='green'>
-                    {category}
-                </Card.Header>
-                <Card.Body>
-                    <p><b>Question:</b><br/> {question}</p>
-                    <p><b>Answer:</b> {answer}</p>
-                </Card.Body>
-            </Card>
         </div>
     )
 }

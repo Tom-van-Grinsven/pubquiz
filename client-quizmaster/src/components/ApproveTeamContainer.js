@@ -10,10 +10,12 @@ import * as ReactRedux from "react-redux";
 import {approveTeams} from "../reducers/approveTeamsReducer";
 import {ErrorComponent} from "./MiscComponents";
 import {Col, Collapse, Row} from "react-bootstrap";
+import {setError} from "../reducers/errorReducer";
 
 function ApproveTeamContainer(props) {
 
-    const approveTeams = () => props.doApproveTeams(props.teams, props.quizCode, props.history);
+    const callback = () => props.history.push('/quiz/' + props.quizCode + '/select-categories');
+    const approveTeams = () => props.doApproveTeams(props.teams, props.quizCode, callback);
 
     return (
             <div>
@@ -64,8 +66,37 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
     return {
-        doApproveTeams: (approvedTeams, quizCode, history) => dispatch(approveTeams(approvedTeams, quizCode, history)),
+        doApproveTeams: (approvedTeams, quizCode, callback) => validateAndSendApprovedTeams(dispatch, approvedTeams, quizCode, callback),
     }
 }
 
+const validateAndSendApprovedTeams = (dispatch, teams, quizCode, callback) => {
+
+    const err = [];
+    const approvedTeams = teams.filter(team => team.approved === true).map(approvedTeam => approvedTeam.teamName);
+    const rejectedTeams = teams.filter(team => team.approved === false);
+
+    if(approvedTeams.length < 2) {
+        err.push('You need to approve at least two team in order for the quiz to be playable')
+    }
+
+    if((approvedTeams.length + rejectedTeams.length) !== teams.length) {
+        err.push('Not all teams have been approved or rejected')
+    }
+
+    if(!quizCode) {
+        err.push('A system error has occurred, please contact an administrator if the problem persists')
+    }
+
+    if(err.length > 0) {
+        return dispatch(setError({
+            messages: err,
+            code: 'NUMBER_OF_TEAMS_APPROVED'
+        }));
+    }
+
+    return dispatch(approveTeams(approvedTeams, quizCode, callback));
+};
+
 export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(ApproveTeamContainer));
+

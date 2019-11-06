@@ -1,7 +1,6 @@
 import {produce} from "immer";
-import {clearActiveQuestion, setActiveQuestionValidated} from "./activeQuestionReducer";
+import {setActiveQuestionValidated} from "./activeQuestionReducer";
 import {clearError, setError} from "./errorReducer";
-import {incrementQuestionNr} from "./quizReducer";
 
 export const fetchTeamAnswers = (quizCode) => {
     return dispatch => {

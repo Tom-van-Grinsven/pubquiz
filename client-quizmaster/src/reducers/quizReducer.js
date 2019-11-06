@@ -1,6 +1,5 @@
 import produce from "immer";
 import {clearError, setError} from "./errorReducer";
-import {setupSocketConnection} from "./webSocketReducer";
 
 export const createQuiz = (quizName, history) => {
     return dispatch => {
@@ -20,7 +19,7 @@ export const createQuiz = (quizName, history) => {
             credentials: 'include',
             body: JSON.stringify({quizName: quizName})
         }).then(response => response.json(), err => {
-            dispatch(createQuizRequestFailure())
+            dispatch(createQuizRequestFailure());
             dispatch(setError({
                 message: [err]
             }));
@@ -28,7 +27,7 @@ export const createQuiz = (quizName, history) => {
                 dispatch(createQuizRequestSuccess(quiz.quizCode));
                 history.push('/quiz/' + quiz.quizCode + '/approve-teams')
             }, err => {
-            dispatch(createQuizRequestFailure())
+            dispatch(createQuizRequestFailure());
             dispatch(setError({
                 message: [err]
             }));

@@ -59,7 +59,6 @@ export const joinQuiz = (quizCode, teamName, history) => {
                 joinquiz: {messages: [fetchErr]}
             }))
         }).then(() => {
-            console.log('hier');
             history.push('/quiz/' + quizCode);
         }, (responseStatus) => {
 

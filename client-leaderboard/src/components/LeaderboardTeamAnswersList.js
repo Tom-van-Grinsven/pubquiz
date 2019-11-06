@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Col, Collapse, Row} from "react-bootstrap";
+import {Card, Table} from "react-bootstrap";
 import {fetchTeamAnswers} from "../reducers/teamAnswersReducer";
 import {connect} from "react-redux";
 
@@ -10,31 +10,23 @@ function LeaderboardTeamAnswersList(props) {
         return null;
     }
 
-    if(!props.activeQuestion.question.isClosed || props.teamAnswers.isFetching) {
-        return (
-            <Collapse in={true} appear={true}>
-                <div className='current-question-display'>
-                    <Card>
-                        <Card.Body className='text-center'>
-                            <p>Waiting for the Team answers</p>
-                            <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
-                        </Card.Body>
-                    </Card>
-                </div>
-            </Collapse>
-        )
-    }
-
     if(!props.teamAnswers.isFetching && props.teamAnswers.isUpdated) {
         props.doFetchTeamAnswers(props.quiz.code);
         return null;
     }
+
+    const loadingDiv = (
+        <div className='loading-div'>
+            <p>Waiting for answers <img width='40px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" /></p>
+        </div>
+    );
 
     let teamAnswersList;
     if(props.teamAnswers.answers.length > 0 ) {
         teamAnswersList = props.teamAnswers.answers.map(teamAnswer => <LeaderboardTeamAnswer
             key={teamAnswer._id}
             answer={teamAnswer}
+            isClosed={props.activeQuestion.question.isClosed}
         />)
     }
 
@@ -44,11 +36,17 @@ function LeaderboardTeamAnswersList(props) {
     }
 
     return (
-        <Card className='green'>
+        <Card>
+            <Card.Header className='green text-center'><h5><b>Team Answers</b></h5></Card.Header>
             <Card.Body>
                 {questionAnswer}
                 <div className='team-answers-list'>
-                    {teamAnswersList ? teamAnswersList : <h5 className='text-center'>No Answers we're given by the teams</h5>}
+                    {!props.activeQuestion.question.isClosed ? loadingDiv : '' }
+                    <Table bordered>
+                        <tbody>
+                        {!teamAnswersList && props.activeQuestion.question.isClosed ? <tr><td className='text-center'>No Answers we're given by the teams</td></tr> : teamAnswersList }
+                        </tbody>
+                    </Table>
                 </div>
             </Card.Body>
         </Card>
@@ -83,9 +81,9 @@ function LeaderboardTeamAnswer(props) {
         }
     }
     return (
-        <Row className='team-answer'>
-            <Col xs='5'>{props.answer.teamName}</Col>
-            <Col xs='7' className={`text-center ${answerStatus}`}>{props.answer.givenAnswer}</Col>
-        </Row>
+        <tr key={props.answer._id} className={answerStatus}>
+            <td>{props.answer.teamName} {!props.isClosed ? 'has given an answer!' : ''}</td>
+            {props.isClosed ? <td> {props.answer.givenAnswer} </td> : ''}
+        </tr>
     )
 }
