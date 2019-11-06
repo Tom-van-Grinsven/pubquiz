@@ -151,7 +151,7 @@ quizSchema.methods.setActiveQuestion = async function (req) {
         const milliseconds          = seconds * 1000;
         newActiveQuestion.timer     = true;
         newActiveQuestion.timestamp = Math.round((new Date()).getTime()) + milliseconds;
-        setTimeout(() => this.closeActiveQuestion(req, true), milliseconds);
+        setTimeout(() => this.closeActiveQuestion(req), milliseconds);
     }
 
     this.questionNumber++;
@@ -162,12 +162,14 @@ quizSchema.methods.setActiveQuestion = async function (req) {
 
 };
 
-quizSchema.methods.closeActiveQuestion = async function (req, notifyQuizMaster = false) {
-    const currentActiveQuestion     = this.questions.find(question => question.isActive === true);
+quizSchema.methods.closeActiveQuestion = async function (req) {
 
-    if(currentActiveQuestion !== true) {
+    const quiz                  = await Quiz.findOne({code: req.quiz.code});
+    const currentActiveQuestion = quiz.questions.find(question => question.isActive === true);
+
+    if(currentActiveQuestion.isClosed !== true) {
         currentActiveQuestion.isClosed  = true;
-        await this.save();
+        await quiz.save();
 
         websocketService.sendMessageToWebsocketTeams(req, "UPDATE_CLOSED_QUESTION");
         websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_CLOSED_ACTION");

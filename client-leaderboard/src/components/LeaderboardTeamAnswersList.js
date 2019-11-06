@@ -15,51 +15,40 @@ function LeaderboardTeamAnswersList(props) {
         return null;
     }
 
-    let content;
-    if(!props.activeQuestion.question.isClosed || props.teamAnswers.isFetching) {
+    const loadingDiv = (
+        <div className='loading-div'>
+            <p>Waiting for answers <img width='40px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" /></p>
+        </div>
+    );
 
-        content = (
-            <Collapse in={true} appear={true}>
-                <Card.Body className='text-center'>
-                    <p>Waiting for the Team answers</p>
-                    <img width='100px' src={process.env.PUBLIC_URL + '/images/spinner.svg'} alt="spinner" />
-                </Card.Body>
-            </Collapse>
-        )
+    let teamAnswersList;
+    if(props.teamAnswers.answers.length > 0 ) {
+        teamAnswersList = props.teamAnswers.answers.map(teamAnswer => <LeaderboardTeamAnswer
+            key={teamAnswer._id}
+            answer={teamAnswer}
+            isClosed={props.activeQuestion.question.isClosed}
+        />)
+    }
 
-    } else {
-
-        let teamAnswersList;
-        if(props.teamAnswers.answers.length > 0 ) {
-            teamAnswersList = props.teamAnswers.answers.map(teamAnswer => <LeaderboardTeamAnswer
-                key={teamAnswer._id}
-                answer={teamAnswer}
-            />)
-        }
-
-        let questionAnswer = '';
-        if(props.activeQuestion.question.isClosed && props.activeQuestion.question.answer !== undefined && props.activeQuestion.question.isValidated) {
-            questionAnswer = <h5 className='text-center'><b>Answer:</b> {props.activeQuestion.question.answer}</h5>
-        }
-
-        content = (
-            <Card.Body>
-                {questionAnswer}
-                <div className='team-answers-list'>
-                    <Table bordered>
-                        <tbody>
-                        {teamAnswersList ? teamAnswersList : <tr><td className='text-center'>No Answers we're given by the teams</td></tr>}
-                        </tbody>
-                    </Table>
-                </div>
-            </Card.Body>
-        )
+    let questionAnswer = '';
+    if(props.activeQuestion.question.isClosed && props.activeQuestion.question.answer !== undefined && props.activeQuestion.question.isValidated) {
+        questionAnswer = <h5 className='text-center'><b>Answer:</b> {props.activeQuestion.question.answer}</h5>
     }
 
     return (
         <Card>
             <Card.Header className='green text-center'><h5><b>Team Answers</b></h5></Card.Header>
-            {content}
+            <Card.Body>
+                {questionAnswer}
+                <div className='team-answers-list'>
+                    {!props.activeQuestion.question.isClosed ? loadingDiv : '' }
+                    <Table bordered>
+                        <tbody>
+                        {!teamAnswersList && props.activeQuestion.question.isClosed ? <tr><td className='text-center'>No Answers we're given by the teams</td></tr> : teamAnswersList }
+                        </tbody>
+                    </Table>
+                </div>
+            </Card.Body>
         </Card>
     )
 
@@ -92,9 +81,9 @@ function LeaderboardTeamAnswer(props) {
         }
     }
     return (
-        <tr className={answerStatus}>
-            <td>{props.answer.teamName}</td>
-            <td>{props.answer.givenAnswer}</td>
+        <tr key={props.answer._id} className={answerStatus}>
+            <td>{props.answer.teamName} {!props.isClosed ? 'has given an answer!' : ''}</td>
+            {props.isClosed ? <td> {props.answer.givenAnswer} </td> : ''}
         </tr>
     )
 }
