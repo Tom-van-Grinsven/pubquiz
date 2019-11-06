@@ -3,10 +3,10 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import * as ReactRedux from "react-redux";
 import {login, setLoginEmail, setLoginPassword} from "../reducers/loginReducer";
 import {withRouter} from "react-router-dom";
 import {ErrorComponent, submitOnEnter} from "./MiscComponents";
+import {connect} from "react-redux";
 
 
 function LoginForm(props) {
@@ -54,4 +54,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(withRouter(LoginForm));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(LoginForm));

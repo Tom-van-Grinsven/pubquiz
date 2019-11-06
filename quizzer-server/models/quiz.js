@@ -1,6 +1,9 @@
+
+
 const mongoose = require('mongoose');
 const questionSchema = require('./question');
 const quizService = require('../service/quiz-schema-service');
+const websocketService = require('../service/websocket-services');
 
 mongoose.set('debug', true);
 
@@ -20,6 +23,8 @@ const quizSchema = new mongoose.Schema({
             isActive: {type: Boolean, required: true, default: false},
             isClosed: {type: Boolean, required: true, default: false},
             isValidated: {type: Boolean, required: true, default: false},
+            timer: {type: Boolean},
+            timestamp: {type: Number}
         }
     ],
     answeredQuestions: [
@@ -72,7 +77,9 @@ quizSchema.methods.getActiveQuestion = async function () {
             return {
                 ...question._doc,
                 isClosed: activeQuestion.isClosed,
-                isValidated: activeQuestion.isValidated
+                isValidated: activeQuestion.isValidated,
+                timer: activeQuestion.timer,
+                timestamp: activeQuestion.timestamp
             }
         }
         return {};
@@ -127,30 +134,44 @@ quizSchema.methods.setDefinitiveTeamsForQuiz = async function (teams) {
     }
 };
 
-quizSchema.methods.setActiveQuestion = async function (questionId) {
-    try {
-        // get the current active question if it exists. Set it to false.
-        let currentActiveQuestionIndex = quizService.getActiveQuestionIndex(this);
-        if (currentActiveQuestionIndex >= 0) {
-            this.questions[currentActiveQuestionIndex].isActive = false;
-        }
-        // get the next current question
-        let currentQuestionIndex = this.questions.findIndex(e => e._id.toString() === questionId);
-        this.questions[currentQuestionIndex].isActive = true;
-        this.questionNumber++;
-        await this.save();
-    } catch (err) {
-        console.log(err)
+quizSchema.methods.setActiveQuestion = async function (req) {
+
+    const {id, timer, seconds} = req.body;
+
+    // get the current active question if it exists. Set it to false.
+    const currentActiveQuestion = this.questions.find(question => question.isActive === true)
+    if (currentActiveQuestion !== undefined) {
+        currentActiveQuestion.isActive = false;
     }
+    // get the next current question
+    const newActiveQuestion = this.questions.find(question => question._id.toString() === id);
+    newActiveQuestion.isActive = true;
+
+    if(timer && seconds > 0) {
+        const milliseconds          = seconds * 1000;
+        newActiveQuestion.timer     = true;
+        newActiveQuestion.timestamp = Math.round((new Date()).getTime()) + milliseconds;
+        setTimeout(() => this.closeActiveQuestion(req, true), milliseconds);
+    }
+
+    this.questionNumber++;
+    await this.save();
+
+    websocketService.sendMessageToWebsocketTeams(req, "UPDATE_ACTIVE_QUESTION");
+    websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
+
 };
 
-quizSchema.methods.setClosedQuestion = async function (questionId) {
-    try {
-        let currentQuestionIndex = quizService.getActiveQuestionIndex(this);
-        this.questions[currentQuestionIndex].isClosed = true;
+quizSchema.methods.closeActiveQuestion = async function (req, notifyQuizMaster = false) {
+    const currentActiveQuestion     = this.questions.find(question => question.isActive === true);
+
+    if(currentActiveQuestion !== true) {
+        currentActiveQuestion.isClosed  = true;
         await this.save();
-    } catch (err) {
-        console.log(err);
+
+        websocketService.sendMessageToWebsocketTeams(req, "UPDATE_CLOSED_QUESTION");
+        websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_CLOSED_ACTION");
+        websocketService.sendMessageToWebsocketQuizmaster(req, "UPDATE_CLOSED_ACTION")
     }
 };
 

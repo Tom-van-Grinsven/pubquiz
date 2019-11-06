@@ -2,8 +2,6 @@ import produce from 'immer'
 import {clearError, setError} from "./errorReducer";
 import {setAccountIsUpdated} from "./accountReducer";
 
-const defaultLoginRedirectUrl = '/quiz';
-
 const validateLogin = (email, password) => {
 
     const err = [];
@@ -101,7 +99,6 @@ const initialState = {
     email: '',
     password: '',
     isSending: false,
-    redirectUrl: defaultLoginRedirectUrl
 };
 
 export const loginReducer = produce((state, action) => {

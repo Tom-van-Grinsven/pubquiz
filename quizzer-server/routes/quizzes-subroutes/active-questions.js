@@ -1,7 +1,6 @@
 'use strict';
 
 const express           = require('express');
-const websocketService  = require('../../service/websocket-services');
 
 const quizActiveQuestionRouter = express.Router();
 
@@ -13,6 +12,7 @@ quizActiveQuestionRouter.get('/', async function(req, res) {
         } else if (req.session.team || req.session.quizCode){
             let result = await req.quiz.getActiveQuestion();
             if(result._id) {
+                console.log(result);
                 let questionObject = {
                     roundNr: req.quiz.roundNumber,
                     questionNr: req.quiz.questionNumber,
@@ -20,6 +20,8 @@ quizActiveQuestionRouter.get('/', async function(req, res) {
                     category: result.category,
                     isClosed: result.isClosed,
                     isValidated: result.isValidated,
+                    timer: result.timer,
+                    timestamp: result.timestamp,
                     _id: result._id,
                 };
                 if(result.isClosed) {
@@ -33,26 +35,24 @@ quizActiveQuestionRouter.get('/', async function(req, res) {
         }
     } catch (err) {
         console.log(err);
-        res.json("nope");
+        res.sendStatus(500)
     }
 });
 
 quizActiveQuestionRouter.put('/', async function(req, res) {
     try{
         if(req.body.id){
-            await req.quiz.setActiveQuestion(req.body.id);
-            websocketService.sendMessageToWebsocketTeams(req, "UPDATE_ACTIVE_QUESTION");
-            websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_ACTIVE_QUESTION");
-            res.json("Ok");
+
+            await req.quiz.setActiveQuestion(req);
+            res.sendStatus(204)
+
         } else if (req.body.closed){
-            await req.quiz.setClosedQuestion(req.body.closed);
-            websocketService.sendMessageToWebsocketTeams(req, "UPDATE_CLOSED_QUESTION");
-            websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_CLOSED_ACTION");
-            res.json("ok");
+            await req.quiz.closeActiveQuestion(req);
+            res.sendStatus(204)
         }
     } catch (err) {
         console.log(err);
-        res.json("nope");
+        res.sendStatus(500);
     }
 });
 
