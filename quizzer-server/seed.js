@@ -17,8 +17,6 @@ const Account = mongoose.model('Account');
 mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true } ).then(() => {
     return seedQuestion();
 }).then(() => {
-    return seedQuiz();
-}).then(() => {
     return seedAccount();
 }).catch(err => {
     console.log(err);
@@ -37,25 +35,6 @@ seedQuestion = async () => {
         const result = await readFileP(fileName);
         await Question.insertMany(JSON.parse(result));
     }
-};
-
-seedQuiz = async () => {
-    await Quiz.deleteMany();
-
-    await Quiz.insertMany([{
-            code: "qhhhnt",
-            name: "De eerste Quiz",
-            teams: [],
-            isActive: 0,
-            roundNumber: 1,
-            questions: [],
-            answeredQuestions: {
-                answers: [
-
-                ]
-            }
-        }]
-    )
 };
 
 seedAccount = async () => {

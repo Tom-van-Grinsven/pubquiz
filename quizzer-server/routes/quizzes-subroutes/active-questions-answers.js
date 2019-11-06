@@ -47,7 +47,7 @@ quizActiveQuestionAnswerRouter.put('/', async function(req, res) {
                 await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
                 websocketService.sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
                 websocketService.sendMessageToWebsocketScoreboard(req,"UPDATE_GIVEN_TEAM_ANSWERS");
-                res.send(204)
+                res.sendStatus(204)
             } else {
                 res.sendStatus(400)
             }

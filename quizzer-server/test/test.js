@@ -9,3 +9,4 @@ require('./routes/quizzes-subroutes/categories');
 require('./routes/quizzes-subroutes/categories-questions');
 require('./routes/quizzes-subroutes/score');
 require('./routes/quizzes-subroutes/active-questions');
+require('./routes/quizzes-subroutes/active-questions-answers');

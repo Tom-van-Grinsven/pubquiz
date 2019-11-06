@@ -8,6 +8,7 @@ let getQuizCode    = require('../quizzes');
 chai.use(chaiHttp);
 
 let currentQuiz = null;
+let cookieForTeam1 = null;
 
 describe('Tests for teams endpoint', () => {
     let quizMaster = request.agent(app);
@@ -36,6 +37,7 @@ describe('Tests for teams endpoint', () => {
             .expect(201)
             .then((res) => {
                 team1.jar.setCookie(res.headers['set-cookie'][0]);
+                cookieForTeam1 = res.headers['set-cookie'][0];
             })
     });
     it('should create a session for a team by adding itself to the quiz - Team 2', function () {
@@ -122,3 +124,7 @@ describe('Tests for teams endpoint', () => {
             });
     });
 });
+
+module.exports = function getTeam1Cookie(callback){
+    return callback(cookieForTeam1);
+};

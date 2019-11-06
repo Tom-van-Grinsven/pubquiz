@@ -42,7 +42,6 @@ quizActiveQuestionRouter.get('/', async function(req, res) {
 quizActiveQuestionRouter.put('/', async function(req, res) {
     try{
         if(req.body.id){
-
             await req.quiz.setActiveQuestion(req);
             res.sendStatus(204)
 
