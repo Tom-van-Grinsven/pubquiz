@@ -35,10 +35,6 @@ const QuestionTimer = (props) => {
 
     const milliseconds = props.timestamp - Math.round((new Date()).getTime());
 
-    // if(milliseconds < 0) {
-    //     return null;
-    // }
-
     return (
         <div>
             <Timer initialTime={milliseconds} direction="backward">
