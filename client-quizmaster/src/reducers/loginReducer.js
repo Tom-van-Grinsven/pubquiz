@@ -35,7 +35,6 @@ export const login = (email, password) => {
             headers: {
                 'Content-Type': 'Application/JSON'
             },
-            mode: 'no-cors',
             credentials: "include",
             body: JSON.stringify({
                 email: email,
