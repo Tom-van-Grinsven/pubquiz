@@ -6,7 +6,7 @@ import QuizMasterDashboard from "./QuizMasterDashboard";
 import React from "react";
 import {fetchQuiz} from "../reducers/quizReducer";
 import {LoadingComponent} from "./MiscComponents";
-import {setupSocketConnection} from "../reducers/webSocketReducer";
+import {setupSocketConnection} from "../reducers/WebSocketReducer";
 import QuizEnded from "./QuizEnded";
 
 

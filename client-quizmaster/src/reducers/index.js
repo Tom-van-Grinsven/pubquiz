@@ -8,7 +8,7 @@ import {categoryQuestionsReducer} from "./categoryQuestionsReducer";
 import {teamAnswersReducer} from "./teamAnswersReducer";
 import {activeQuestionReducer} from "./activeQuestionReducer";
 import {errorReducer} from "./errorReducer";
-import {webSocketReducer} from "./webSocketReducer";
+import {webSocketReducer} from "./WebSocketReducer";
 import {accountReducer} from "./accountReducer";
 
 const mainReducer = Redux.combineReducers({
