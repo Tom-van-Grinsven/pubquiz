@@ -13,13 +13,8 @@ quizActiveQuestionAnswerRouter.get('/', async function(req, res) {
     try {
 
         const currentQuestion = req.quiz.questions.find(question => question.isActive === true);
-        // if(!authorizationService.isAuthorized(req) && currentQuestion.isClosed === false) {
-        //     return res.sendStatus(403);
-        // }
-
         let result = await req.quiz.getGivenAnswers();
         return res.send(result);
-
 
     } catch (err) {
         console.log(err);
@@ -36,15 +31,13 @@ quizActiveQuestionAnswerRouter.put('/', async function(req, res) {
             }
 
             await req.quiz.judgeGivenAnswers(req.body);
-
             websocketService.sendMessageToWebsocketTeams(req, "UPDATE_JUDGED_QUESTIONS");
             websocketService.sendMessageToWebsocketScoreboard(req,"UPDATE_JUDGED_QUESTIONS");
-
             res.sendStatus(204);
         }
         else {
             if(req.body.answer){
-                await req.quiz.setTeamAnswerForQuestion(req.body.teamName, req.body.answer);
+                await req.quiz.setTeamAnswerForQuestion(req.session.team.teamName, req.body.answer);
                 websocketService.sendMessageToWebsocketQuizmaster(req, "UPDATE_GIVEN_TEAM_ANSWERS");
                 websocketService.sendMessageToWebsocketScoreboard(req,"UPDATE_GIVEN_TEAM_ANSWERS");
                 res.sendStatus(204)

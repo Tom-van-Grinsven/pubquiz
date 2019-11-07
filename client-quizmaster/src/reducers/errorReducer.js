@@ -1,19 +1,15 @@
 import {produce} from "immer";
 
-export const setError = (component, err) => {
+export const setError = (err) => {
     return {
         type: 'SET_ERROR',
-        payload: {
-            component,
-            err
-        }
+        payload: err
     }
 };
 
-export const clearError = (component) => {
+export const clearError = () => {
     return {
-        type: 'CLEAR_ERROR',
-        payload: component
+        type: 'CLEAR_ERROR'
     }
 };
 
@@ -21,27 +17,16 @@ export const errorReducer = produce((state, action) => {
 
     switch (action.type) {
         case 'SET_ERROR':
-            let {component, err} = action.payload;
-            state = {
-                ...state,
-                [component]: err
-            };
+            state = action.payload;
             return state;
 
         case 'CLEAR_ERROR':
-
-            if(action.payload) {
-                if(state[action.payload]) {
-                    delete state[action.payload]
-                }
-            } else {
-                state = [];
-            }
+            state = [];
             return state;
 
         default:
             return state;
     }
 
-}, {});
+}, []);
 

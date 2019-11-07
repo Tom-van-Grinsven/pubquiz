@@ -1,5 +1,6 @@
 import produce from 'immer'
 import {clearError, setError} from './errorReducer';
+import {teamIsAcceptanceIsPending} from "./teamReducer";
 
 export const setQuizCode = (quizCode) => {
     return {
@@ -15,7 +16,26 @@ export const setTeamName = (teamName) => {
     }
 };
 
-export const joinQuiz = (quizCode, teamName, history) => {
+const joinQuizRequest = () => {
+    return {
+        type: 'JOIN_QUIZ_REQUEST'
+    }
+};
+
+const joinQuizRequestSuccess = () => {
+    return {
+        type: 'JOIN_QUIZ_REQUEST_SUCCESS'
+    }
+};
+
+const joinQuizRequestFailure = () => {
+    return {
+        type: 'JOIN_QUIZ_REQUEST_FAILURE'
+    }
+}
+
+
+export const joinQuiz = (quizCode, teamName, callback) => {
     return dispatch => {
         if(teamName.length === 0) {
             dispatch(setError({
@@ -38,6 +58,7 @@ export const joinQuiz = (quizCode, teamName, history) => {
         }
 
         dispatch(clearError());
+        dispatch(joinQuizRequest());
         fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/teams', {
             method: 'POST',
             headers: {
@@ -55,13 +76,17 @@ export const joinQuiz = (quizCode, teamName, history) => {
                 return true;
             }
         }, fetchErr =>  {
+            dispatch(joinQuizRequestFailure());
             dispatch(setError({
-                joinquiz: {messages: [fetchErr]}
+                joinquiz: {messages: [fetchErr.message || 'Something went wrong']}
             }))
         }).then(() => {
-            history.push('/quiz/' + quizCode);
+            dispatch(joinQuizRequestSuccess());
+            dispatch(teamIsAcceptanceIsPending());
+            callback(quizCode);
         }, (responseStatus) => {
 
+            dispatch(joinQuizRequestFailure());
             if(responseStatus === 404){
                 dispatch(setError({
                     joinquiz: {messages: ["This Quiz does not exist"]}
@@ -88,6 +113,15 @@ const initialState = {
 
 export const joinQuizReducer = produce((state, action) => {
     switch (action.type) {
+
+        case 'JOIN_QUIZ_REQUEST':
+            state.isSending = true;
+            return;
+
+        case 'JOIN_QUIZ_REQUEST_SUCCESS':
+        case 'JOIN_QUIZ_REQUEST_FAILURE':
+            state.isSending = false;
+            return;
 
         case 'SET_QUIZ_CODE':
             state.quizCode = action.payload;
