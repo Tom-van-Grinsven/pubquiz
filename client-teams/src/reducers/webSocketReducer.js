@@ -5,7 +5,6 @@ export const setupSocketConnection = () => {
         const socket = new WebSocket(process.env.REACT_APP_WEB_SOCKET_URL);
 
         socket.onmessage = (event) => {
-            console.log(event.data);
             dispatch(JSON.parse(event.data));
         };
 
