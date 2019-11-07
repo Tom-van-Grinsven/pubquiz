@@ -1,10 +1,17 @@
 import produce from "immer";
+import {setError} from "./errorReducer";
 
 export const setupSocketConnection = () => {
     return dispatch => {
         const socket = new WebSocket(process.env.REACT_APP_WEB_SOCKET_URL);
-
+        socket.onerror = (event) => {
+            //dispatch(setError(event))
+        };
+        socket.onopen = (event) => {
+            //console.log('YESSS')
+        };
         socket.onmessage = (event) => {
+            console.log(event.data);
             dispatch(JSON.parse(event.data));
         };
 
@@ -16,6 +23,12 @@ const attachSocket = (socket) => {
     return {
         type: 'ATTACH_SOCKET',
         payload: socket
+    }
+};
+
+const closeSocket = (socket) => {
+    return {
+        type: 'CLOSE_SOCKET',
     }
 };
 
