@@ -11,7 +11,7 @@ import {joinQuiz, setQuizCode, setTeamName} from "../reducers/joinQuizReducer";
 function JoinQuizForm(props) {
 
     const setQuizCodeFromUrl = () => {
-        if(props.match.params.code.length === 6) {
+        if(props.match.params.code && props.match.params.code.length === 6) {
             props.doSetQuizCode(props.match.params.code);
         }
     };
