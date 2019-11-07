@@ -47,7 +47,7 @@ quizTeamRouter.put('/', async function(req, res) {
 
         await req.quiz.setDefinitiveTeamsForQuiz(req.body);
         websocketService.filterWebsocketConnectionsForDefinitiveTeam(req, req.body);
-        websocketService.sendMessageToWebsocketTeams(req, "UPDATE_DEFINITIVE_TEAMS");
+        websocketService.sendMessageToWebsocketTeams(req, "TEAM_ACCEPTED");
         websocketService.sendMessageToWebsocketScoreboard(req, "UPDATE_DEFINITIVE_TEAMS");
         res.sendStatus(204)
 

@@ -67,7 +67,7 @@ const dbName = "quizzer";
 httpServer.on('request', app);
 
 httpServer.listen(3000, function() {
-    mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true }, () => {
+    mongoose.connect(`mongodb://quizzer-user:supers3cretp4assword!@104.248.87.211:27017/${dbName}`,  {useNewUrlParser: true, useUnifiedTopology: true }, () => {
     });
 });
 

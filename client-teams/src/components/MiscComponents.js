@@ -28,6 +28,35 @@ export const LoadingComponent = (props) => {
     )
 };
 
+export const TeamPending = () => {
+    return (
+        <Card className='green'>
+            <Card.Body>
+                <div className='loading-div'>
+                    <h3>Waiting for the Quiz Master to <br/>Accept (or Reject) the request to join the Quiz</h3>
+                    <img width='150px' src={process.env.PUBLIC_URL + '/images/spinner-white.svg'} alt="spinner" />
+                </div>
+            </Card.Body>
+        </Card>
+    )
+};
+
+export const TeamRejected = () => {
+    return (
+        <Card className='orange'>
+            <Card.Body>
+                <div className='loading-div'>
+                    <h1>Sorry...</h1>
+                    <br/><br/>
+                    <img width='250px' src={process.env.PUBLIC_URL + '/images/sad-smiley.svg'} alt="sad smiley" />
+                    <br/><br/>
+                    <h3>The Quiz Master has decided to <br/>Reject your application for participation in the Quiz</h3>
+                </div>
+            </Card.Body>
+        </Card>
+    )
+}
+
 export const submitOnEnter = (callback) => {
     return (event) => {
         if(event.key === 'Enter') callback();
