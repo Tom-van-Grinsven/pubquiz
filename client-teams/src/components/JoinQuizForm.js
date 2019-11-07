@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -9,6 +9,14 @@ import {Collapse} from "react-bootstrap";
 import {joinQuiz, setQuizCode, setTeamName} from "../reducers/joinQuizReducer";
 
 function JoinQuizForm(props) {
+
+    const setQuizCodeFromUrl = () => {
+        if(props.match.params.code.length === 6) {
+            props.doSetQuizCode(props.match.params.code);
+        }
+    };
+
+    useEffect(() => setQuizCodeFromUrl(), []);
 
     const setQuizCode = (event) => props.doSetQuizCode(event.target.value);
     const setTeamName = (event) => props.doSetTeamName(event.target.value);

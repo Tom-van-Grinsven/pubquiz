@@ -26,33 +26,36 @@ function QuizComponent(props) {
         return <Redirect to='/' />
     }
 
-    if(props.team.isUpdated && !props.team.isFetching) {
-        props.doFetchTeam();
-        return loadingComponent;
-    }
+    if(props.quiz.isActive === false) {
+        if(!props.quiz.isFetching && props.location.pathname !== '/quiz/' + props.quiz.code + '/thanks-for-playing') {
+            return <Redirect to={`/quiz/${props.quiz.code}/thanks-for-playing`} />
+        }
+    } else {
 
-    if(props.team.isFetching || props.quiz.isFetching) {
-        return loadingComponent;
-    }
+        if(props.team.isUpdated && !props.team.isFetching) {
+            props.doFetchTeam();
+            return loadingComponent;
+        }
 
-    if(props.team.teamName && props.websocket.socket === null && !props.websocket.isClosed){
-        props.doSetupSocketConnection()
-    }
+        if(props.team.isFetching || props.quiz.isFetching) {
+            return loadingComponent;
+        }
 
-    if(!props.quiz.isFetching && props.quiz.isOpen === true && props.location.pathname !== '/quiz/' + props.quiz.code + '/team-pending') {
-        return <Redirect to={`/quiz/${props.quiz.code}/team-pending`} />
-    }
+        if(props.team.teamName && props.websocket.socket === null && !props.websocket.isClosed){
+            props.doSetupSocketConnection()
+        }
 
-    if(!props.quiz.isFetching && props.quiz.isOpen === false && props.team.teamName && props.location.pathname !== props.match.url) {
-        return <Redirect to={props.match.url} />
-    }
+        if(!props.quiz.isFetching && props.quiz.isOpen === true && props.location.pathname !== '/quiz/' + props.quiz.code + '/team-pending') {
+            return <Redirect to={`/quiz/${props.quiz.code}/team-pending`} />
+        }
 
-    if(!props.quiz.isFetching && props.quiz.isOpen === false && !props.team.teamName && props.location.pathname !== '/quiz/' + props.quiz.code + '/team-rejected') {
-        return <Redirect to={`/quiz/${props.quiz.code}/team-rejected`} />
-    }
+        if(!props.quiz.isFetching && props.quiz.isOpen === false && props.team.teamName && props.location.pathname !== props.match.url) {
+            return <Redirect to={props.match.url} />
+        }
 
-    if( !props.quiz.isFetching && props.quiz.isActive === false && props.location.pathname !== 'quiz/' + props.quiz.code + '/thanks-for-playing') {
-        return <Redirect to={`/quiz/${props.quiz.code}/thanks-for-playing`} />
+        if(!props.quiz.isFetching && props.quiz.isOpen === false && !props.team.teamName && props.location.pathname !== '/quiz/' + props.quiz.code + '/team-rejected') {
+            return <Redirect to={`/quiz/${props.quiz.code}/team-rejected`} />
+        }
     }
 
     return (

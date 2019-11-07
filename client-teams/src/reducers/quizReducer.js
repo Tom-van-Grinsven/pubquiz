@@ -10,12 +10,12 @@ export const fetchQuiz = (quizCode) => {
             method: 'GET',
             credentials: 'include'
         }).then(response => response.json(), err => {
-            dispatch(fetchQuizRequestFailure())
+            dispatch(fetchQuizRequestFailure());
             dispatch(setError({
                 message: [err]
             }));
         }).then(quiz => dispatch(fetchQuizRequestSuccess(quiz)), err => {
-            dispatch(fetchQuizRequestFailure(err))
+            dispatch(fetchQuizRequestFailure(err));
             dispatch(setError({
                 message: [err]
             }));

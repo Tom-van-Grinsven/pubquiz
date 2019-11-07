@@ -109,8 +109,8 @@ export const answerQuestionReducer = produce((state, action) => {
     switch (action.type) {
 
         case 'FETCH_ACTIVE_QUESTION_SUCCESS':
-            const {isActive, isClosed, isValidated } = action.payload;
-            if(isActive && !isClosed && !isValidated) {
+            const {isClosed, isValidated } = action.payload;
+            if(!isClosed && !isValidated) {
                 state.answer = '';
             }
             return;

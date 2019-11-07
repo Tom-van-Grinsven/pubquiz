@@ -10,7 +10,7 @@ function App(props) {
     content = (
         <Router>
             <Switch>
-                <Route exact path='/' component={JoinQuizForm} />
+                <Route exact path={['/', '/:code']} component={JoinQuizForm} />
                 <Route path='/quiz/:code' component={QuizComponent} />
             </Switch>
         </Router>
