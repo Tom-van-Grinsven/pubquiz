@@ -5,10 +5,31 @@ export const setupSocketConnection = () => {
         const socket = new WebSocket(process.env.REACT_APP_WEB_SOCKET_URL);
 
         socket.onmessage = (event) => {
+            console.log(event.data);
             dispatch(JSON.parse(event.data));
         };
 
+        socket.onerror = () => {
+            dispatch(socketError('Problems connecting to server, please try again'))
+        };
+
+        socket.onclose = () => {
+            dispatch(socketClose())
+        };
         dispatch(attachSocket(socket));
+    }
+};
+
+const socketError = (err) => {
+    return {
+        type: 'SOCKET_ERROR',
+        payload: err
+    }
+};
+
+const socketClose = () => {
+    return {
+        type: 'SOCKET_CLOSE'
     }
 };
 
@@ -21,20 +42,24 @@ const attachSocket = (socket) => {
 
 const initialState = {
     socket: null,
+    isClosed: false,
+    err: null,
 };
 
 export const webSocketReducer = produce((state, action) => {
 
     switch(action.type) {
 
-        case 'CLOSE_SOCKET':
-            state.socket.close();
-            state.socket = null;
-            return state;
-
         case 'ATTACH_SOCKET':
-            state.socket = action.payload;
-            return state;
+            state.socket    = action.payload;
+            state.isClosed  = false;
+            state.err       = null;
+            return;
+
+        case 'SOCKET_CLOSE':
+            state.socket = null;
+            state.isClosed = true;
+            return;
 
         default:
             return state;

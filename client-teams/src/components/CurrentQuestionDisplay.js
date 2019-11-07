@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {Card, Collapse} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import {fetchActiveQuestion} from "../reducers/activeQuestionReducer";
+import TimerComponent from "./TimerComponent";
 
 function CurrentQuestionDisplay(props) {
 
@@ -30,17 +31,19 @@ function CurrentQuestionDisplay(props) {
 
     return (
         <div className='current-question-display'>
-        <Card className='category-card purple text-center'>
-            <Card.Body>
-                <h3><b>{category}</b></h3>
-            </Card.Body>
-        </Card>
-        <Card className='current-question-display green text-center'>
-            <Card.Body>
-            <h3><b>Question:</b></h3>
-                <h5>{question}</h5>
-            </Card.Body>
-        </Card>
+            <TimerComponent activeQuestion={props.activeQuestion} />
+
+            <Card className='category-card purple text-center'>
+                <Card.Body>
+                    <h3><b>{category}</b></h3>
+                </Card.Body>
+            </Card>
+            <Card className='current-question-display green text-center'>
+                <Card.Body>
+                <h3><b>Question:</b></h3>
+                    <h5>{question}</h5>
+                </Card.Body>
+            </Card>
         </div>
     )
 }
