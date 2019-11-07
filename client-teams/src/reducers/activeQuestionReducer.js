@@ -14,7 +14,9 @@ export const fetchActiveQuestion = (quizCode) => {
             dispatch(setError({
                 message: [err]
             }));
-        }).then(question => dispatch(fetchActiveQuestionRequestSuccess(question)), err => {
+        }).then(question => {
+            dispatch(fetchActiveQuestionRequestSuccess(question))
+        }, err => {
             dispatch(fetchActiveQuestionRequestFailure());
             dispatch(setError({
                 message: [err]
@@ -46,7 +48,6 @@ const initialState = {
     question: null,
     isFetching: false,
     isUpdated: true,
-    quizClosed: false,
 };
 
 export const activeQuestionReducer = produce((state, action) => {
@@ -69,20 +70,14 @@ export const activeQuestionReducer = produce((state, action) => {
             }
             return;
 
+        case 'UPDATE_CLOSED_QUESTION':
+        case 'UPDATE_JUDGED_QUESTIONS':
         case 'UPDATE_ACTIVE_QUESTION':
             state.isUpdated = true;
             return state;
 
-        case 'UPDATE_CLOSED_QUESTION':
-            state.question.isClosed = true;
-            return state;
-
         case 'FETCH_ACTIVE_QUESTION_FAILURE':
             state.isFetching = false;
-            return;
-
-        case "UPDATE_QUIZ_ENDED":
-            state.quizClosed = true;
             return;
 
         default:

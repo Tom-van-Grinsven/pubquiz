@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {ErrorComponent} from "./MiscComponents";
+import {ErrorComponent, submitOnEnter} from "./MiscComponents";
 import {Collapse} from "react-bootstrap";
 import {joinQuiz, setQuizCode, setTeamName} from "../reducers/joinQuizReducer";
 
@@ -12,7 +12,9 @@ function JoinQuizForm(props) {
 
     const setQuizCode = (event) => props.doSetQuizCode(event.target.value);
     const setTeamName = (event) => props.doSetTeamName(event.target.value);
-    const joinQuiz = () => props.doJoinQuiz(props.quizCode, props.teamName, props.history);
+    const joinQuizCallback = (quizCode) => props.history.push('/quiz/' + quizCode + '/team-pending');
+    const joinQuiz = () => props.doJoinQuiz(props.quizCode, props.teamName, joinQuizCallback);
+    const doSubmitOnEnter   = (event) => submitOnEnter(joinQuiz)(event);
 
     if((props.quizCode && props.teamName) && props.websocket === null){
         props.doSetupSocketConnection()
@@ -30,6 +32,7 @@ function JoinQuizForm(props) {
                                 type='text'
                                 value={props.quizCode}
                                 onChange={setQuizCode}
+                                onKeyPress={doSubmitOnEnter}
                                 placeholder='Quiz Code'
                                 className={props.err.code === 'QUIZ_CODE' ? 'error' : ''}
                             />
@@ -39,6 +42,7 @@ function JoinQuizForm(props) {
                                 type='text'
                                 value={props.teamName}
                                 onChange={setTeamName}
+                                onKeyPress={doSubmitOnEnter}
                                 placeholder='Team Name'
                             />
                         </Form.Group>
@@ -67,7 +71,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         doSetQuizCode: (quizCode) => dispatch(setQuizCode(quizCode)),
         doSetTeamName: (teamName) => dispatch(setTeamName(teamName)),
-        doJoinQuiz: (quizCode, teamName, history) => dispatch(joinQuiz(quizCode, teamName, history)),}
+        doJoinQuiz: (quizCode, teamName, callback) => dispatch(joinQuiz(quizCode, teamName, callback)),}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(JoinQuizForm));

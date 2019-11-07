@@ -3,7 +3,6 @@ import produce from "immer";
 export const setupSocketConnection = () => {
     return dispatch => {
         const socket = new WebSocket(process.env.REACT_APP_WEB_SOCKET_URL);
-
         socket.onmessage = (event) => {
             dispatch(JSON.parse(event.data));
         };
@@ -29,7 +28,7 @@ export const webSocketReducer = produce((state, action) => {
 
         case 'CLOSE_SOCKET':
             state.socket.close();
-            state.socket = null
+            state.socket = null;
             return state;
 
         case 'ATTACH_SOCKET':

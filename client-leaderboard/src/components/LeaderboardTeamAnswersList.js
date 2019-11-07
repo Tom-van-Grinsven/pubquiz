@@ -80,10 +80,10 @@ function LeaderboardTeamAnswer(props) {
             answerStatus = 'incorrect'
         }
     }
-    return (
-        <tr key={props.answer._id} className={answerStatus}>
-            <td>{props.answer.teamName} {!props.isClosed ? 'has given an answer!' : ''}</td>
-            {props.isClosed ? <td> {props.answer.givenAnswer} </td> : ''}
-        </tr>
-    )
+    if(props.isClosed) {
+        return (<tr className={answerStatus}><td>{props.answer.teamName}</td><td>{props.answer.givenAnswer}</td></tr>
+        )
+    } else {
+        return (<tr><td>{`${props.answer.teamName} has given an answer`}</td></tr>)
+    }
 }
