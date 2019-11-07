@@ -56,30 +56,32 @@ export const toggleSelectedQuestion = (questionId) => {
 
 export const sendActiveQuestion = (questionId, quizCode, seconds) => {
     return dispatch => {
-        dispatch(clearError());
-        dispatch(sendActiveQuestionRequest());
-        fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'Application/JSON'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                'id': questionId,
-                'timer': seconds > 0,
-                'seconds': parseInt(seconds)
-            })
-        }).then(() => {
-            dispatch(setActiveQuestionIsUpdated());
-            dispatch(sendActiveQuestionRequestSuccess());
-            dispatch(incrementQuestionNr());
-        }, err => {
-            dispatch(setError({
-                message: [err]
-            }));
-            dispatch(sendActiveQuestionRequestFailure())
-        });
+        if(questionId !== undefined && questionId !== null) {
+            dispatch(clearError());
+            dispatch(sendActiveQuestionRequest());
+            fetch(process.env.REACT_APP_API_URL + '/quizzes/' + quizCode + '/active-questions', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'Application/JSON'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    'id': questionId,
+                    'timer': seconds > 0,
+                    'seconds': parseInt(seconds)
+                })
+            }).then(() => {
+                dispatch(setActiveQuestionIsUpdated());
+                dispatch(sendActiveQuestionRequestSuccess());
+                dispatch(incrementQuestionNr());
+            }, err => {
+                dispatch(setError({
+                    message: [err]
+                }));
+                dispatch(sendActiveQuestionRequestFailure())
+            });
 
+        }
     }
 };
 

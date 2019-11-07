@@ -2,8 +2,7 @@ import React from 'react';
 import Container from 'react-bootstrap/Container'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import JoinQuizForm from './JoinQuizForm'
-import AnswerQuestion from './AnswerQuestion';
-import QuizEnded from './QuizEnded';
+import QuizComponent from "./QuizComponent";
 
 function App(props) {
     let content;
@@ -11,9 +10,8 @@ function App(props) {
     content = (
         <Router>
             <Switch>
-                <Route exact path='/' component={JoinQuizForm} />
-                <Route exact path='/quiz/:code' component={AnswerQuestion} />
-                <Route exact path="/quiz/:code/thanksforplaying" component={QuizEnded} />
+                <Route exact path={['/', '/:code']} component={JoinQuizForm} />
+                <Route path='/quiz/:code' component={QuizComponent} />
             </Switch>
         </Router>
     );
