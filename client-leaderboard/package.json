@@ -5,7 +5,7 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "fireworks-canvas": "^2.3.2",
-    "immer": "^4.0.2",
+    "immer": "^8.0.1",
     "react": "^16.10.2",
     "react-bootstrap": "^1.0.0-beta.14",
     "react-compound-timer": "^1.1.15",
